@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '2024M');
 session_start();
 
 require_once "../config/config.php";
@@ -30,7 +31,7 @@ if (isset($_GET['id'])) {
           aria-hidden="true">&times;</span></button>
       <strong>Aviso!</strong> Redirigiendo para cancelar venta...
     </div>
-  <?php
+    <?php
   } else {
     ?>
     <div class="alert alert-danger alert-dismissible" role="alert">
@@ -46,11 +47,12 @@ if (isset($_GET['id'])) {
 if ($action == 'ajax') {
   $q = $_REQUEST['q'] ?? '';
   $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
-  $per_page = 10;
+  $per_page = isset($_REQUEST['per_page']) ? intval($_REQUEST['per_page']) : 25;
+  $branch_filter = $_REQUEST['branch'] ?? '';
   $adjacents = 4;
   $offset = ($page - 1) * $per_page;
 
-  $sWhere = "WHERE 1=1 ";
+  $sWhere = " WHERE A.created_at >= DATE_SUB(NOW(), INTERVAL 60 DAY) ";
   $params = [];
   $types = "";
 
@@ -63,36 +65,61 @@ if ($action == 'ajax') {
     $types .= "sss";
   }
 
-  $sTable = "vtahead A 
-               INNER JOIN cust B ON A.cust_id = B.id 
-               INNER JOIN user C ON A.user_id = C.id";
+  $all_rows = [];
+  $branchesConfigs = getBranchesConfig();
 
-  // Count Rows
-  $sql_count = "SELECT count(*) AS numrows FROM $sTable $sWhere";
-  $stmt_count = mysqli_prepare($conexion, $sql_count);
-  if (!empty($params)) {
-    mysqli_stmt_bind_param($stmt_count, $types, ...$params);
+  foreach ($branchesConfigs as $branchLabel => $config) {
+    // Apply branch filter if selected
+    if (!empty($branch_filter) && $branch_filter !== $branchLabel) {
+      continue;
+    }
+
+    $branchConn = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
+
+    if (!$branchConn) {
+      error_log("Could not connect to branch: $branchLabel");
+      continue;
+    }
+
+    $sTable = "vtahead A 
+                   INNER JOIN cust B ON A.cust_id = B.id 
+                   INNER JOIN user C ON A.user_id = C.id";
+
+    $sql_data = "SELECT A.id, A.mov_id, A.cust_id, B.name as cliente, A.created_at, A.hour_at, 
+                            A.items, A.sumqty, A.sumimp, A.balance, A.is_active as status, C.name as usuario 
+                     FROM $sTable $sWhere 
+                     ORDER BY A.created_at DESC, A.mov_id DESC";
+
+    $stmt_data = mysqli_prepare($branchConn, $sql_data);
+    if (!empty($params)) {
+      mysqli_stmt_bind_param($stmt_data, $types, ...$params);
+    }
+
+    if (mysqli_stmt_execute($stmt_data)) {
+      $query_res = mysqli_stmt_get_result($stmt_data);
+      while ($row = mysqli_fetch_array($query_res, MYSQLI_ASSOC)) {
+        $row['branch_label'] = $branchLabel;
+        // Assign CSS class based on branch label
+        $row['branch_class'] = 'label-' . strtolower($branchLabel);
+        $all_rows[] = $row;
+      }
+    }
+    mysqli_close($branchConn);
   }
-  mysqli_stmt_execute($stmt_count);
-  $row_count = mysqli_fetch_array(mysqli_stmt_get_result($stmt_count));
-  $numrows = $row_count['numrows'];
 
+  // Sort all aggregated rows by created_at DESC
+  usort($all_rows, function ($a, $b) {
+    $dateA = strtotime($a['created_at'] . ' ' . $a['hour_at']);
+    $dateB = strtotime($b['created_at'] . ' ' . $b['hour_at']);
+    return $dateB <=> $dateA;
+  });
+
+  $numrows = count($all_rows);
   $total_pages = ceil($numrows / $per_page);
   $reload = './vtaqry.php';
 
-  // Fetch Data
-  $sql_data = "SELECT A.id, A.mov_id, A.cust_id, B.name as cliente, A.created_at, A.hour_at, 
-                        A.items, A.sumqty, A.sumimp, A.balance, A.is_active as status, C.name as usuario 
-                 FROM $sTable $sWhere 
-                 ORDER BY A.created_at DESC, A.mov_id DESC 
-                 LIMIT $offset, $per_page";
-
-  $stmt_data = mysqli_prepare($conexion, $sql_data);
-  if (!empty($params)) {
-    mysqli_stmt_bind_param($stmt_data, $types, ...$params);
-  }
-  mysqli_stmt_execute($stmt_data);
-  $query = mysqli_stmt_get_result($stmt_data);
+  // Manual Slicing for Pagination
+  $display_rows = array_slice($all_rows, $offset, $per_page);
 
   if ($numrows > 0) {
     include 'pagination.php';
@@ -111,32 +138,37 @@ if ($action == 'ajax') {
         </tr>
       </thead>
       <tbody>
-        <?php while ($r = mysqli_fetch_array($query, MYSQLI_ASSOC)):
+        <?php foreach ($display_rows as $r):
           $status = intval($r['status']);
           $fecha_f = date('d-m-Y', strtotime($r['created_at']));
+          $row_class = ($status == 1) ? "paid-highlight" : "";
           ?>
-          <tr>
-            <td>Sucursal</td>
+          <tr class="<?php echo $row_class; ?>">
+            <td><span class="label <?php echo $r['branch_class']; ?>"><?php echo $r['branch_label']; ?></span></td>
             <td><?php echo $r['mov_id']; ?></td>
             <td><?php echo utf8_decode($r['cliente']); ?></td>
             <td><?php echo $fecha_f; ?></td>
             <td><?php echo $r['hour_at']; ?></td>
             <td align="right"><?php echo number_format($r['sumimp'], 2); ?></td>
-            <td><?php echo ($status == 1) ? "Activo" : "Inactivo"; ?></td>
+            <td>
+              <span class="badge <?php echo ($status == 1) ? 'badge-success' : 'badge-danger'; ?>">
+                <?php echo ($status == 1) ? "Activo" : "Inactivo"; ?>
+              </span>
+            </td>
             <td class="text-right">
               <?php if ($status == 1 && $user_kind != 0 && $fecha_f == $hoy): ?>
-                <button type="button" class='btn btn-default btn-xs' title='Cancelar Venta'
+                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cancelar Venta'
                   onclick="eliminar('<?php echo $r['id']; ?>')">
                   <i class="glyphicon glyphicon-trash"></i>
                 </button>
               <?php endif; ?>
-              <a href="action/vtaticket.php?xyz=<?php echo $r['id']; ?>" class='btn btn-default btn-xs' target="_blank"
-                title='Imprimir Venta'>
+              <a href="action/vtaticket.php?xyz=<?php echo $r['id']; ?>" class='btn btn-default btn-xs action-btn-victoria'
+                target="_blank" title='Imprimir Venta'>
                 <i class="glyphicon glyphicon-print"></i>
               </a>
             </td>
           </tr>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
         <tr>
           <td colspan="8">
             <span class="pull-right">
