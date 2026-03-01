@@ -1,0 +1,160 @@
+<?php
+session_start();
+
+require_once "../config/config.php";
+
+$user_kind = $_SESSION['user_kind'] ?? 0;
+$user_id = $_SESSION['user_id'] ?? 0;
+$hoy = date('d-m-Y');
+
+$action = $_REQUEST['action'] ?? '';
+
+// 1. Handle Deletion (Cancel Sale)
+if (isset($_GET['id'])) {
+  $id_expense = intval($_GET['id']);
+
+  // Check if sale exists using prepared statement
+  $stmt_check = mysqli_prepare($conexion, "SELECT 1 FROM vtahead WHERE id = ?");
+  mysqli_stmt_bind_param($stmt_check, "i", $id_expense);
+  mysqli_stmt_execute($stmt_check);
+  $res_check = mysqli_stmt_get_result($stmt_check);
+
+  if (mysqli_num_rows($res_check) > 0) {
+    // Instead of echoing a script, we return a status that the JS can handle
+    // However, the original code called cancelingregistro(id) which did window.location.href="action/del_vta.php?xyz="+id;
+    // We will keep this for now but returning it as a data attribute or a specific message
+    ?>
+    <div class="alert alert-success alert-dismissible" role="alert"
+      data-redirect="action/del_vta.php?xyz=<?php echo $id_expense; ?>">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
+      <strong>Aviso!</strong> Redirigiendo para cancelar venta...
+    </div>
+  <?php
+  } else {
+    ?>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
+      <strong>Error!</strong> Venta no encontrada.
+    </div>
+    <?php
+  }
+}
+
+// 2. Handle AJAX Listing
+if ($action == 'ajax') {
+  $q = $_REQUEST['q'] ?? '';
+  $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
+  $per_page = 10;
+  $adjacents = 4;
+  $offset = ($page - 1) * $per_page;
+
+  $sWhere = "WHERE 1=1 ";
+  $params = [];
+  $types = "";
+
+  if (!empty($q)) {
+    $sWhere .= " AND (B.name LIKE ? OR A.mov_id LIKE ? OR A.created_at LIKE ?)";
+    $search_q = "%$q%";
+    $params[] = $search_q;
+    $params[] = $search_q;
+    $params[] = $search_q;
+    $types .= "sss";
+  }
+
+  $sTable = "vtahead A 
+               INNER JOIN cust B ON A.cust_id = B.id 
+               INNER JOIN user C ON A.user_id = C.id";
+
+  // Count Rows
+  $sql_count = "SELECT count(*) AS numrows FROM $sTable $sWhere";
+  $stmt_count = mysqli_prepare($conexion, $sql_count);
+  if (!empty($params)) {
+    mysqli_stmt_bind_param($stmt_count, $types, ...$params);
+  }
+  mysqli_stmt_execute($stmt_count);
+  $row_count = mysqli_fetch_array(mysqli_stmt_get_result($stmt_count));
+  $numrows = $row_count['numrows'];
+
+  $total_pages = ceil($numrows / $per_page);
+  $reload = './vtaqry.php';
+
+  // Fetch Data
+  $sql_data = "SELECT A.id, A.mov_id, A.cust_id, B.name as cliente, A.created_at, A.hour_at, 
+                        A.items, A.sumqty, A.sumimp, A.balance, A.is_active as status, C.name as usuario 
+                 FROM $sTable $sWhere 
+                 ORDER BY A.created_at DESC, A.mov_id DESC 
+                 LIMIT $offset, $per_page";
+
+  $stmt_data = mysqli_prepare($conexion, $sql_data);
+  if (!empty($params)) {
+    mysqli_stmt_bind_param($stmt_data, $types, ...$params);
+  }
+  mysqli_stmt_execute($stmt_data);
+  $query = mysqli_stmt_get_result($stmt_data);
+
+  if ($numrows > 0) {
+    include 'pagination.php';
+    ?>
+    <table class="table table-striped jambo_table bulk_action">
+      <thead>
+        <tr class="headings">
+          <th>Sucursal</th>
+          <th>Numero</th>
+          <th>Cliente</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Monto</th>
+          <th>Estatus</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php while ($r = mysqli_fetch_array($query, MYSQLI_ASSOC)):
+          $status = intval($r['status']);
+          $fecha_f = date('d-m-Y', strtotime($r['created_at']));
+          ?>
+          <tr>
+            <td>Sucursal</td>
+            <td><?php echo $r['mov_id']; ?></td>
+            <td><?php echo utf8_decode($r['cliente']); ?></td>
+            <td><?php echo $fecha_f; ?></td>
+            <td><?php echo $r['hour_at']; ?></td>
+            <td align="right"><?php echo number_format($r['sumimp'], 2); ?></td>
+            <td><?php echo ($status == 1) ? "Activo" : "Inactivo"; ?></td>
+            <td class="text-right">
+              <?php if ($status == 1 && $user_kind != 0 && $fecha_f == $hoy): ?>
+                <button type="button" class='btn btn-default btn-xs' title='Cancelar Venta'
+                  onclick="eliminar('<?php echo $r['id']; ?>')">
+                  <i class="glyphicon glyphicon-trash"></i>
+                </button>
+              <?php endif; ?>
+              <a href="action/vtaticket.php?xyz=<?php echo $r['id']; ?>" class='btn btn-default btn-xs' target="_blank"
+                title='Imprimir Venta'>
+                <i class="glyphicon glyphicon-print"></i>
+              </a>
+            </td>
+          </tr>
+        <?php endwhile; ?>
+        <tr>
+          <td colspan="8">
+            <span class="pull-right">
+              <?php echo paginate($reload, $page, $total_pages, $adjacents); ?>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <?php
+  } else {
+    ?>
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
+      <strong>Aviso!</strong> No hay datos para mostrar.
+    </div>
+    <?php
+  }
+}
+?>

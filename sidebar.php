@@ -20,16 +20,10 @@ $user_kind=$_SESSION['user_kind'];
                         </li>
                    <?php } ?>
 
-                   <li><a><i class="fa fa-shopping-cart"></i> Ventas <span class="fa fa-chevron-down"></span></a>
+                   <li><a><i class="fa fa-shopping-cart"></i> TICKETS <span class="fa fa-chevron-down"></span></a>
                        <ul class="nav child_menu">
-                           <li class="<?php if(isset($active11)){echo $active11;}?>">
-                               <a href="vtanew.php"> Nueva</a>
-                           </li>
-                           <li class="<?php if(isset($active12)){echo $active12;}?>">
-                               <a href="vtaqrym.php"> Ver</a>
-                           </li>
                            <li class="<?php if(isset($active13)){echo $active12;}?>">
-                               <a href="vtaqry.php"> Ver Todas</a>
+                               <a href="vtaqry.php"> Ver Todos</a>
                            </li>
                        </ul>
                    </li>
