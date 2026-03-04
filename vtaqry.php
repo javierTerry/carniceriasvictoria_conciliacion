@@ -131,12 +131,6 @@ include "sidebar.php";
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Ventas (Global)</h2> <!-- titulo de los registros -->
-                        <ul class="nav navbar-right panel_toolbox">
-                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                            </li> <!-- simbolo ordenar asc/desc -->
-                            <li><a class="close-link"><i class="fa fa-close"></i></a>
-                            </li> <!-- simbolo cerrar ventana -->
-                        </ul> <!-- define una lista desordenada -->
                         <div class="clearfix"></div> <!-- ajusta imagen al cuadro -->
                     </div> <!-- titulo Proveedor -->
 
