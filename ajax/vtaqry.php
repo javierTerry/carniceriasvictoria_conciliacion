@@ -162,10 +162,14 @@ if ($action == 'ajax') {
                   <i class="glyphicon glyphicon-trash"></i>
                 </button>
               <?php endif; ?>
-              <a href="action/vtaticket.php?xyz=<?php echo $r['id']; ?>" class='btn btn-default btn-xs action-btn-victoria'
-                target="_blank" title='Imprimir Venta'>
+              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
+                onclick="printTicket('<?php echo $r['id']; ?>')">
                 <i class="glyphicon glyphicon-print"></i>
-              </a>
+              </button>
+              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
+                onclick="viewTicketHTML('<?php echo $r['id']; ?>')">
+                <i class="glyphicon glyphicon-list-alt"></i>
+              </button>
             </td>
           </tr>
         <?php endforeach; ?>

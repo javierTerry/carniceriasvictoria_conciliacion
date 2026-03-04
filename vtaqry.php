@@ -117,6 +117,40 @@ include "sidebar.php";
             margin-bottom: 5px;
         }
     }
+
+    /* Modal Ticket Style */
+    #ticketModal .modal-content {
+        border: 2px solid var(--victoria-gold);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    #ticketModal .modal-header {
+        background-color: var(--victoria-black);
+        color: var(--victoria-white);
+        border-bottom: 2px solid var(--victoria-gold);
+    }
+
+    #ticketModal .modal-title {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    #ticketModal .close {
+        color: var(--victoria-white);
+        opacity: 0.8;
+    }
+
+    #ticketModal .close:hover {
+        opacity: 1;
+    }
+
+    #ticketFrame {
+        width: 100%;
+        height: 500px;
+        border: none;
+    }
 </style>
 <div class="right_col" role="main"><!-- page content -->
     <div class="">
@@ -187,7 +221,71 @@ include "sidebar.php";
     </div>
 </div><!-- /page content -->
 
+<!-- Ticket Modal -->
+<div class="modal fade" id="ticketModal" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ticketModalLabel"><i class="glyphicon glyphicon-print"></i> Ticket de Venta
+                </h4>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <iframe id="ticketFrame" src=""></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default action-btn-victoria" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HTML Ticket Modal -->
+<div class="modal fade" id="htmlTicketModal" tabindex="-1" role="dialog" aria-labelledby="htmlTicketModalLabel">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="htmlTicketModalLabel"><i class="glyphicon glyphicon-list-alt"></i> Vista
+                    Previa Ticket
+                </h4>
+            </div>
+            <div class="modal-body" id="htmlTicketBody" style="background-color: #f4f4f4; padding: 20px;">
+                <!-- Content will be loaded via AJAX -->
+                <div class="text-center">
+                    <img src="./images/ajax-loader.gif"> Cargando...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default action-btn-victoria" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function printTicket(id) {
+        $("#ticketFrame").attr("src", "action/vtaticket.php?xyz=" + id);
+        $("#ticketModal").modal("show");
+    }
+
+    function viewTicketHTML(id) {
+        $("#htmlTicketBody").html('<div class="text-center"><img src="./images/ajax-loader.gif"> Cargando...</div>');
+        $("#htmlTicketModal").modal("show");
+        $.ajax({
+            url: "ajax/vta_html_ticket.php",
+            type: "GET",
+            data: { id: id },
+            success: function (response) {
+                $("#htmlTicketBody").html(response);
+            },
+            error: function () {
+                $("#htmlTicketBody").html('<div class="alert alert-danger">Error al cargar el ticket.</div>');
+            }
+        });
+    }
+</script>
+<script type="text/javascript" src="js/vtaqry.js?v=<?php echo time(); ?>"></script>
 <?php include "footer.php" ?>
-
-
-<script type="text/javascript" src="js/vtaqry.js"></script>

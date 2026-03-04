@@ -1,5 +1,7 @@
-$(document).ready(function () {
-	load(1);
+window.addEventListener('load', function () {
+	if (typeof $ !== 'undefined') {
+		load(1);
+	}
 });
 
 
@@ -45,8 +47,4 @@ function eliminar(id) {
 		});
 	}
 }
-
-
-
-
 
