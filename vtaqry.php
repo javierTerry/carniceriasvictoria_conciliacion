@@ -57,6 +57,7 @@ include "sidebar.php";
     .table th {
         text-align: center !important;
         vertical-align: middle !important;
+        font-size: 14px !important;
     }
 
     /* Branch Specific Colors (Bubbles) */
@@ -64,6 +65,8 @@ include "sidebar.php";
         background-color: var(--victoria-gold) !important;
         color: var(--victoria-black) !important;
         font-weight: 700;
+        font-size: 14px !important;
+        padding: 4px 8px !important;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
@@ -71,6 +74,8 @@ include "sidebar.php";
         background-color: var(--victoria-red) !important;
         color: var(--victoria-white) !important;
         font-weight: 700;
+        font-size: 14px !important;
+        padding: 4px 8px !important;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
@@ -79,6 +84,8 @@ include "sidebar.php";
         /* Indigo */
         color: var(--victoria-white) !important;
         font-weight: 700;
+        font-size: 14px !important;
+        padding: 4px 8px !important;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 

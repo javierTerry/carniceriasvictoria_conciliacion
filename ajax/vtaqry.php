@@ -128,7 +128,7 @@ if ($action == 'ajax') {
       <thead>
         <tr class="headings">
           <th>Sucursal</th>
-          <th>Numero</th>
+          <th>Ticket</th>
           <th>Cliente</th>
           <th>Fecha</th>
           <th>Hora</th>
