@@ -1,13 +1,13 @@
 <?php
 
-    session_start();
-    include "config/config.php";
+session_start();
+include "config/config.php";
 
-    if (isset($_SESSION['user_id']) && $_SESSION!==null) {
+if (isset($_SESSION['user_id']) && $_SESSION !== null) {
 
-       header("location: dashboard.php");
+    header("location: dashboard.php");
 
-    }
+}
 
 ?>
 
@@ -15,132 +15,125 @@
 
 <html lang="es">
 
-    <head>		
+<head>
 
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-		<style type="text/css">
-  		.img3 {
- 			max-width: 100%;
-			height: auto;
-			}
-		</style> 
-		
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/index.css">
 
-			<!-- Favicon -->
-        
-         <link rel="shortcut icon" href="images/ico/favicon.png">
 
-		<link rel="apple-touch-icon" sizes="180x180" href="images/ico/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="images/ico/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="images/ico/favicon-16x16.png">
-        <link rel="icon" type="image/png" sizes="192x192" href="images/ico/android-chrome-192x192.png">
-		<link rel="manifest" href="images/ico/site.webmanifest">
-        
-		<link rel="mask-icon" href="images/ico/safari-pinned-tab.svg" color="#061316">
-		<meta name="apple-mobile-web-app-title" content="SysPV Conciliacion">
-		<meta name="application-name" content="Sys - Conciliacion">
-		<meta name="msapplication-TileColor" content="#000000">
-		<meta name="theme-color" content="#000000">
+    <!-- Favicon -->
 
-        <title>Sys Ventas | Conciliacion </title>
+    <link rel="shortcut icon" href="images/ico/favicon.png">
 
-        <!-- Bootstrap -->
+    <link rel="apple-touch-icon" sizes="180x180" href="images/ico/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/ico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/ico/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/ico/android-chrome-192x192.png">
+    <link rel="manifest" href="images/ico/site.webmanifest">
 
-        <link href="css/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="mask-icon" href="images/ico/safari-pinned-tab.svg" color="#061316">
+    <meta name="apple-mobile-web-app-title" content="SysPV Conciliacion">
+    <meta name="application-name" content="Sys - Conciliacion">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="theme-color" content="#000000">
 
-        <!-- Font Awesome -->
+    <title>Sys Ventas | Conciliacion </title>
 
-        <link href="css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
 
-        <!-- NProgress -->
+    <link href="css/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <link href="css/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Font Awesome -->
 
-        <!-- Animate.css -->
+    <link href="css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 
-        <link href="css/animate.css/animate.min.css" rel="stylesheet">
+    <!-- NProgress -->
 
-        <!-- Custom Theme Style -->
+    <link href="css/nprogress/nprogress.css" rel="stylesheet">
 
-        <link href="css/custom.min.css" rel="stylesheet">
-    </head>
+    <!-- Animate.css -->
 
-    <body class="login" onload=setfocus()>
+    <link href="css/animate.css/animate.min.css" rel="stylesheet">
 
-        <div>
+    <!-- Custom Theme Style -->
 
-            <a class="hiddenanchor" id="signup"></a>
-            <a class="hiddenanchor" id="signin"></a>
-            <div class="login_wrapper">
-                <div class="animate form login_form">
-                    <?php 
+    <link href="css/custom.min.css" rel="stylesheet">
+</head>
 
-                        $invalid=sha1(md5("contrasena y usuario invalido"));
+<body class="login" onload=setfocus()>
 
-                        if (isset($_GET['invalid']) && $_GET['invalid']==$invalid) {
+    <div>
 
-                            echo "<div class='alert alert-danger alert-dismissible fade in' role='alert'>
+        <a class="hiddenanchor" id="signup"></a>
+        <a class="hiddenanchor" id="signin"></a>
+        <div class="login_wrapper">
+            <div class="animate form login_form">
+                <?php
+
+                $invalid = sha1(md5("contrasena y usuario invalido"));
+
+                if (isset($_GET['invalid']) && $_GET['invalid'] == $invalid) {
+
+                    echo "<div class='alert alert-danger alert-dismissible fade in' role='alert'>
 
                                 <strong>Error!</strong> Contraseña o Usuario invalido
 
                                 </div>";
-                        }
+                }
 
-                    ?>
+                ?>
 
-                    <section class="login_content">
-						<img class="img3" src="images/profiles/logo1.png">
+                <section class="login_content">
+                    <img class="img3" src="images/profiles/logo1.png">
 
-                        <form action="action/login.php" method="post" name="head" >
-							
-                            <h1>Iniciar Sesión</h1>
-                            <div>
-                                <input type="text" name="username" class="form-control" placeholder="Usuario" required />
-                            </div>
-                            <div>
-                                <input type="password" name="password" class="form-control" placeholder="Contraseña" required/>
-                            </div>
-                            <div>
-                                <button type="submit" name="token" value="Login" class="btn btn-default">Iniciar Sesion</button>
-                            </div>
+                    <form action="action/login.php" method="post" name="head">
+
+                        <h1>Iniciar Sesión</h1>
+                        <div>
+                            <input type="text" name="username" class="form-control" placeholder="Usuario" required />
+                        </div>
+                        <div>
+                            <input type="password" name="password" class="form-control" placeholder="Contraseña"
+                                required />
+                        </div>
+                        <div>
+                            <button type="submit" name="token" value="Login" class="btn btn-default">Iniciar
+                                Sesion</button>
+                        </div>
+                        <div class="clearfix"></div>
+
+                        <div class="separator">
+
                             <div class="clearfix"></div>
 
-                            <div class="separator">
+                            <br />
 
-                                <div class="clearfix"></div>
+                            <div>
 
-                                <br />
-
-                                <div>
-
-                                    <h1><i class="fa fa-shopping-cart"></i> SysPV Conciliacion </h1>
-                                   <p> <a style="text-decoration: underline;" target="_blank" href="http://gabrielperaltarivero.com">G&amp;A Soluciones </a> Todos los derechos reservados</p>
-
-                                </div>
+                                <h1><i class="fa fa-shopping-cart"></i> SysPV Conciliacion </h1>
+                                <p> <a style="text-decoration: underline;" target="_blank"
+                                        href="http://gabrielperaltarivero.com">G&amp;A Soluciones </a> Todos los
+                                    derechos reservados</p>
 
                             </div>
 
-                        </form>
+                        </div>
 
-                    </section>
+                    </form>
 
-                </div>
+                </section>
 
             </div>
 
         </div>
 
-    </body>
+    </div>
+
+</body>
 
 </html>
 
-<script language= javascript type= text/javascript >
-
-function setfocus() {  document.head.username.focus(); }
-
-
-</script>
-
+<script src="assets/js/index.js" defer></script>

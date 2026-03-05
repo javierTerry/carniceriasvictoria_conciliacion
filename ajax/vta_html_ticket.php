@@ -41,69 +41,7 @@ $res_items = mysqli_query($conexion, $sql_items);
 $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale['recibo'] - $sale['acuenta']);
 ?>
 
-<style>
-    .ticket-html {
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 13px;
-        color: #000;
-        width: 100%;
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-        background: #fff;
-    }
-
-    .ticket-header {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .ticket-header h4 {
-        margin: 5px 0;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-
-    .ticket-info {
-        margin-bottom: 10px;
-        border-bottom: 1px dashed #000;
-        padding-bottom: 10px;
-    }
-
-    .ticket-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 10px;
-    }
-
-    .ticket-table th {
-        border-bottom: 1px solid #000;
-        text-align: left;
-    }
-
-    .ticket-table td {
-        padding: 2px 0;
-    }
-
-    .text-right {
-        text-align: right;
-    }
-
-    .ticket-totals {
-        border-top: 1px dashed #000;
-        padding-top: 5px;
-    }
-
-    .ticket-footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 11px;
-    }
-
-    .ticket-bold {
-        font-weight: bold;
-    }
-</style>
+<link rel="stylesheet" href="assets/css/vta_html_ticket.css">
 
 <div class="ticket-html">
     <div class="ticket-header">
