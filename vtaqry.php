@@ -51,11 +51,6 @@ include "sidebar.php";
                                 </select>
                             </div>
 
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-default action-btn-victoria btn-block"
-                                    onclick='load(1);'>
-                                    <span class="glyphicon glyphicon-search"></span> Buscar</button>
-                            </div>
                         </div>
                     </form>
                     <!-- end form search -->
