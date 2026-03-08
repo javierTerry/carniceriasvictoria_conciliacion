@@ -81,12 +81,16 @@ if ($action == 'ajax') {
       continue;
     }
 
+    mysqli_set_charset($branchConn, "utf8");
+
     $sTable = "vtahead A 
                    INNER JOIN cust B ON A.cust_id = B.id 
-                   INNER JOIN user C ON A.user_id = C.id";
+                   INNER JOIN user C ON A.user_id = C.id
+                   INNER JOIN fpago F ON A.fpago = F.id";
 
     $sql_data = "SELECT A.id, A.mov_id, A.cust_id, B.name as cliente, A.created_at, A.hour_at, 
-                            A.items, A.sumqty, A.sumimp, A.balance, A.is_active as status, C.name as usuario 
+                            A.items, A.sumqty, A.sumimp, A.balance, A.is_active as status, C.name as usuario,
+                            F.name as fname 
                      FROM $sTable $sWhere 
                      ORDER BY A.created_at DESC, A.mov_id DESC";
 
@@ -124,6 +128,9 @@ if ($action == 'ajax') {
   if ($numrows > 0) {
     include 'pagination.php';
     ?>
+    <div style="text-align: center; margin-bottom: 15px;">
+      <?php echo paginate($reload, $page, $total_pages, $adjacents); ?>
+    </div>
     <table class="table table-striped jambo_table bulk_action">
       <thead>
         <tr class="headings">
@@ -132,6 +139,7 @@ if ($action == 'ajax') {
           <th>Cliente</th>
           <th>Fecha</th>
           <th>Hora</th>
+          <th>Método Pago</th>
           <th>Fecha Fact.</th>
           <th>Monto</th>
           <th>Estatus</th>
@@ -147,9 +155,10 @@ if ($action == 'ajax') {
           <tr class="<?php echo $row_class; ?>">
             <td><span class="label <?php echo $r['branch_class']; ?>"><?php echo $r['branch_label']; ?></span></td>
             <td><?php echo $r['mov_id']; ?></td>
-            <td><?php echo utf8_decode($r['cliente']); ?></td>
+            <td><?php echo $r['cliente']; ?></td>
             <td><?php echo $fecha_f; ?></td>
             <td><?php echo $r['hour_at']; ?></td>
+            <td><?php echo $r['fname']; ?></td>
             <td>---</td>
             <td align="right"><?php echo number_format($r['sumimp'], 2); ?></td>
             <td>
@@ -176,10 +185,8 @@ if ($action == 'ajax') {
           </tr>
         <?php endforeach; ?>
         <tr>
-          <td colspan="9">
-            <span class="pull-right">
-              <?php echo paginate($reload, $page, $total_pages, $adjacents); ?>
-            </span>
+          <td colspan="10" style="text-align: center;">
+            <?php echo paginate($reload, $page, $total_pages, $adjacents); ?>
           </td>
         </tr>
       </tbody>

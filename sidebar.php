@@ -32,85 +32,85 @@ $user_kind = $_SESSION['user_kind'];
                 </ul>
             </li>
 
-            <?php if ($user_kind == 1 || $user_kind == 2) { ?>
-                <li>
-                    <a><i class="fa fa-exchange"></i> Inventario <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                        <li class="<?php if (isset($active51)) {
-                            echo $active51;
-                        } ?>">
-                            <a href="invnew.php"> Entrada/Salida</a>
-                        </li>
-                        <li class="<?php if (isset($active52)) {
-                            echo $active52;
-                        } ?>">
-                            <a href="invqry.php"> Ver</a>
-                        </li>
-                    </ul>
-                </li>
-            <?php } ?>
+            <?php /* if ($user_kind == 1 || $user_kind == 2) { ?>
+           <li>
+               <a><i class="fa fa-exchange"></i> Inventario <span class="fa fa-chevron-down"></span></a>
+               <ul class="nav child_menu">
+                   <li class="<?php if (isset($active51)) {
+                       echo $active51;
+                   } ?>">
+                       <a href="invnew.php"> Entrada/Salida</a>
+                   </li>
+                   <li class="<?php if (isset($active52)) {
+                       echo $active52;
+                   } ?>">
+                       <a href="invqry.php"> Ver</a>
+                   </li>
+               </ul>
+           </li>
+       <?php } */ ?>
 
-            <li><a><i class="fa fa-print"></i> Reportes <span class="fa fa-chevron-down"></span></a>
-                <ul class="nav child_menu">
-                    <li class="<?php if (isset($active61)) {
-                        echo $active61;
-                    } ?>">
-                        <a href="corte.php"> Cierre</a>
-                    </li>
-                    <li class="<?php if (isset($active62)) {
-                        echo $active62;
-                    } ?>">
-                        <a href="rvtadiat.php"> Documentos de Ventas</a>
-                    </li>
-                    <li class="<?php if (isset($active62)) {
-                        echo $active62;
-                    } ?>">
-                        <a href="rvtadiac.php"> Analisis de Ingresos</a>
-                    </li>
-                    <li class="<?php if (isset($active63)) {
-                        echo $active62;
-                    } ?>">
-                        <a href="rvtadia.php"> Analisis de Venta Producto </a>
-                    </li>
-                    <!--<li class="<?php if (isset($active64)) {
-                        echo $active62;
-                    } ?>">
-                                <a href="rvtadiadet.php"> Venta Dia </a>
-                            </li> 
-                            <li class="<?php if (isset($active65)) {
-                                echo $active62;
-                            } ?>">
-                                <a href="rvtaprod.php"> Venta Producto </a>
-                            </li>
-                            -->
+            <?php /* <li><a><i class="fa fa-print"></i> Reportes <span class="fa fa-chevron-down"></span></a>
+           <ul class="nav child_menu">
+               <li class="<?php if (isset($active61)) {
+                   echo $active61;
+               } ?>">
+                   <a href="corte.php"> Cierre</a>
+               </li>
+               <li class="<?php if (isset($active62)) {
+                   echo $active62;
+               } ?>">
+                   <a href="rvtadiat.php"> Documentos de Ventas</a>
+               </li>
+               <li class="<?php if (isset($active62)) {
+                   echo $active62;
+               } ?>">
+                   <a href="rvtadiac.php"> Analisis de Ingresos</a>
+               </li>
+               <li class="<?php if (isset($active63)) {
+                   echo $active62;
+               } ?>">
+                   <a href="rvtadia.php"> Analisis de Venta Producto </a>
+               </li>
+               <!--<li class="<?php if (isset($active64)) {
+                   echo $active62;
+               } ?>">
+                           <a href="rvtadiadet.php"> Venta Dia </a>
+                       </li> 
+                       <li class="<?php if (isset($active65)) {
+                           echo $active62;
+                       } ?>">
+                           <a href="rvtaprod.php"> Venta Producto </a>
+                       </li>
+                       -->
 
-                    <li class="<?php if (isset($active66)) {
-                        echo $active63;
-                    } ?>">
-                        <a href="rcxcdia.php"> Cobranza Dia</a>
-                    </li>
-                    <li class="<?php if (isset($active67)) {
-                        echo $active64;
-                    } ?>">
-                        <a href="rexidia.php"> Existencia Dia</a>
-                    </li>
-                    <li class="<?php if (isset($active68)) {
-                        echo $active65;
-                    } ?>">
-                        <a href="rcomdia.php"> Compra Dia</a>
-                    </li>
-                    <li class="<?php if (isset($active69)) {
-                        echo $active66;
-                    } ?>">
-                        <a href="ranadia.php"> Compra/Venta Dia</a>
-                    </li>
-                    <li class="<?php if (isset($active70)) {
-                        echo $active67;
-                    } ?>">
-                        <a href="rcat.php"> Catalogos </a>
-                    </li>
-                </ul>
-            </li>
+               <li class="<?php if (isset($active66)) {
+                   echo $active63;
+               } ?>">
+                   <a href="rcxcdia.php"> Cobranza Dia</a>
+               </li>
+               <li class="<?php if (isset($active67)) {
+                   echo $active64;
+               } ?>">
+                   <a href="rexidia.php"> Existencia Dia</a>
+               </li>
+               <li class="<?php if (isset($active68)) {
+                   echo $active65;
+               } ?>">
+                   <a href="rcomdia.php"> Compra Dia</a>
+               </li>
+               <li class="<?php if (isset($active69)) {
+                   echo $active66;
+               } ?>">
+                   <a href="ranadia.php"> Compra/Venta Dia</a>
+               </li>
+               <li class="<?php if (isset($active70)) {
+                   echo $active67;
+               } ?>">
+                   <a href="rcat.php"> Catalogos </a>
+               </li>
+           </ul>
+       </li> */ ?>
         </ul>
 
     </div>
@@ -124,6 +124,15 @@ $user_kind = $_SESSION['user_kind'];
             <div class="nav toggle">
                 <a id="menu_toggle"><i class="fa fa-bars"></i></a>
             </div>
+
+            <div class="nav-title-container"
+                style="position: absolute; width: 100%; text-align: center; pointer-events: none; margin-top: 10px;">
+                <h1 style="margin: 0; font-size: 1.8em; font-weight: bold; color: #1a2732; text-transform: uppercase;">
+                    ConsolidaCión</h1>
+                <small style="display: block; font-size: 0.9em; color: #e74c3c; font-weight: bold; margin-top: -5px;">
+                    Ambiente Dev</small>
+            </div>
+
             <ul class="nav navbar-nav navbar-right">
                 <li class="">
                     <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
