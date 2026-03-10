@@ -4,14 +4,28 @@ require_once "../config/config.php";
 require_once "../config/numtolet.php";
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$branch = isset($_GET['branch']) ? $_GET['branch'] : '';
 
 if ($id <= 0) {
     die("<div class='alert alert-danger'>ID de venta no válido.</div>");
 }
 
+// Select connection based on branch
+$targetConn = $conexion; // Default to main connection (Obrador)
+if (!empty($branch)) {
+    $branchesConfigs = getBranchesConfig();
+    if (isset($branchesConfigs[$branch])) {
+        $config = $branchesConfigs[$branch];
+        $targetConn = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
+        if (!$targetConn) {
+            die("<div class='alert alert-danger'>Error: No se pudo conectar a la base de datos de la sucursal $branch.</div>");
+        }
+    }
+}
+
 // 1. Empresa
 $sql_empresa = "SELECT name, rfc, domicilio, municipio, alias FROM emprsa LIMIT 1";
-$res_empresa = mysqli_query($conexion, $sql_empresa);
+$res_empresa = mysqli_query($targetConn, $sql_empresa);
 $empresa = mysqli_fetch_array($res_empresa, MYSQLI_ASSOC);
 
 // 2. Venta
@@ -24,11 +38,11 @@ $sql_venta = "SELECT A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.s
               INNER JOIN user U ON A.user_id = U.id
               INNER JOIN fpago F ON A.fpago = F.id
               WHERE A.id = $id";
-$res_venta = mysqli_query($conexion, $sql_venta);
+$res_venta = mysqli_query($targetConn, $sql_venta);
 $sale = mysqli_fetch_array($res_venta, MYSQLI_ASSOC);
 
 if (!$sale) {
-    die("<div class='alert alert-danger'>Venta no encontrada.</div>");
+    die("<div class='alert alert-danger'>Venta no encontrada en la sucursal $branch (ID: $id).</div>");
 }
 
 // 3. Items
@@ -36,7 +50,7 @@ $sql_items = "SELECT A.qty, B.name, A.price, A.amount
               FROM vtaitem A 
               INNER JOIN art B ON B.id = A.art_id 
               WHERE A.vta_id = $id";
-$res_items = mysqli_query($conexion, $sql_items);
+$res_items = mysqli_query($targetConn, $sql_items);
 
 $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale['recibo'] - $sale['acuenta']);
 ?>

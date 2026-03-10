@@ -7,11 +7,25 @@ require_once "../config/config.php";   // Conecta a la base de datos
 require_once "../config/numtolet.php"; // Función número en letras
 require_once "../config/plantillatv.php";
 
-// Recibo id venta
+// Recibo id venta y sucursal
 $id = isset($_GET['xyz']) ? intval($_GET['xyz']) : 0;
+$branch = isset($_GET['branch']) ? $_GET['branch'] : '';
 
 if ($id <= 0) {
    die("ID de venta no válido.");
+}
+
+// Select connection based on branch
+$targetConn = $conexion; // Default to main connection (Obrador)
+if (!empty($branch)) {
+   $branchesConfigs = getBranchesConfig();
+   if (isset($branchesConfigs[$branch])) {
+      $config = $branchesConfigs[$branch];
+      $targetConn = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
+      if (!$targetConn) {
+         die("Error: No se pudo conectar a la base de datos de la sucursal $branch.");
+      }
+   }
 }
 
 /**
@@ -112,9 +126,9 @@ function renderTicketSection($pdf, $data, $items_array, $type_label)
    $pdf->Cell(100, 6, $type_label, 0, 1, 'C');
 }
 
-// 1. Traer datos de la empresa (No filtrada por ID, asumo que es una sola fila)
+// 1. Traer datos de la empresa
 $sql_empresa = "SELECT linea1, linea2, linea3, name, rfc, domicilio, municipio, alias FROM emprsa LIMIT 1";
-$res_empresa = mysqli_query($conexion, $sql_empresa) or die("Error Empresa: " . mysqli_error($conexion));
+$res_empresa = mysqli_query($targetConn, $sql_empresa) or die("Error Empresa: " . mysqli_error($targetConn));
 $GLOBALS["empresa"] = mysqli_fetch_array($res_empresa);
 
 // 2. Traer datos de la venta (Prepared Statement)
@@ -128,14 +142,14 @@ $sql_venta = "SELECT A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.s
               INNER JOIN fpago F ON A.fpago = F.id
               WHERE A.id = ?";
 
-$stmt = mysqli_prepare($conexion, $sql_venta);
+$stmt = mysqli_prepare($targetConn, $sql_venta);
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $res_venta = mysqli_stmt_get_result($stmt);
 $sale_data = mysqli_fetch_array($res_venta, MYSQLI_ASSOC);
 
 if (!$sale_data) {
-   die("Venta no encontrada.");
+   die("Venta no encontrada en la sucursal $branch (ID: $id).");
 }
 
 // 3. Traer items de la venta (Prepared Statement)
@@ -144,7 +158,7 @@ $sql_items = "SELECT A.qty, B.name, A.price, A.amount
               INNER JOIN art B ON B.id = A.art_id 
               WHERE A.vta_id = ?";
 
-$stmt_items = mysqli_prepare($conexion, $sql_items);
+$stmt_items = mysqli_prepare($targetConn, $sql_items);
 mysqli_stmt_bind_param($stmt_items, "i", $id);
 mysqli_stmt_execute($stmt_items);
 $res_items = mysqli_stmt_get_result($stmt_items);

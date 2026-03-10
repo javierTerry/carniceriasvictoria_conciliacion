@@ -174,11 +174,11 @@ if ($action == 'ajax') {
                 </button>
               <?php endif; ?>
               <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
-                onclick="printTicket('<?php echo $r['id']; ?>')">
+                onclick="printTicket('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
                 <i class="glyphicon glyphicon-print"></i>
               </button>
               <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
-                onclick="viewTicketHTML('<?php echo $r['id']; ?>')">
+                onclick="viewTicketHTML('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
                 <i class="glyphicon glyphicon-list-alt"></i>
               </button>
             </td>
