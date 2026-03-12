@@ -49,12 +49,33 @@ if ($action == 'ajax') {
   $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
   $per_page = isset($_REQUEST['per_page']) ? intval($_REQUEST['per_page']) : 25;
   $branch_filter = $_REQUEST['branch'] ?? '';
+  $status_filter = $_REQUEST['status'] ?? '';
+  $fpay_filter = $_REQUEST['fpay'] ?? '';
   $adjacents = 4;
   $offset = ($page - 1) * $per_page;
 
   $sWhere = " WHERE A.created_at >= DATE_SUB(NOW(), INTERVAL 60 DAY) ";
   $params = [];
   $types = "";
+
+  if ($status_filter !== '') {
+    if ($status_filter == '0') {
+      // Pendientes: Active sales with remaining balance
+      $sWhere .= " AND A.is_active = 1 AND A.balance > 0 ";
+    } elseif ($status_filter == '1') {
+      // Completo: Active sales with zero balance
+      $sWhere .= " AND A.is_active = 1 AND A.balance = 0 ";
+    } elseif ($status_filter == '2') {
+      // Facturado: Placeholder logic (needs specific field)
+      $sWhere .= " AND A.is_active = 1 "; 
+    }
+  }
+
+  if ($fpay_filter !== '') {
+    $sWhere .= " AND A.fpago = ? ";
+    $params[] = intval($fpay_filter);
+    $types .= "i";
+  }
 
   if (!empty($q)) {
     $sWhere .= " AND (B.name LIKE ? OR A.mov_id LIKE ? OR A.created_at LIKE ?)";

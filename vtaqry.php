@@ -31,13 +31,19 @@ include "sidebar.php";
                                     onkeyup='load(1);'>
                             </div>
 
-                            <label for="branch_filter" class="col-md-1 control-label">Sucursal</label>
+                            <input type="hidden" id="branch_filter" value="<?php echo $_GET['branch'] ?? ''; ?>">
+
+                            <label for="fpay_filter" class="col-md-1 control-label">Pago</label>
                             <div class="col-md-2">
-                                <select class="form-control select-victoria" id="branch_filter" onchange="load(1);">
-                                    <option value="">Todas</option>
-                                    <option value="Obrador">Obrador</option>
-                                    <option value="Vicoria1">Victoria 1</option>
-                                    <option value="Vicoria2">Victoria 2</option>
+                                <select class="form-control select-victoria" id="fpay_filter" onchange="load(1);">
+                                    <option value="">Todos</option>
+                                    <?php
+                                    $sql_fpay = "SELECT id, name FROM fpago WHERE is_active = 1 ORDER BY name";
+                                    $res_fpay = mysqli_query($conexion, $sql_fpay);
+                                    while ($fpay = mysqli_fetch_array($res_fpay, MYSQLI_ASSOC)) {
+                                        echo "<option value='{$fpay['id']}'>{$fpay['name']}</option>";
+                                    }
+                                    ?>
                                 </select>
                             </div>
 

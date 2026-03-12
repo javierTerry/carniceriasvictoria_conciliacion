@@ -9,9 +9,10 @@ function load(page) {
 	var q = $("#q").val();
 	var per_page = $("#per_page").val();
 	var branch = $("#branch_filter").val();
+	var fpay = $("#fpay_filter").val();
 	$("#loader").fadeIn('slow');
 	$.ajax({
-		url: './ajax/vtaqry.php?action=ajax&page=' + page + '&q=' + q + '&per_page=' + per_page + '&branch=' + branch,
+		url: './ajax/vtaqry.php?action=ajax&page=' + page + '&q=' + q + '&per_page=' + per_page + '&branch=' + branch + '&fpay=' + fpay,
 		beforeSend: function (objeto) {
 			$('#loader').html('<img src="./images/ajax-loader.gif"> Cargando...');
 		},

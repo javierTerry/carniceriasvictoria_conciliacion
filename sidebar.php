@@ -32,6 +32,24 @@ $user_kind = $_SESSION['user_kind'];
                 </ul>
             </li>
 
+            <li><a><i class="fa fa-building"></i> OBRADOR <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
+                    <li><a href="vtaqry.php?branch=Obrador">Tickets</a></li>
+                </ul>
+            </li>
+
+            <li><a><i class="fa fa-store"></i> VICTORIA 1 <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
+                    <li><a href="vtaqry.php?branch=Vicoria1">Tickets</a></li>
+                </ul>
+            </li>
+
+            <li><a><i class="fa fa-store"></i> VICTORIA 2 <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
+                    <li><a href="vtaqry.php?branch=Vicoria2">Tickets</a></li>
+                </ul>
+            </li>
+
             <?php /* if ($user_kind == 1 || $user_kind == 2) { ?>
            <li>
                <a><i class="fa fa-exchange"></i> Inventario <span class="fa fa-chevron-down"></span></a>
