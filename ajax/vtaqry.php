@@ -84,7 +84,7 @@ if ($action == 'ajax') {
 
   foreach ($branchesConfigs as $branchLabel => $config) {
     // Apply branch filter if selected
-    if (!empty($branch_filter) && $branch_filter !== $branchLabel) {
+    if (!empty($branch_filter) && $branch_filter !== 'all' && $branch_filter !== $branchLabel) {
       continue;
     }
 

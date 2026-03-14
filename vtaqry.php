@@ -23,7 +23,7 @@ include "sidebar.php";
 
 
                     <!-- form search -->
-                    <form class="form-horizontal" role="form" id="datos_cotizacion">
+                    <form class="form-horizontal" role="form" id="datos_cotizacion" onsubmit="event.preventDefault();">
                         <div class="form-group row">
                             <label for="q" class="col-md-1 control-label">Venta</label>
                             <div class="col-md-2">
