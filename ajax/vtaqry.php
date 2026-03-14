@@ -59,16 +59,9 @@ if ($action == 'ajax') {
   $types = "";
 
   if ($status_filter !== '') {
-    if ($status_filter == '0') {
-      // Pendientes: Active sales with remaining balance
-      $sWhere .= " AND A.is_active = 1 AND A.balance > 0 ";
-    } elseif ($status_filter == '1') {
-      // Completo: Active sales with zero balance
-      $sWhere .= " AND A.is_active = 1 AND A.balance = 0 ";
-    } elseif ($status_filter == '2') {
-      // Facturado: Placeholder logic (needs specific field)
-      $sWhere .= " AND A.is_active = 1 "; 
-    }
+    $sWhere .= " AND A.is_active = ? ";
+    $params[] = intval($status_filter);
+    $types .= "i";
   }
 
   if ($fpay_filter !== '') {
@@ -183,9 +176,27 @@ if ($action == 'ajax') {
             <td>---</td>
             <td align="right"><?php echo number_format($r['sumimp'], 2); ?></td>
             <td>
-              <span class="badge <?php echo ($status == 1) ? 'badge-success' : 'badge-danger'; ?>">
-                <?php echo ($status == 1) ? "Activo" : "Inactivo"; ?>
-              </span>
+              <?php
+              switch ($status) {
+                case 1:
+                  echo '<span class="badge badge-success">Activo</span>';
+                  break;
+                case 0:
+                  echo '<span class="badge badge-danger">Inactivo</span>';
+                  break;
+                case 2:
+                  echo '<span class="badge badge-warning">Pendiente</span>';
+                  break;
+                case 3:
+                  echo '<span class="badge badge-info">Completado</span>';
+                  break;
+                case 4:
+                  echo '<span class="badge badge-primary">Facturado</span>';
+                  break;
+                default:
+                  echo '<span class="badge">' . $status . '</span>';
+              }
+              ?>
             </td>
             <td class="text-right">
               <?php if ($status == 1 && $user_kind != 0 && $fecha_f == $hoy): ?>

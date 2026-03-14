@@ -25,7 +25,7 @@ $user_kind = $_SESSION['user_kind'];
             <li><a><i class="fa fa-shopping-cart"></i> TICKETS <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
                     <li class="<?php if (isset($active13)) {
-                        echo $active12;
+                        echo $active13;
                     } ?>">
                         <a href="vtaqry.php"> Ver Todos</a>
                     </li>
@@ -35,18 +35,27 @@ $user_kind = $_SESSION['user_kind'];
             <li><a><i class="fa fa-building"></i> OBRADOR <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
                     <li><a href="vtaqry.php?branch=Obrador">Tickets</a></li>
+                    <li><a href="vtaqry.php?branch=Obrador&status=2">Pendientes</a></li>
+                    <li><a href="vtaqry.php?branch=Obrador&status=3">Completado</a></li>
+                    <li><a href="vtaqry.php?branch=Obrador&status=4">Facturados</a></li>
                 </ul>
             </li>
 
             <li><a><i class="fa fa-store"></i> VICTORIA 1 <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
                     <li><a href="vtaqry.php?branch=Vicoria1">Tickets</a></li>
+                    <li><a href="vtaqry.php?branch=Vicoria1&status=2">Pendientes</a></li>
+                    <li><a href="vtaqry.php?branch=Vicoria1&status=3">Completado</a></li>
+                    <li><a href="vtaqry.php?branch=Vicoria1&status=4">Facturados</a></li>
                 </ul>
             </li>
 
             <li><a><i class="fa fa-store"></i> VICTORIA 2 <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
                     <li><a href="vtaqry.php?branch=Vicoria2">Tickets</a></li>
+                    <li><a href="vtaqry.php?branch=Vicoria2&status=2">Pendientes</a></li>
+                    <li><a href="vtaqry.php?branch=Vicoria2&status=3">Completado</a></li>
+                    <li><a href="vtaqry.php?branch=Vicoria2&status=4">Facturados</a></li>
                 </ul>
             </li>
 

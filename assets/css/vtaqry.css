@@ -42,7 +42,32 @@
 
 .badge-success {
     background-color: #28a745 !important;
-    border: 1px solid var(--victoria-gold);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-danger {
+    background-color: #6c757d !important; /* Gray */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-warning {
+    background-color: #ff9800 !important; /* Orange */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-info {
+    background-color: #17a2b8 !important; /* Blue/Cyan */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-primary {
+    background-color: #004085 !important; /* Dark Blue */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
 }
 
 /* Centered table cells */

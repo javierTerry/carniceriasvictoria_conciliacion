@@ -4,7 +4,7 @@ $title = "Ver Ventas Globales | Victoria Obrador y Carnicería";
 include "head.php";
 include "sidebar.php";
 ?>
-<link rel="stylesheet" href="assets/css/vtaqry.css">
+<link rel="stylesheet" href="assets/css/vtaqry.css?v=<?php echo time(); ?>">
 <div class="right_col" role="main"><!-- page content -->
     <div class="">
         <div class="page-title"> <!-- recuadro A bajo de cabecera gris -->
@@ -32,6 +32,7 @@ include "sidebar.php";
                             </div>
 
                             <input type="hidden" id="branch_filter" value="<?php echo $_GET['branch'] ?? ''; ?>">
+                            <input type="hidden" id="status_filter" value="<?php echo $_GET['status'] ?? ''; ?>">
 
                             <label for="fpay_filter" class="col-md-1 control-label">Pago</label>
                             <div class="col-md-2">

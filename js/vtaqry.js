@@ -10,9 +10,10 @@ function load(page) {
 	var per_page = $("#per_page").val();
 	var branch = $("#branch_filter").val();
 	var fpay = $("#fpay_filter").val();
+	var status = $("#status_filter").val();
 	$("#loader").fadeIn('slow');
 	$.ajax({
-		url: './ajax/vtaqry.php?action=ajax&page=' + page + '&q=' + q + '&per_page=' + per_page + '&branch=' + branch + '&fpay=' + fpay,
+		url: './ajax/vtaqry.php?action=ajax&page=' + page + '&q=' + q + '&per_page=' + per_page + '&branch=' + branch + '&fpay=' + fpay + '&status=' + status,
 		beforeSend: function (objeto) {
 			$('#loader').html('<img src="./images/ajax-loader.gif"> Cargando...');
 		},
