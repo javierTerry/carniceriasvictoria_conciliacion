@@ -206,7 +206,7 @@ if ($action == 'ajax') {
                 </button>
               <?php endif; ?>
               
-              <?php if (empty($status_filter)): ?>
+              <?php if (empty($status_filter) && $status == 1): ?>
               <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cambiar Estatus'
                 onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
                 <i class="glyphicon glyphicon-retweet"></i>
