@@ -119,6 +119,9 @@ if(count($row) == 0){
            <!-- MICSS button[type="file"] -->
            <link rel="stylesheet" href="css/micss.css">
 
+           <!-- Global Layout Fixes -->
+           <link rel="stylesheet" href="assets/css/layout.css?v=<?php echo time(); ?>">
+
       </head>
 
       <body class="nav-md">
