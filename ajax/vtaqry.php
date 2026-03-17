@@ -205,6 +205,12 @@ if ($action == 'ajax') {
                   <i class="glyphicon glyphicon-trash"></i>
                 </button>
               <?php endif; ?>
+              
+              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cambiar Estatus'
+                onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
+                <i class="glyphicon glyphicon-retweet"></i>
+              </button>
+
               <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
                 onclick="printTicket('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
                 <i class="glyphicon glyphicon-print"></i>

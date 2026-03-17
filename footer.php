@@ -45,11 +45,14 @@
 
 
 
-            <!-- DateJS -->
+        <!-- DateJS -->
         <!-- <script src="js/DateJS/build/date.js"></script> -->
         <!-- bootstrap-daterangepicker -->
         <script src="js/moment/min/moment.min.js"></script>
         <script src="css/bootstrap-daterangepicker/daterangepicker.js"></script>
+        
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
     </body>

@@ -42,31 +42,31 @@ $q_status = $_GET['status'] ?? '';
                 </ul>
             </li>
 
-            <li class="<?php echo ($q_branch == 'Vicoria1') ? 'active' : ''; ?>">
+            <li class="<?php echo ($q_branch == 'Victoria1') ? 'active' : ''; ?>">
                 <a><i class="fa fa-store"></i> VICTORIA 1 <span class="fa fa-chevron-down"></span></a>
-                <ul class="nav child_menu" style="<?php echo ($q_branch == 'Vicoria1') ? 'display: block;' : ''; ?>">
-                    <li class="<?php echo ($q_branch == 'Vicoria1' && empty($q_status)) ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria1">Tickets</a></li>
-                    <li class="<?php echo ($q_branch == 'Vicoria1' && $q_status == '2') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria1&status=2">Pendientes</a></li>
-                    <li class="<?php echo ($q_branch == 'Vicoria1' && $q_status == '3') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria1&status=3">Completado</a></li>
-                    <li class="<?php echo ($q_branch == 'Vicoria1' && $q_status == '4') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria1&status=4">Facturados</a></li>
+                <ul class="nav child_menu" style="<?php echo ($q_branch == 'Victoria1') ? 'display: block;' : ''; ?>">
+                    <li class="<?php echo ($q_branch == 'Victoria1' && empty($q_status)) ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria1">Tickets</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria1' && $q_status == '2') ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria1&status=2">Pendientes</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria1' && $q_status == '3') ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria1&status=3">Completado</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria1' && $q_status == '4') ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria1&status=4">Facturados</a></li>
                 </ul>
             </li>
 
-            <li class="<?php echo ($q_branch == 'Vicoria2') ? 'active' : ''; ?>">
+            <li class="<?php echo ($q_branch == 'Victoria2') ? 'active' : ''; ?>">
                 <a><i class="fa fa-store"></i> VICTORIA 2 <span class="fa fa-chevron-down"></span></a>
-                <ul class="nav child_menu" style="<?php echo ($q_branch == 'Vicoria2') ? 'display: block;' : ''; ?>">
-                    <li class="<?php echo ($q_branch == 'Vicoria2' && empty($q_status)) ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria2">Tickets</a></li>
-                    <li class="<?php echo ($q_branch == 'Vicoria2' && $q_status == '2') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria2&status=2">Pendientes</a></li>
-                    <li class="<?php echo ($q_branch == 'Vicoria2' && $q_status == '3') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria2&status=3">Completado</a></li>
-                    <li class="<?php echo ($q_branch == 'Vicoria2' && $q_status == '4') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Vicoria2&status=4">Facturados</a></li>
+                <ul class="nav child_menu" style="<?php echo ($q_branch == 'Victoria2') ? 'display: block;' : ''; ?>">
+                    <li class="<?php echo ($q_branch == 'Victoria2' && empty($q_status)) ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria2">Tickets</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria2' && $q_status == '2') ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria2&status=2">Pendientes</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria2' && $q_status == '3') ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria2&status=3">Completado</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria2' && $q_status == '4') ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Victoria2&status=4">Facturados</a></li>
                 </ul>
             </li>
 

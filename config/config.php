@@ -32,13 +32,13 @@ function getBranchesConfig()
             'pass' => "Notengopalabras.100",
             'db' => "carvic_sysvicobr"
         ],
-        'Vicoria1' => [
+        'Victoria1' => [
             'host' => "172.17.0.1",
             'user' => "carvic_sysgp",
             'pass' => "Notengopalabras.100",
             'db' => "carvic_sysvicm"
         ],
-        'Vicoria2' => [
+        'Victoria2' => [
             'host' => "172.17.0.1",
             'user' => "carvic_sysgp",
             'pass' => "Notengopalabras.100",
