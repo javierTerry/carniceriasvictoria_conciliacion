@@ -23,14 +23,11 @@ function viewTicketHTML(id, branch) {
     });
 }
 
-function changeStatusPrompt(mov_id, cliente, monto, fname, status) {
-    // Normalizamos los valores para evitar fallos por espacios o mayúsculas
-    const normalizedFname = fname ? fname.toLowerCase().trim() : "";
-    const isEfectivo = normalizedFname.includes('efectivo');
+function changeStatusPrompt(mov_id, branch, cliente, monto, fname, status) {
     const isActive = parseInt(status) === 1;
-
-    // La funcionalidad de alerta solo se activa para pagos en Efectivo y Estatus Activo (1)
-    if (!isEfectivo || !isActive) {
+// turbo
+    // La funcionalidad de alerta solo se activa para Estatus Activo (1)
+    if (!isActive) {
         return; 
     }
 
@@ -41,6 +38,10 @@ function changeStatusPrompt(mov_id, cliente, monto, fname, status) {
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px;">
                     <span style="color: #73879C; font-weight: 600; text-transform: uppercase; font-size: 12px;">Ticket</span>
                     <strong style="color: #1a2732; font-size: 16px;">#${mov_id}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px;">
+                    <span style="color: #73879C; font-weight: 600; text-transform: uppercase; font-size: 12px;">Sucursal</span>
+                    <strong style="color: #34495E; font-size: 14px;">${branch}</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px;">
                     <span style="color: #73879C; font-weight: 600; text-transform: uppercase; font-size: 12px;">Cliente</span>
@@ -59,8 +60,8 @@ function changeStatusPrompt(mov_id, cliente, monto, fname, status) {
         `,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#e74c3c', // Rojo corporativo/Premium
-        cancelButtonColor: '#95a5a6',  // Gris apagado
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#95a5a6',
         confirmButtonText: '<i class="fa fa-retweet" style="margin-right: 5px;"></i> Sí, pasar a Pendiente',
         cancelButtonText: '<i class="fa fa-times" style="margin-right: 5px;"></i> Cancelar',
         customClass: {
@@ -68,28 +69,47 @@ function changeStatusPrompt(mov_id, cliente, monto, fname, status) {
             confirmButton: 'btn btn-danger',
             cancelButton: 'btn btn-default'
         },
-        buttonsStyling: false // Utilizamos nuestras clases de bootstrap/css
+        buttonsStyling: false,
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            return $.ajax({
+                url: 'ajax/change_status.php',
+                type: 'POST',
+                data: {
+                    mov_id: mov_id,
+                    branch: branch,
+                    status: 2 // Pendiente
+                },
+                dataType: 'json'
+            }).done(response => {
+                if (!response.success) {
+                    Swal.showValidationMessage(`Error: ${response.message}`);
+                }
+                return response;
+            }).fail(() => {
+                Swal.showValidationMessage('Error en el servidor. Intente más tarde.');
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading()
     }).then((result) => {
-        if (result.isConfirmed) {
-            // Aquí en el futuro se agregará la llamada AJAX para cambiar en BD.
-            
-            // Simulación de Toast de éxito
+        if (result.isConfirmed && result.value.success) {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
                 timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-                }
+                timerProgressBar: true
             });
 
             Toast.fire({
                 icon: 'success',
                 title: 'Estatus cambiado a Pendiente exitosamente'
             });
+
+            // Recargamos los datos de la tabla
+            if (typeof load === 'function') {
+                load(1);
+            }
         }
     });
 }

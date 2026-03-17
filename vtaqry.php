@@ -51,7 +51,8 @@ include "sidebar.php";
                             <label for="per_page" class="col-md-1 control-label">Ver</label>
                             <div class="col-md-2">
                                 <select class="form-control select-victoria" id="per_page" onchange="load(1);">
-                                    <option value="25" selected>25</option>
+                                    <option value="10" selected>10</option>    
+                                    <option value="25" >25</option>
                                     <option value="50">50</option>
                                     <option value="75">75</option>
                                     <option value="100">100</option>

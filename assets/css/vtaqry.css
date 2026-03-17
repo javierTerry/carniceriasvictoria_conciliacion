@@ -88,7 +88,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.label-vicoria1 {
+.label-victoria1 {
     background-color: var(--victoria-red) !important;
     color: var(--victoria-white) !important;
     font-weight: 700;
@@ -97,7 +97,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.label-vicoria2 {
+.label-victoria2 {
     background-color: #4b0082 !important;
     /* Indigo */
     color: var(--victoria-white) !important;
