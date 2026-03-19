@@ -213,6 +213,13 @@ if ($action == 'ajax') {
               </button>
               <?php endif; ?>
 
+              <?php if ($status == 2): ?>
+              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Gestionar Acción Ticket'
+                onclick="window.location.href='vtapendente.php?id=<?php echo $r['id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
+                <i class="glyphicon glyphicon-cog"></i>
+              </button>
+              <?php endif; ?>
+
               <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
                 onclick="printTicket('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
                 <i class="glyphicon glyphicon-print"></i>
