@@ -173,4 +173,8 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
         <p>***AGRADECEMOS SU PREFERENCIA***</p>
         <p class="ticket-bold">ORIGINAL</p>
     </div>
+
+    <?php if (isset($_GET['manage'])): ?>
+        <input type="hidden" id="raw_ticket_total" value="<?php echo $sale['sumimp']; ?>">
+    <?php endif; ?>
 </div>

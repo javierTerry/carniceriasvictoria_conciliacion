@@ -16,10 +16,10 @@ $branch = $_GET['branch'] ?? '';
         min-height: 400px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         flex-direction: column;
         color: #777;
-        padding: 20px;
+        padding: 15px;
     }
     .ticket-header-info {
         margin-bottom: 20px;
@@ -97,11 +97,49 @@ $branch = $_GET['branch'] ?? '';
                                         <h2><i class="fa fa-cogs"></i> Panel de Gestión</h2>
                                         <div class="clearfix"></div>
                                     </div>
-                                    <div class="action-panel">
-                                        <div class="text-center">
-                                            <i class="fa fa-refresh fa-spin fa-4x" style="color: #34495e; margin-bottom: 20px;"></i>
-                                            <h3 style="color: #2c3e50; font-weight: bold;">Trabajando...</h3>
-                                            <p style="font-size: 16px; margin-top: 10px;">Seguimos validando este ticket.</p>
+                                    <div class="action-panel" id="management_panel">
+                                        <div style="width: 100%; margin-bottom: 15px;">
+                                            <div class="form-group row" style="margin: 0;">
+                                                <label for="fpay_selector" class="col-sm-3 control-label" style="padding-top: 7px; margin-bottom: 0;">Método Pago:</label>
+                                                <div class="col-sm-9">
+                                                    <select class="form-control select-victoria" id="fpay_selector">
+                                                        <option value="">-- Seleccionar --</option>
+                                                        <?php
+                                                        $sql_fpay = "SELECT id, name FROM fpago WHERE is_active = 1 ORDER BY name";
+                                                        $res_fpay = mysqli_query($conexion, $sql_fpay);
+                                                        while ($fpay = mysqli_fetch_array($res_fpay, MYSQLI_ASSOC)) {
+                                                            echo "<option value='{$fpay['id']}' data-name='{$fpay['name']}'>{$fpay['name']}</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Summary Totals Area -->
+                                        <div id="totals_summary" style="width: 100%; background: #fff; padding: 10px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #eee; display: flex; justify-content: space-around; align-items: center;">
+                                            <div class="text-center">
+                                                <small style="display: block; color: #73879C; font-weight: 600; text-transform: uppercase;">Total Ticket</small>
+                                                <strong id="ticket_total_val" style="font-size: 1.4em; color: #34495e;">$0.00</strong>
+                                            </div>
+                                            <div style="width: 1px; height: 30px; background: #eee;"></div>
+                                            <div class="text-center">
+                                                <small style="display: block; color: #73879C; font-weight: 600; text-transform: uppercase;">Acumulado</small>
+                                                <strong id="accumulated_total_val" style="font-size: 1.4em; color: #26B99A;">$0.00</strong>
+                                            </div>
+                                            <div style="width: 1px; height: 30px; background: #eee;"></div>
+                                            <div class="text-center">
+                                                <small style="display: block; color: #73879C; font-weight: 600; text-transform: uppercase;">Pendiente</small>
+                                                <strong id="pending_total_val" style="font-size: 1.4em; color: #e74c3c;">$0.00</strong>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="payment_method_tables" style="width: 100%;">
+                                            <!-- Dynamic tables per payment method will be injected here -->
+                                            <div class="text-center" id="empty_management_msg">
+                                                <i class="fa fa-info-circle fa-3x" style="color: #eee;"></i>
+                                                <p style="color: #999; margin-top: 10px;">Seleccione un método de pago y copie partidas desde la izquierda.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
