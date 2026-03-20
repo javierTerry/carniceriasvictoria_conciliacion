@@ -99,9 +99,9 @@ $branch = $_GET['branch'] ?? '';
                                     </div>
                                     <div class="action-panel" id="management_panel">
                                         <div style="width: 100%; margin-bottom: 15px;">
-                                            <div class="form-group row" style="margin: 0;">
-                                                <label for="fpay_selector" class="col-sm-3 control-label" style="padding-top: 7px; margin-bottom: 0;">Método Pago:</label>
-                                                <div class="col-sm-9">
+                                            <div class="form-group row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                                                <div class="col-sm-4 col-xs-12">
+                                                    <label for="fpay_selector" class="control-label" style="margin-bottom: 5px; display: block;">Método Pago:</label>
                                                     <select class="form-control select-victoria" id="fpay_selector">
                                                         <option value="">-- Seleccionar --</option>
                                                         <?php
@@ -112,6 +112,18 @@ $branch = $_GET['branch'] ?? '';
                                                         }
                                                         ?>
                                                     </select>
+                                                </div>
+                                                <div class="col-sm-4 col-xs-12">
+                                                    <label for="manual_amount" class="control-label" style="margin-bottom: 5px; display: block;">Monto a Seccionar:</label>
+                                                    <div class="input-group" style="margin-bottom: 0;">
+                                                        <span class="input-group-addon">$</span>
+                                                        <input type="number" class="form-control" id="manual_amount" placeholder="0.00" step="0.01" min="0">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4 col-xs-12" style="padding-top: 25px;">
+                                                    <button type="button" class="btn btn-primary btn-block" id="btn_add_manual_amount" style="margin-bottom: 0;">
+                                                        <i class="fa fa-plus"></i> Agregar
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

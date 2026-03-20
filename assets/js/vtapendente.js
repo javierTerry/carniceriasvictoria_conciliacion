@@ -43,6 +43,73 @@ $(document).ready(function () {
         }, 1000);
     });
 
+    // Add manual amount
+    $('#btn_add_manual_amount').on('click', function() {
+        const fpay_id = $('#fpay_selector').val();
+        const fpay_name = $('#fpay_selector option:selected').data('name');
+        const amount = parseFloat($('#manual_amount').val());
+        const ticketTotal = parseFloat($('#raw_ticket_total').val()) || 0;
+
+        // Calculate current accumulated total
+        let accumulated = 0;
+        Object.values(managedItems).forEach(group => {
+            group.items.forEach(item => {
+                accumulated += item.amount;
+            });
+        });
+
+        // Validation: No more additions if pending is already 0
+        if (ticketTotal - accumulated <= 0.01) {
+            Swal.fire({
+                title: 'Atención',
+                text: 'El saldo pendiente ya es cero. No se pueden agregar más montos.',
+                icon: 'warning',
+                confirmButtonColor: '#34495e'
+            });
+            return;
+        }
+
+        if (!fpay_id) {
+            Swal.fire({
+                title: 'Atención',
+                text: 'Seleccione un método de pago.',
+                icon: 'warning',
+                confirmButtonColor: '#34495e'
+            });
+            return;
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+            Swal.fire({
+                title: 'Atención',
+                text: 'Ingrese un monto válido mayor a 0.',
+                icon: 'warning',
+                confirmButtonColor: '#34495e'
+            });
+            return;
+        }
+
+        if (amount > (ticketTotal + 0.01)) {
+            Swal.fire({
+                title: 'Atención',
+                text: 'El monto no puede ser mayor al total del ticket ($' + ticketTotal.toFixed(2) + ').',
+                icon: 'warning',
+                confirmButtonColor: '#34495e'
+            });
+            return;
+        }
+
+        const itemData = {
+            name: 'Monto seccionado',
+            qty: 1,
+            price: amount,
+            amount: amount
+        };
+
+        addItemToManagement(fpay_id, fpay_name, itemData);
+        $('#manual_amount').val(''); // Clear input
+    });
+
     function addItemToManagement(fpay_id, fpay_name, item) {
         if (!managedItems[fpay_id]) {
             managedItems[fpay_id] = {
