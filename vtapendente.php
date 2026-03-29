@@ -146,11 +146,13 @@ $branch = $_GET['branch'] ?? '';
                                             </div>
                                         </div>
                                         
-                                        <div id="payment_method_tables" style="width: 100%;">
-                                            <!-- Dynamic tables per payment method will be injected here -->
+                                        <div id="payment_method_tables_container" style="width: 100%;">
+                                            <div id="payment_method_tables">
+                                                <!-- Dynamic tables per payment method will be injected here -->
+                                            </div>
                                             <div class="text-center" id="empty_management_msg">
                                                 <i class="fa fa-info-circle fa-3x" style="color: #eee;"></i>
-                                                <p style="color: #999; margin-top: 10px;">Seleccione un método de pago y copie partidas desde la izquierda.</p>
+                                                <p style="color: #999; margin-top: 10px;">Seleccione un método de pago y agregue monto.</p>
                                             </div>
                                         </div>
                                     </div>
