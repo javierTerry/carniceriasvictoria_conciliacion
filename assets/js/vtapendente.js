@@ -14,23 +14,29 @@ $(document).ready(function () {
         $('#ticket_preview').html('<div class="alert alert-danger">Error: ID o Sucursal no proporcionados.</div>');
     }
 
+    // Helper to clean and parse numbers reliably
+    const parseNum = (val) => {
+        if (typeof val === 'number') return val;
+        if (!val) return 0;
+        // Remove everything except numbers, dots, and minus signs
+        const cleaned = String(val).replace(/[^\d.-]/g, '');
+        return parseFloat(cleaned) || 0;
+    };
+
     // Add manual amount with automatic item selection (Greedy)
     $('#btn_add_manual_amount').on('click', function() {
         const fpay_selector = $('#fpay_selector');
         const fpay_id = fpay_selector.val();
         const fpay_name = $('#fpay_selector option:selected').data('name');
         const amountInput = $('#manual_amount');
-        let amountToSection = parseFloat(amountInput.val());
-        const ticketTotal = parseFloat($('#global_ticket_total').val()) || 0;
+        let amountToSection = parseNum(amountInput.val());
+        const ticketTotal = parseNum($('#global_ticket_total').val());
 
-        // 1 & 2. Validation: Payment Method and Amount (Combined check)
+        // 1 & 2. Validation: Basic requirements
         let validationErrors = [];
-        if (!fpay_id) {
-            validationErrors.push("Seleccione un método de pago.");
-        }
-        if (isNaN(amountToSection) || amountToSection <= 0) {
-            validationErrors.push("Ingrese un monto válido mayor a 0.");
-        }
+        if (!fpay_id) validationErrors.push("Seleccione un método de pago.");
+        if (amountToSection <= 0) validationErrors.push("Ingrese un monto válido mayor a 0.");
+        if (availableItems.length === 0) validationErrors.push("No hay artículos cargados en la vista previa del ticket.");
 
         if (validationErrors.length > 0) {
             Swal.fire({
@@ -42,50 +48,88 @@ $(document).ready(function () {
             return;
         }
 
-        // Calculate current accumulated total in management panel
+        // Calculate current accumulated total
         let currentAccumulated = 0;
         Object.values(managedItems).forEach(group => {
             group.items.forEach(item => currentAccumulated += item.amount);
         });
 
-        const pendingBalance = ticketTotal - currentAccumulated;
+        let pendingBalance = ticketTotal - currentAccumulated;
 
-        // 3. Validation: Pending Balance Check
-        if (pendingBalance <= 0.009) {
+        // Validation: Already completed
+        if (pendingBalance <= 0.001) {
             Swal.fire({ 
                 title: 'Venta Completada', 
-                text: 'El total de la venta ya ha sido cubierto por los métodos de pago agregados.', 
+                text: 'El total de la venta ya ha sido cubierto.', 
                 icon: 'info', 
                 confirmButtonColor: '#34495e' 
             });
             return;
         }
 
-        // 4. Validation: Amount does not exceed total/pending
-        if (amountToSection > (pendingBalance + 0.01)) {
-            Swal.fire({ 
-                title: 'Monto Excedido', 
-                text: 'El monto ingresado ($' + amountToSection.toFixed(2) + ') no puede superar el saldo pendiente actual ($' + pendingBalance.toFixed(2) + ').', 
-                icon: 'warning', 
-                confirmButtonColor: '#e74c3c' 
+        // PERMISSIVE: Clamp amount to pending balance instead of erroring out
+        if (amountToSection > (pendingBalance + 0.001)) {
+            amountToSection = pendingBalance;
+        }
+
+        // Greedy matching algorithm
+        let selections = [];
+        let remainingToFind = amountToSection;
+
+        for (let i = 0; i < availableItems.length; i++) {
+            let item = availableItems[i];
+            
+            // Skip if this entire item pool has already been consumed
+            if (item.remainingAmount <= 0.001) continue;
+
+            // Determine how much we can take from this item
+            let takeAmount = Math.min(remainingToFind, item.remainingAmount);
+            if (takeAmount <= 0.001) continue;
+
+            // Calculate weight based on price
+            let itemPrice = item.price > 0 ? item.price : 1; 
+            let takeQty = (takeAmount / itemPrice);
+
+            // Create a portion entry
+            selections.push({
+                name: item.name,
+                qty: takeQty,
+                price: itemPrice,
+                amount: takeAmount,
+                originalIndex: i
+            });
+
+            // Update the available pool
+            item.remainingAmount -= takeAmount;
+            item.remainingQty -= takeQty;
+            
+            // Update what we still need to find
+            remainingToFind -= takeAmount;
+
+            // If we've found enough, we can stop
+            if (remainingToFind <= 0.001) break;
+        }
+
+        // Final check: Did we actually select anything?
+        if (selections.length === 0) {
+            Swal.fire({
+                title: 'No se pudo asignar',
+                text: 'El monto solicitado no pudo ser asignado. Asegúrese de que los productos tengan saldo pendiente en la vista previa del ticket.',
+                icon: 'error',
+                confirmButtonColor: '#34495e'
             });
             return;
         }
 
-        // Add a DUMMY entry for now as requested
-        const dummyItem = {
-            name: `Abono a ${fpay_name}`,
-            qty: 1,
-            price: amountToSection,
-            amount: amountToSection
-        };
-
-        addItemToManagement(fpay_id, fpay_name, dummyItem);
+        // Add the calculated selections to the managed items structure
+        selections.forEach(sel => {
+            addItemToManagement(fpay_id, fpay_name, sel);
+        });
 
         amountInput.val('');
         renderManagementTables();
         
-        // Success micro-feedback
+        // Success feedback
         const toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -95,7 +139,7 @@ $(document).ready(function () {
         });
         toast.fire({
             icon: 'success',
-            title: `Se agregaron $${amountToSection.toFixed(2)} a ${fpay_name}`
+            title: `Partidas asignadas con éxito ($${amountToSection.toFixed(2)})`
         });
     });
 
@@ -207,8 +251,8 @@ $(document).ready(function () {
         const item = managedItems[fpay_id].items[index];
         // Return to pool so it can be re-allocated later
         if (item.originalIndex !== undefined && availableItems[item.originalIndex]) {
-            availableItems[item.originalIndex].remainingAmount += item.amount;
-            availableItems[item.originalIndex].remainingQty += item.qty;
+            availableItems[item.originalIndex].remainingAmount += parseNum(item.amount);
+            availableItems[item.originalIndex].remainingQty += parseNum(item.qty);
         }
 
         managedItems[fpay_id].items.splice(index, 1);
@@ -233,8 +277,8 @@ $(document).ready(function () {
                 // Return all items in this table to pool
                 managedItems[fpay_id].items.forEach(item => {
                     if (item.originalIndex !== undefined && availableItems[item.originalIndex]) {
-                        availableItems[item.originalIndex].remainingAmount += item.amount;
-                        availableItems[item.originalIndex].remainingQty += item.qty;
+                        availableItems[item.originalIndex].remainingAmount += parseNum(item.amount);
+                        availableItems[item.originalIndex].remainingQty += parseNum(item.qty);
                     }
                 });
                 delete managedItems[fpay_id];
@@ -242,68 +286,72 @@ $(document).ready(function () {
             }
         });
     };
-});
-
-function viewTicketHTML(id, branch) {
-    $('#ticket_preview').html(
-        '<div class="text-center" style="margin-top: 50px;"><img src="./images/ajax-loader.gif"> Cargando...</div>',
-    );
-    $.ajax({
-        url: "ajax/vta_html_ticket.php",
-        type: "GET",
-        data: { id: id, branch: branch, manage: 1 },
-        success: function (response) {
-            $("#ticket_preview").html(response);
-            
-            // Parse the HTML table directly to avoid any PHP JSON encoding issues
-            availableItems = [];
-            try {
-                $("#ticket_preview .ticket-table tbody tr").each(function() {
-                    const qtyStr = $(this).find("td").eq(0).text().trim().replace(/,/g, '');
-                    const nameStr = $(this).find("td").eq(1).text().trim();
-                    const priceStr = $(this).find("td").eq(2).text().trim().replace(/,/g, '');
-                    const amountStr = $(this).find("td").eq(3).text().trim().replace(/,/g, '');
-                    
-                    const qty = parseFloat(qtyStr);
-                    const price = parseFloat(priceStr);
-                    const amount = parseFloat(amountStr);
-                    
-                    if (!isNaN(amount) && amount > 0) {
-                        availableItems.push({
-                            name: nameStr,
-                            qty: qty,
-                            price: price,
-                            amount: amount,
-                            originalIndex: availableItems.length,
-                            remainingQty: qty,
-                            remainingAmount: amount
-                        });
-                    }
-                });
-            } catch(e) {
-                console.error("Error parsing ticket items from DOM:", e);
-            }
-
-            setTimeout(() => {
-                const totalEl = $('#raw_ticket_total', '#ticket_preview');
-                if (totalEl.length > 0) {
-                    const totalVal = parseFloat(totalEl.val()) || 0;
-                    $('#ticket_total_val').text(`$${totalVal.toFixed(2)}`);
-                    $('#pending_total_val').text(`$${totalVal.toFixed(2)}`);
-                    
-                    // Maintain a reliable global reference for the calculation logic
-                    if ($('#global_ticket_total').length === 0) {
-                        $('body').append(`<input type="hidden" id="global_ticket_total" value="${totalVal}">`);
-                    } else {
-                        $('#global_ticket_total').val(totalVal);
-                    }
+    function viewTicketHTML(id, branch) {
+        $('#ticket_preview').html(
+            '<div class="text-center" style="margin-top: 50px;"><img src="./images/ajax-loader.gif"> Cargando...</div>',
+        );
+        $.ajax({
+            url: "ajax/vta_html_ticket.php",
+            type: "GET",
+            data: { id: id, branch: branch, manage: 1 },
+            success: function (response) {
+                $("#ticket_preview").html(response);
+                
+                // Parse the HTML table directly to avoid any PHP JSON encoding issues
+                availableItems = [];
+                try {
+                    $("#ticket_preview .ticket-table tbody tr").each(function() {
+                        const qtyStr = $(this).find("td").eq(0).text().trim();
+                        const nameStr = $(this).find("td").eq(1).text().trim();
+                        const priceStr = $(this).find("td").eq(2).text().trim();
+                        const amountStr = $(this).find("td").eq(3).text().trim();
+                        
+                        // Simple helper accessible in this scope for initialization
+                        const pNum = (s) => parseFloat(String(s).replace(/[^\d.-]/g, '')) || 0;
+                        
+                        const qty = pNum(qtyStr);
+                        const price = pNum(priceStr);
+                        const amount = pNum(amountStr);
+                        
+                        if (amount > 0) {
+                            availableItems.push({
+                                name: nameStr,
+                                qty: qty,
+                                price: price,
+                                amount: amount,
+                                originalIndex: availableItems.length,
+                                remainingQty: qty,
+                                remainingAmount: amount
+                            });
+                        }
+                    });
+                    console.log("Ticket items loaded into pool:", availableItems.length);
+                } catch(e) {
+                    console.error("Error parsing ticket items from DOM:", e);
                 }
-            }, 100);
-        },
-        error: function () {
-            $("#ticket_preview").html(
-                '<div class="alert alert-danger" style="margin-top: 50px;">Error al cargar el ticket.</div>',
-            );
-        },
-    });
-}
+
+                setTimeout(() => {
+                    const totalEl = $('#raw_ticket_total', '#ticket_preview');
+                    if (totalEl.length > 0) {
+                        const tVal = (s) => parseFloat(String(s).replace(/[^\d.-]/g, '')) || 0;
+                        const totalVal = tVal(totalEl.val());
+                        $('#ticket_total_val').text(`$${totalVal.toFixed(2)}`);
+                        $('#pending_total_val').text(`$${totalVal.toFixed(2)}`);
+                        
+                        // Maintain a reliable global reference for the calculation logic
+                        if ($('#global_ticket_total').length === 0) {
+                            $('body').append(`<input type="hidden" id="global_ticket_total" value="${totalVal}">`);
+                        } else {
+                            $('#global_ticket_total').val(totalVal);
+                        }
+                    }
+                }, 100);
+            },
+            error: function () {
+                $("#ticket_preview").html(
+                    '<div class="alert alert-danger" style="margin-top: 50px;">Error al cargar el ticket.</div>',
+                );
+            },
+        });
+    }
+});
