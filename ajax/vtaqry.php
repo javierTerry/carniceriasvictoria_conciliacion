@@ -188,9 +188,6 @@ if ($action == 'ajax') {
                   echo '<span class="badge badge-warning">Pendiente</span>';
                   break;
                 case 3:
-                  echo '<span class="badge badge-info">Completado</span>';
-                  break;
-                case 4:
                   echo '<span class="badge badge-primary">Facturado</span>';
                   break;
                 default:
@@ -215,7 +212,7 @@ if ($action == 'ajax') {
 
               <?php if ($status == 2): ?>
               <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Gestionar Acción Ticket'
-                onclick="window.location.href='vtapendente.php?id=<?php echo $r['id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
+                onclick="window.location.href='vtapendente.php?mov_id=<?php echo $r['mov_id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
                 <i class="glyphicon glyphicon-cog"></i>
               </button>
               <?php endif; ?>

@@ -1,6 +1,6 @@
 $(document).ready(function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+    const mov_id = urlParams.get('mov_id') || urlParams.get('id');
     const branch = urlParams.get('branch');
     
     // Store items per payment method
@@ -8,10 +8,10 @@ $(document).ready(function () {
     // Pool of available items from the ticket
     let availableItems = [];
 
-    if (id && branch) {
-        viewTicketHTML(id, branch);
+    if (mov_id && branch) {
+        viewTicketHTML(mov_id, branch);
     } else {
-        $('#ticket_preview').html('<div class="alert alert-danger">Error: ID o Sucursal no proporcionados.</div>');
+        $('#ticket_preview').html('<div class="alert alert-danger">Error: Mov ID o Sucursal no proporcionados.</div>');
     }
 
     // Helper to clean and parse numbers reliably
@@ -25,6 +25,12 @@ $(document).ready(function () {
 
     // Add manual amount with automatic item selection (Greedy)
     $('#btn_add_manual_amount').on('click', function() {
+        // Check if we are in "Completar" mode (button is green/success)
+        if ($(this).hasClass('btn-success')) {
+            showCompletionSummary();
+            return;
+        }
+
         const fpay_selector = $('#fpay_selector');
         const fpay_id = fpay_selector.val();
         const fpay_name = $('#fpay_selector option:selected').data('name');
@@ -236,7 +242,7 @@ $(document).ready(function () {
         const btnAdd = $('#btn_add_manual_amount');
         if (pending <= 0.009) {
             $('#pending_total_val').css('color', '#26B99A'); // Green for zero/covered
-            btnAdd.html('<i class="fa fa-check"></i> Completar').removeClass('btn-primary').addClass('btn-success');
+            btnAdd.html('<i class="fa fa-check"></i> Facturar').removeClass('btn-primary').addClass('btn-success');
         } else {
             btnAdd.html('<i class="fa fa-plus"></i> Agregar').removeClass('btn-success').addClass('btn-primary');
             if (pending < -0.01) {
@@ -245,6 +251,93 @@ $(document).ready(function () {
                 $('#pending_total_val').css('color', '#e74c3c').removeAttr('title');
             }
         }
+    }
+
+    function showCompletionSummary() {
+        let summaryHtml = '<div style="text-align: left; margin-top: 10px;">';
+        let grandTotal = 0;
+        
+        Object.values(managedItems).forEach(group => {
+            let subtotal = 0;
+            group.items.forEach(item => subtotal += item.amount);
+            grandTotal += subtotal;
+            
+            summaryHtml += `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                    <span><i class="fa fa-credit-card" style="color: #26B99A; width: 20px;"></i> <strong>${group.name}</strong></span>
+                    <span style="color: #26B99A; font-weight: bold;">$${subtotal.toFixed(2)}</span>
+                </div>`;
+        });
+        
+        summaryHtml += `
+            <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 1.25em; border-top: 2px solid #34495e; margin-top: 10px; background: #f9f9f9; padding-left: 5px; padding-right: 5px;">
+                <span><strong>TOTAL CONCILIADO</strong></span>
+                <span style="color: #34495e; font-weight: 800;">$${grandTotal.toFixed(2)}</span>
+            </div>
+        </div>`;
+
+        Swal.fire({
+            title: '¿Confirmar Factura?',
+            html: summaryHtml,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#26B99A',
+            cancelButtonColor: '#34495e',
+            confirmButtonText: '<i class="fa fa-check"></i> Sí, facturar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                completeTicketAction();
+            }
+        });
+    }
+
+    function completeTicketAction() {
+        Swal.fire({
+            title: 'Procesando...',
+            text: 'Actualizando estatus',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        $.ajax({
+            url: "ajax/complete_ticket.php",
+            type: "POST",
+            data: { 
+                mov_id: mov_id,
+                branch: branch 
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonColor: '#34495e'
+                    }).then(() => {
+                        window.location.href = `vtaqry.php?branch=${branch}&status=3`;
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonColor: '#34495e'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Error de Red',
+                    text: 'No se pudo comunicar con el servidor.',
+                    icon: 'error',
+                    confirmButtonColor: '#34495e'
+                });
+            }
+        });
     }
 
     window.removeItem = function(fpay_id, index) {
@@ -286,14 +379,14 @@ $(document).ready(function () {
             }
         });
     };
-    function viewTicketHTML(id, branch) {
+    function viewTicketHTML(mov_id, branch) {
         $('#ticket_preview').html(
             '<div class="text-center" style="margin-top: 50px;"><img src="./images/ajax-loader.gif"> Cargando...</div>',
         );
         $.ajax({
             url: "ajax/vta_html_ticket.php",
             type: "GET",
-            data: { id: id, branch: branch, manage: 1 },
+            data: { mov_id: mov_id, branch: branch, manage: 1 },
             success: function (response) {
                 $("#ticket_preview").html(response);
                 

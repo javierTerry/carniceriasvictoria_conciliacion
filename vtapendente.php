@@ -4,7 +4,7 @@ $title = "Gestión de Acción Ticket | Victoria Obrador y Carnicería";
 include "head.php";
 include "sidebar.php";
 
-$id = $_GET['id'] ?? 0;
+$mov_id = $_GET['mov_id'] ?? $_GET['id'] ?? '';
 $branch = $_GET['branch'] ?? '';
 ?>
 <link rel="stylesheet" href="assets/css/vtaqry.css?v=<?php echo time(); ?>">
@@ -65,7 +65,7 @@ $branch = $_GET['branch'] ?? '';
                         <!-- Info del Ticket -->
                         <div class="ticket-header-info">
                             <div>
-                                <strong>Gestionando Ticket ID:</strong> #<?php echo htmlspecialchars($id); ?>
+                                <strong>Gestionando Ticket ID:</strong> #<?php echo htmlspecialchars($mov_id); ?>
                             </div>
                             <div class="text-right">
                                 <span class="label label-warning" style="font-size: 14px;">ESTATUS: PENDIENTE</span>

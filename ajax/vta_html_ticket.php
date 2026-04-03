@@ -3,11 +3,12 @@ session_start();
 require_once "../config/config.php";
 require_once "../config/numtolet.php";
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$branch = isset($_GET['branch']) ? $_GET['branch'] : '';
+$id = $_GET['id'] ?? null;
+$mov_id = $_GET['mov_id'] ?? null;
+$branch = $_GET['branch'] ?? '';
 
-if ($id <= 0) {
-    die("<div class='alert alert-danger'>ID de venta no válido.</div>");
+if (!$id && !$mov_id) {
+    die("<div class='alert alert-danger'>Identificador de venta no proporcionado.</div>");
 }
 
 // Select connection based on branch
@@ -29,7 +30,7 @@ $res_empresa = mysqli_query($targetConn, $sql_empresa);
 $empresa = mysqli_fetch_array($res_empresa, MYSQLI_ASSOC);
 
 // 2. Venta
-$sql_venta = "SELECT A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.sumimp, A.items, 
+$sql_venta = "SELECT A.id, A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.sumimp, A.items, 
                      B.name as cliente, A.recibo, A.acuenta, A.fpago, 
                      CONCAT(U.name, ' ', U.lastname) as uname,
                      F.code as fcode, F.name as fname
@@ -37,7 +38,7 @@ $sql_venta = "SELECT A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.s
               INNER JOIN cust B ON A.cust_id = B.id
               INNER JOIN user U ON A.user_id = U.id
               INNER JOIN fpago F ON A.fpago = F.id
-              WHERE A.id = $id";
+              WHERE " . ($mov_id ? "A.mov_id = '" . mysqli_real_escape_string($targetConn, $mov_id) . "'" : "A.id = " . intval($id));
 $res_venta = mysqli_query($targetConn, $sql_venta);
 $sale = mysqli_fetch_array($res_venta, MYSQLI_ASSOC);
 
@@ -46,10 +47,11 @@ if (!$sale) {
 }
 
 // 3. Items
+$vta_internal_id = $sale['id'] ?? 0;
 $sql_items = "SELECT A.qty, B.name, A.price, A.amount 
               FROM vtaitem A 
               INNER JOIN art B ON B.id = A.art_id 
-              WHERE A.vta_id = $id";
+              WHERE A.vta_id = $vta_internal_id";
 $res_items = mysqli_query($targetConn, $sql_items);
 
 $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale['recibo'] - $sale['acuenta']);
