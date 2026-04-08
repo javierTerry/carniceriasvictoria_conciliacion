@@ -1,0 +1,142 @@
+[2026-04-03 06:55:34] Éxito al extraer - Serie: '', FolioActual: ''
+[2026-04-05 04:22:08] Error cURL/HTTP. Code: 0, Msg: Could not resolve host: ep-dot-facturanube.appspot.com
+[2026-04-05 04:22:27] Éxito al extraer - Serie: '', FolioActual: ''
+[2026-04-05 04:59:38] Éxito al extraer - Serie: '', FolioActual: ''
+Error 39Error 39Error 51Error 39Error 51Error 39Error 51Error 59RESPONSE 200 39Error 51Error 59Response HTTP Code: 200[2026-04-05 05:20:57] Error al extraer datos: Call to undefined function simplexml_load_string()
+Response HTTP Code: 200[2026-04-05 05:23:15] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200[2026-04-05 05:25:04] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200debug 70[2026-04-05 05:28:11] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200debug 61debug 71
+        
+     83[2026-04-05 05:54:08] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200debug 61debug 71Array 79
+        
+     85[2026-04-05 05:56:54] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200debug 61debug 7179
+        
+     87[2026-04-05 05:58:28] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200debug 61debug 7179Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [@attributes] => Array
+                (
+                    [noCertificado] => 30001000000500003441
+                )
+
+            [foliador] => SimpleXMLElement Object
+                (
+                    [@attributes] => Array
+                        (
+                            [folioActual] => 8
+                            [folioFinal] => 99999999999
+                            [folioInicial] => 1
+                            [foliosDisponibles] => 99999999991
+                            [serie] => F
+                        )
+
+                )
+
+        )
+
+)
+
+        
+     87[2026-04-05 05:59:48] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200debug 61debug 7179[{"@attributes":{"noCertificado":"30001000000500003441"},"foliador":{"@attributes":{"folioActual":"8","folioFinal":"99999999999","folioInicial":"1","foliosDisponibles":"99999999991","serie":"F"}}}]
+        
+     87[2026-04-05 06:02:17] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200debug 61debug 7179[{"@attributes":{"noCertificado":"30001000000500003441"},"foliador":{"@attributes":{"folioActual":"8","folioFinal":"99999999999","folioInicial":"1","foliosDisponibles":"99999999991","serie":"F"}}}]
+        
+     87[2026-04-05 06:07:17] Éxito al extraer - Serie: '', FolioActual: ''
+Response HTTP Code: 200SimpleXMLElement Object
+(
+    [@attributes] => Array
+        (
+            [noCertificado] => 30001000000500003441
+        )
+
+    [foliador] => SimpleXMLElement Object
+        (
+            [@attributes] => Array
+                (
+                    [folioActual] => 8
+                    [folioFinal] => 99999999999
+                    [folioInicial] => 1
+                    [foliosDisponibles] => 99999999991
+                    [serie] => F
+                )
+
+        )
+
+)
+[2026-04-05 06:09:43] Éxito al extraer - Serie: 'F', FolioActual: '8'
+[2026-04-05 06:25:45] Éxito envío Facturanube (Folio: 8, Serie: F)
+[2026-04-05 06:27:25] Éxito envío Facturanube (Folio: 8, Serie: F)
+[2026-04-05 06:47:28] Éxito envío Facturanube (Folio: 8, Serie: F)
+[2026-04-05 06:50:16] Éxito envío Facturanube (Folio: 9, Serie: F)
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Respuesta>
+    <xml>https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MTAKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MTAKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk=</xml>
+    <pdf>https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0xMAp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg==</pdf>
+    <TipoProceso>NUEVA FACTURA</TipoProceso>
+    <UUID>1c6f0cf7-bd38-487b-8c42-f9cbb77b2c30</UUID>
+    <folio>10</folio>
+    <serie>F</serie>
+    <fechaFactura>2026-04-05T00:53:05</fechaFactura>
+</Respuesta>
+[2026-04-05 06:54:07] Éxito envío Facturanube (Folio: 10, Serie: F)
+[2026-04-05 07:06:06] Éxito envío Facturanube (Folio: 11, Serie: F)
+124[2026-04-05 07:06:06] Error extracción: Respuesta no encontrada.
+[2026-04-05 07:17:40] Éxito envío Facturanube (Folio: 12, Serie: F)
+124[2026-04-05 07:17:40] Error extracción: Respuesta no encontrada.
+[2026-04-05 07:18:46] Éxito envío Facturanube (Folio: 13, Serie: F)
+124[2026-04-05 07:18:46] Error extracción: Respuesta no encontrada.
+[2026-04-05 07:20:33] Éxito envío Facturanube (Folio: 14, Serie: F)
+124Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MTQKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MTQKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk=
+        )
+
+)
+[2026-04-05 07:22:42] Éxito envío Facturanube (Folio: 15, Serie: F)
+124[{"0":"https:\/\/ep-dot-facturanube.appspot.com\/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MTUKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MTUKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk="}][{"0":"https:\/\/ep-dot-facturanube.appspot.com\/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0xNQp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg=="}][2026-04-05 07:24:02] Éxito envío Facturanube (Folio: 16, Serie: F)
+124[{"0":"https:\/\/ep-dot-facturanube.appspot.com\/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MTYKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MTYKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk="}][{"0":"https:\/\/ep-dot-facturanube.appspot.com\/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0xNgp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg=="}][2026-04-05 07:25:24] Éxito envío Facturanube (Folio: 17, Serie: F)
+124[[{"0":"https:\/\/ep-dot-facturanube.appspot.com\/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0xNwp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg=="}][2026-04-05 07:28:25] Éxito envío Facturanube (Folio: 18, Serie: F)
+124[{"0":"https:\/\/ep-dot-facturanube.appspot.com\/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MTgKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MTgKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk="}]--------------[{"0":"https:\/\/ep-dot-facturanube.appspot.com\/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0xOAp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg=="}][2026-04-05 07:30:14] Éxito envío Facturanube (Folio: 19, Serie: F)
+124Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MTkKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MTkKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk=
+        )
+
+)
+--------------Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0xOQp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg==
+        )
+
+)
+[2026-04-05 07:31:16] Éxito envío Facturanube (Folio: 20, Serie: F)
+124SimpleXMLElement Object
+(
+    [0] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MjAKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MjAKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk=
+)
+--------------SimpleXMLElement Object
+(
+    [0] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0yMAp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg==
+)
+[2026-04-05 07:33:13] Éxito envío Facturanube (Folio: 21, Serie: F)
+124SimpleXMLElement Object
+(
+    [0] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89MjEKbm9tYXJjaGl2bz1VUkUxODA0MjlUTTZfRkFDVC01OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89MjEKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk=
+)
+---------------SimpleXMLElement Object
+(
+    [0] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0yMQp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg==
+)

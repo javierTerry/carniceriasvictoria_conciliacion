@@ -295,6 +295,47 @@ $(document).ready(function () {
     function completeTicketAction() {
         Swal.fire({
             title: 'Procesando...',
+            text: 'Obteniendo certificado de Facturanube',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // 1. Obtener datos de factura y enviar a Sinube
+        $.ajax({
+            url: "ajax/facturar_api.php",
+            type: "POST",
+            dataType: 'json',
+            success: function(certResponse) {
+                if (certResponse && certResponse.success) {
+                    proceedWithLocalCompletion();
+                } else {
+                    let msg = (certResponse && certResponse.message) ? certResponse.message : "Error al obtener datos.";
+                    Swal.fire({
+                        title: 'Error Facturanube',
+                        text: msg,
+                        icon: 'error',
+                        confirmButtonColor: '#34495e',
+                        confirmButtonText: 'Cerrar'
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    title: 'Error de Red',
+                    text: 'Fallo al conectar con el servidor para obtener certificado.',
+                    icon: 'error',
+                    confirmButtonColor: '#34495e',
+                    confirmButtonText: 'Cerrar'
+                });
+            }
+        });
+    }
+
+    function proceedWithLocalCompletion() {
+        Swal.fire({
+            title: 'Procesando...',
             text: 'Actualizando estatus',
             allowOutsideClick: false,
             didOpen: () => {
