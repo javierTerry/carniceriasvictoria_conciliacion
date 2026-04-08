@@ -140,3 +140,8 @@ Response HTTP Code: 200SimpleXMLElement Object
 (
     [0] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1uZW9yZXBvcnRlcwplbXByZXNhbW92PVVSRTE4MDQyOVRNNi0zOQpzdWN1cnNhbD1NYXRyaXoKcmVwb3J0ZT1DRkRJIDQuMCAtIENPTiBJVkEgLSBTSU5VQkUKc2VyaWU9Rgpmb2xpbz0yMQp0aXBvPTMxCnBpZT0wCm11ZXN0cmFodG1sPTAKbm9tcGRmPVVSRTE4MDQyOVRNNl9GQUNULTU4Cg==
 )
+[2026-04-07 20:29:42] Éxito envío Facturanube (Folio: 23, Serie: F)
+[2026-04-07 21:03:14] Éxito envío Facturanube (Folio: 24, Serie: F)
+[2026-04-07 21:06:10] Éxito envío Facturanube (Folio: 25, Serie: F)
+[2026-04-07 21:18:42] Éxito envío Facturanube (Folio: 26, Serie: F)
+[2026-04-07 21:18:44] Éxito envío Facturanube (Folio: 27, Serie: F)

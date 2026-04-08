@@ -293,38 +293,76 @@ $(document).ready(function () {
     }
 
     function completeTicketAction() {
+        // Collect all invoices to be generated from managedItems
+        let invoices = [];
+        Object.keys(managedItems).forEach(fpay_id => {
+            let group = managedItems[fpay_id];
+            let subtotal = 0;
+            group.items.forEach(item => subtotal += item.amount);
+            
+            if (subtotal > 0) {
+                invoices.push({
+                    mov_id: mov_id,
+                    branch: branch,
+                    monto: subtotal,
+                    metodo_pago: group.name
+                });
+            }
+        });
+
+        if (invoices.length === 0) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No hay montos asignados para facturar.',
+                icon: 'error',
+                confirmButtonColor: '#34495e'
+            });
+            return;
+        }
+
+        let completedInvoices = 0;
+        let totalInvoices = invoices.length;
+        let successCount = 0;
+        let firstError = null;
+
         Swal.fire({
             title: 'Procesando...',
-            text: 'Obteniendo certificado de Facturanube',
+            text: `Facturando 0 de ${totalInvoices}...`,
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             }
         });
 
-        // 1. Obtener datos de factura y enviar a Sinube
-        $.ajax({
-            url: "ajax/facturar_api.php",
-            type: "POST",
-            dataType: 'json',
-            success: function(certResponse) {
+        // Execute ajax requests concurrently but track completion
+        let ajaxPromises = invoices.map(invData => {
+            return $.ajax({
+                url: "ajax/facturar_api.php",
+                type: "POST",
+                dataType: 'json',
+                data: invData
+            }).done(function(certResponse) {
+                completedInvoices++;
+                Swal.update({ text: `Facturando ${completedInvoices} de ${totalInvoices}...` });
                 if (certResponse && certResponse.success) {
-                    proceedWithLocalCompletion();
+                    successCount++;
                 } else {
-                    let msg = (certResponse && certResponse.message) ? certResponse.message : "Error al obtener datos.";
-                    Swal.fire({
-                        title: 'Error Facturanube',
-                        text: msg,
-                        icon: 'error',
-                        confirmButtonColor: '#34495e',
-                        confirmButtonText: 'Cerrar'
-                    });
+                    if (!firstError) firstError = (certResponse && certResponse.message) ? certResponse.message : "Error al obtener datos.";
                 }
-            },
-            error: function() {
+            }).fail(function() {
+                completedInvoices++;
+                Swal.update({ text: `Facturando ${completedInvoices} de ${totalInvoices}...` });
+                if (!firstError) firstError = "Fallo al conectar con el servidor para la factura de " + invData.metodo_pago + ".";
+            });
+        });
+
+        $.when.apply($, ajaxPromises).always(function() {
+            if (successCount === totalInvoices) {
+                proceedWithLocalCompletion();
+            } else {
                 Swal.fire({
-                    title: 'Error de Red',
-                    text: 'Fallo al conectar con el servidor para obtener certificado.',
+                    title: 'Error en Facturación',
+                    text: `Se lograron facturar ${successCount} de ${totalInvoices}. Error: ${firstError}`,
                     icon: 'error',
                     confirmButtonColor: '#34495e',
                     confirmButtonText: 'Cerrar'

@@ -35,8 +35,8 @@ $q_status = $_GET['status'] ?? '';
                             href="vtaqry.php?branch=Obrador">Tickets</a></li>
                     <li class="<?php echo ($q_branch == 'Obrador' && $q_status == '2') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Obrador&status=2">Pendientes</a></li>
-                    <li class="<?php echo ($q_branch == 'Obrador' && $q_status == '3') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Obrador&status=3">Facturados</a></li>
+                    <li class="<?php echo ($q_branch == 'Obrador' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>"><a
+                            href="facturasqry.php?branch=Obrador">Facturados</a></li>
                 </ul>
             </li>
 
@@ -47,8 +47,8 @@ $q_status = $_GET['status'] ?? '';
                             href="vtaqry.php?branch=Victoria1">Tickets</a></li>
                     <li class="<?php echo ($q_branch == 'Victoria1' && $q_status == '2') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Victoria1&status=2">Pendientes</a></li>
-                    <li class="<?php echo ($q_branch == 'Victoria1' && $q_status == '3') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Victoria1&status=3">Facturados</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>"><a
+                            href="facturasqry.php?branch=Victoria1">Facturados</a></li>
                 </ul>
             </li>
 
@@ -59,8 +59,8 @@ $q_status = $_GET['status'] ?? '';
                             href="vtaqry.php?branch=Victoria2">Tickets</a></li>
                     <li class="<?php echo ($q_branch == 'Victoria2' && $q_status == '2') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Victoria2&status=2">Pendientes</a></li>
-                    <li class="<?php echo ($q_branch == 'Victoria2' && $q_status == '3') ? 'active' : ''; ?>"><a
-                            href="vtaqry.php?branch=Victoria2&status=3">Facturados</a></li>
+                    <li class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>"><a
+                            href="facturasqry.php?branch=Victoria2">Facturados</a></li>
                 </ul>
             </li>
 

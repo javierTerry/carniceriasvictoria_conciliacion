@@ -5,12 +5,37 @@
  * 2. Envía XML dummy para proceso de facturación.
  */
 session_start();
+require_once "../config/config.php";
+
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
-    // Validar sesión si es necesario en producción
-    // echo json_encode(['success' => false, 'message' => 'Sesión no iniciada']);
+$user_id = $_SESSION['user_id'] ?? 1; // Fallback or read from session
+$mov_id = $_POST['mov_id'] ?? '';
+$monto = $_POST['monto'] ?? 0;
+$metodo_pago = $_POST['metodo_pago'] ?? '';
+$branch = $_POST['branch'] ?? '';
+
+if (empty($mov_id) || empty($branch)) {
+    // For now, don't exit since vtapendente.js might not be sending it yet, but it should.
+    // echo json_encode(['success' => false, 'message' => 'Datos insuficientes']);
     // exit;
+}
+
+$db_error = '';
+$branchConn = null;
+if (!empty($branch)) {
+    $branchesConfigs = getBranchesConfig();
+    if (isset($branchesConfigs[$branch])) {
+        $config = $branchesConfigs[$branch];
+        $branchConn = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
+        if ($branchConn) {
+            mysqli_set_charset($branchConn, "utf8");
+        } else {
+            $db_error = 'Error de conexión a la BD de sucursal';
+        }
+    } else {
+        $db_error = 'Sucursal no válida';
+    }
 }
 
 // Configuración ruta logs
@@ -123,9 +148,11 @@ if ($http_code_envio == 200) {
         
         $xml_matches = $xml_obj->xpath("/Respuesta/xml");
         $pdf_matches = $xml_obj->xpath("/Respuesta/pdf");
+        $uuid_matches = $xml_obj->xpath("/Respuesta/UUID");
         
         $link_xml = isset($xml_matches[0]) ? (string)$xml_matches[0] : '';
         $link_pdf = isset($pdf_matches[0]) ? (string)$pdf_matches[0] : '';
+        $uuid     = isset($uuid_matches[0]) ? (string)$uuid_matches[0] : 'Pendiente';
      
     } catch (Throwable $e) {
         error_log("[" . date('Y-m-d H:i:s') . "] Error extracción links: " . $e->getMessage() . "\n", 3, $log_file);
@@ -133,14 +160,39 @@ if ($http_code_envio == 200) {
         exit;
     }
 
+    // Intentar guardar en base de datos si tenemos la conexión
+    $db_message = 'No se guardó en BD (Faltan parámetros de sucursal o mov_id)';
+    if ($branchConn && !empty($mov_id)) {
+        $sql = "INSERT INTO facturas (mov_id, uuid, monto, metodo_pago, usuario_id, serie, folio, xml_url, pdf_url, estatus, estado) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'Activa')";
+        $stmt = mysqli_prepare($branchConn, $sql);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "ssdssssss", $mov_id, $uuid, $monto, $metodo_pago, $user_id, $serie, $folio, $link_xml, $link_pdf);
+            if (mysqli_stmt_execute($stmt)) {
+                $db_message = 'Factura guardada en la base de datos correctamente';
+            } else {
+                $db_message = 'Error al insertar en la tabla facturas: ' . mysqli_stmt_error($stmt);
+                error_log("[" . date('Y-m-d H:i:s') . "] $db_message\n", 3, $log_file);
+            }
+            mysqli_stmt_close($stmt);
+        } else {
+            $db_message = 'Error al preparar la consulta de facturas';
+        }
+        mysqli_close($branchConn);
+    } else if ($db_error) {
+        $db_message = $db_error;
+    }
+
     echo json_encode([
         'success' => true,
         'message' => 'Factura procesada correctamente en Facturanube.',
+        'db_message' => $db_message,
         'data' => [
             'serie' => $serie,
             'folio' => $folio,
             'xml' => $link_xml,
             'pdf' => $link_pdf,
+            'uuid' => $uuid,
             'api_response' => $response_envio
         ]
     ]);
