@@ -298,6 +298,15 @@ $(document).ready(function () {
         Object.keys(managedItems).forEach(fpay_id => {
             let group = managedItems[fpay_id];
             let subtotal = 0;
+            
+            // Reconstruir el catálogo de conceptos dinámico para esta proporción de pago
+            let itemsPayload = group.items.map(item => ({
+                name: item.name,
+                qty: item.qty,
+                price: item.price,
+                amount: item.amount
+            }));
+
             group.items.forEach(item => subtotal += item.amount);
             
             if (subtotal > 0) {
@@ -305,7 +314,8 @@ $(document).ready(function () {
                     mov_id: mov_id,
                     branch: branch,
                     monto: subtotal,
-                    metodo_pago: group.name
+                    metodo_pago: group.name,
+                    items: itemsPayload
                 });
             }
         });

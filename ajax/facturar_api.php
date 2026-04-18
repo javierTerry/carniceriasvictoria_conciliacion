@@ -1,7 +1,7 @@
 <?php
 /**
  * facturar_api.php
- * 1. Obtiene Serie y Folio de Facturanube.
+ * 1. Obtiene Serie y Folio de SINUBE.
  * 2. Envía XML dummy para proceso de facturación.
  */
 session_start();
@@ -48,7 +48,7 @@ $log_file = $log_dir . "/factura_error.log";
 // ---------------------------------------------------------
 // PASO 1: Obtener Certificado (Folio y Serie)
 // ---------------------------------------------------------
-$url_cert = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0xMQplbXA9VVJFMTgwNDI5VE02LTM5CnN1Yz1NYXRyaXoKdXN1PWF0ZW5jaW9uc29sdWNpb25lc3J5akBnbWFpbC5jb20KcHdkPXByb3ZlZWRvcmVzCnNpcz1PQlJBRE9SQ0FSTklDRVJJQQ==";
+$url_cert = "http://ep-dot-SINUBE.appspot.com/blob?par=dGlwbz0xMQplbXA9VVJFMTgwNDI5VE02LTM5CnN1Yz1NYXRyaXoKdXN1PWF0ZW5jaW9uc29sdWNpb25lc3J5akBnbWFpbC5jb20KcHdkPXByb3ZlZWRvcmVzCnNpcz1PQlJBRE9SQ0FSTklDRVJJQQ==";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url_cert);
@@ -66,7 +66,7 @@ curl_close($ch);
 if ($response_cert === false || $http_code_cert != 200) {
     $error_msg = "[" . date('Y-m-d H:i:s') . "] Error cURL obteniendo certificado. Code: $http_code_cert, Msg: $curl_error_cert\n";
     error_log($error_msg, 3, $log_file);
-    echo json_encode(['success' => false, 'message' => 'Error al consultar folio/serie en Facturanube.']);
+    echo json_encode(['success' => false, 'message' => 'Error al consultar folio/serie en SINUBE.']);
     exit;
 }
 
@@ -103,29 +103,83 @@ try {
 }
 
 // ---------------------------------------------------------
-// PASO 2: Armar XML Dummy y enviar a Sinube
+// PASO 2: Armar XML Dinámico y enviar a Sinube
 // ---------------------------------------------------------
-$xml_dummy = <<<XML
+
+// Decodificar items del ticket (vienen del JS por POST)
+// ---------------------------------------------------------
+// PASO 2: Armar XML Dinámico y enviar a Sinube
+// ---------------------------------------------------------
+
+// Decodificar items del ticket (vienen del JS por POST)
+$ticket_items = $_POST['items'] ?? [];
+
+// Nodo Receptor Demo conforme a requerimiento
+$rfc_receptor = "OHM191218EH7";
+$razonSocial = "OBRADOR HNOS MIRANDA";
+$usoCFDI = "G03";
+$regimenFiscal = "601";
+$esPersonaFisica = "0";
+
+// Cálculos Globales (IVA 16%)
+$totalGlobal = (float)$monto; // El monto recibido incluye IVA
+$subtotalGlobal = $totalGlobal;//round($totalGlobal / 1.16, 2);
+$ivaGlobal = round($totalGlobal - $subtotalGlobal, 2);
+$msTime = round(microtime(true) * 1000); // Tiempo actual en milisegundos
+$tipoIVA = "IVA 0%";
+$porcentajeIVA = "16";
+
+
+
+$conceptos_xml = "";
+foreach ($ticket_items as $item) {
+    $desc = htmlspecialchars($item['name'] ?? 'Producto General', ENT_XML1, 'UTF-8');
+    $qty = (float)($item['qty'] ?? 1);
+    if ($qty <= 0) $qty = 1;
+    
+    $totalItem = (float)($item['amount'] ?? 0); // Valor Bruto del ticket (ya incluye IVA)
+    $priceItem = (float)($item['price'] ?? 0);  // Precio Bruto del ticket
+    
+    // De acuerdo a las nuevas reglas:
+    // descripcion = producto
+    // cantidad = cantidad
+    // valorUnitario, montoBaseIVA, importe y subtotalDet = Valor Bruto (Sin dividir por 1.16)
+    // montoIVA = Cálculo del 16% sobre el valor bruto
+    
+    $ivaItemCalculado = "0";//round($totalItem * 0.16, 2);
+    $valUnitarioItem = round($priceItem, 4); 
+    
+    $conceptos_xml .= <<<XML
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="{$desc}" cantidad="{$qty}" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="{$valUnitarioItem}" descuento="0" tipoIVA="{$tipoIVA}" montoBaseIVA="{$totalItem}" montoIVA="{$ivaItemCalculado}" importe="{$totalItem}" subtotalDet="{$totalItem}" objetoImp="02" />
+XML;
+}
+
+$xml_payload = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
-<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE" permiteAgregarProductosNoInv="1" nomArchivoDescarga="URE180429TM6_FACT-58" noCertificado="30001000000500003441" serie="{$serie}" folio="{$folio}" formaDePago="03" condicionesDePago="A 30 DIAS" fechaPagoProbable="1774995997474" metodoDePago="PUE" subtotal="700.00" descuento="0" porcentajeIVA="16" montoIVA="112.00" total="812.00" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
-   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601" cliente="2"/>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-{$mov_id}-{$serie}-{$folio}" noCertificado="30001000000500003441" serie="{$serie}" folio="{$folio}"  
+    formaDePago="03" condicionesDePago="CONTADO" fechaPagoProbable="{$msTime}" metodoDePago="PUE" subtotal="{$subtotalGlobal}" descuento="0" porcentajeIVA="{$porcentajeIVA}" montoIVA="0" 
+    total="{$totalGlobal}" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$usoCFDI}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}"/>
    <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
    <Conceptos>
-       <Concepto productoSinube="0000VAVC1908001" productoSAT="50202206" descripcion="Whisky Chivas Regal 12 anos Escoces 750 ml" cantidad="1" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="700.00" descuento="0" tipoIVA="Causa IVA" montoBaseIVA="700.00" montoIVA="112.00" importe="700.00" subtotalDet="700.00" objetoImp="02" />
-   </Conceptos>
+{$conceptos_xml}   </Conceptos>
 </Comprobante>
 XML;
 
-$url_envio = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz00CmVtcD1VUkUxODA0MjlUTTYtMzkKc3VjPU1hdHJpegp1c3U9YXRlbmNpb25zb2x1Y2lvbmVzcnlqQGdtYWlsLmNvbQpwd2Q9cHJvdmVlZG9yZXM=";
+$url_envio = "http://ep-dot-SINUBE.appspot.com/blob?par=dGlwbz00CmVtcD1VUkUxODA0MjlUTTYtMzkKc3VjPU1hdHJpegp1c3U9YXRlbmNpb25zb2x1Y2lvbmVzcnlqQGdtYWlsLmNvbQpwd2Q9cHJvdmVlZG9yZXM=";
+
+// Guardar payload en el log para visualización
+error_log("[" . date('Y-m-d H:i:s') . "] XML GENERADO (Folio: $folio, MovID: $mov_id):\n$xml_payload\n-----------------------\n", 3, $log_file);
 
 $ch2 = curl_init();
 curl_setopt($ch2, CURLOPT_URL, $url_envio);
 curl_setopt($ch2, CURLOPT_POST, 1);
-curl_setopt($ch2, CURLOPT_POSTFIELDS, $xml_dummy);
+curl_setopt($ch2, CURLOPT_POSTFIELDS, $xml_payload);
 curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch2, CURLOPT_HTTPHEADER, [
     'Content-Type: text/xml',
-    'Content-Length: ' . strlen($xml_dummy)
+    'Content-Length: ' . strlen($xml_payload)
 ]);
 curl_setopt($ch2, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch2, CURLOPT_SSL_VERIFYHOST, false);
@@ -135,9 +189,8 @@ $http_code_envio = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
 $curl_error_envio = curl_error($ch2);
 curl_close($ch2);
 
-
 if ($http_code_envio == 200) {
-    error_log("[" . date('Y-m-d H:i:s') . "] Éxito envío Facturanube (Folio: $folio, Serie: $serie)\n", 3, $log_file);
+    error_log("[" . date('Y-m-d H:i:s') . "] Éxito envío SINUBE (Folio: $folio, Serie: $serie)\n", 3, $log_file);
 
     try {
         libxml_use_internal_errors(true);
@@ -145,18 +198,34 @@ if ($http_code_envio == 200) {
         if ($xml_obj === false) {
             throw new Exception("XML de respuesta malformado.");
         }
+
+        //error_log("[" . date('Y-m-d H:i:s') . "] $xml_obj \n", 3, $log_file);
+        error_log(print_r($xml_obj,true), 3, $log_file);
         
+        
+        $error_matches = $xml_obj->xpath("error");
+        
+        error_log(print_r($error_matches,true), 3, $log_file);
+
+        if (isset($error_matches[0]) && !empty((string)$error_matches[0])) {
+            throw new Exception("SINUBE devolvió un error: " . (string)$error_matches[0]);
+        }
+
         $xml_matches = $xml_obj->xpath("/Respuesta/xml");
         $pdf_matches = $xml_obj->xpath("/Respuesta/pdf");
         $uuid_matches = $xml_obj->xpath("/Respuesta/UUID");
         
         $link_xml = isset($xml_matches[0]) ? (string)$xml_matches[0] : '';
         $link_pdf = isset($pdf_matches[0]) ? (string)$pdf_matches[0] : '';
-        $uuid     = isset($uuid_matches[0]) ? (string)$uuid_matches[0] : 'Pendiente';
+        $uuid     = isset($uuid_matches[0]) ? (string)$uuid_matches[0] : '';
+        
+        if (empty($uuid)) {
+            throw new Exception("La respuesta fue exitosa pero no incluye UUID válido.");
+        }
      
     } catch (Throwable $e) {
         error_log("[" . date('Y-m-d H:i:s') . "] Error extracción links: " . $e->getMessage() . "\n", 3, $log_file);
-        echo json_encode(['success' => false, 'message' => "Error al procesar respuesta de Facturanube: " . $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => "Error al procesar respuesta de SINUBE: " . $e->getMessage()]);
         exit;
     }
 
@@ -185,7 +254,7 @@ if ($http_code_envio == 200) {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Factura procesada correctamente en Facturanube.',
+        'message' => 'Factura procesada correctamente en SINUBE.',
         'db_message' => $db_message,
         'data' => [
             'serie' => $serie,
@@ -197,11 +266,11 @@ if ($http_code_envio == 200) {
         ]
     ]);
 } else {
-    $error_msg = "[" . date('Y-m-d H:i:s') . "] Error envío Facturanube. Code: $http_code_envio, Msg: $curl_error_envio, Response: $response_envio\n";
+    $error_msg = "[" . date('Y-m-d H:i:s') . "] Error envío SINUBE. Code: $http_code_envio, Msg: $curl_error_envio, Response: $response_envio\n";
     error_log($error_msg, 3, $log_file);
     echo json_encode([
         'success' => false,
-        'message' => 'Error al enviar XML a Facturanube.',
+        'message' => 'Error al enviar XML a SINUBE.',
         'details' => $response_envio
     ]);
 }
