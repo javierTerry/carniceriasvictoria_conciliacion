@@ -157,7 +157,7 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12">Forma de pago:
+            <div class="col-xs-12" id="ticket_payment_info" data-fcode="<?php echo $sale['fcode']; ?>">Forma de pago:
                 <?php echo "{$sale['fcode']} - {$sale['fname']}"; ?>
             </div>
         </div>

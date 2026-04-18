@@ -14,6 +14,7 @@ $mov_id = $_POST['mov_id'] ?? '';
 $monto = $_POST['monto'] ?? 0;
 $metodo_pago = $_POST['metodo_pago'] ?? '';
 $branch = $_POST['branch'] ?? '';
+$forma_pago = $_POST['forma_pago'] ?? '03'; // Default to 03 if not provided
 
 if (empty($mov_id) || empty($branch)) {
     // For now, don't exit since vtapendente.js might not be sending it yet, but it should.
@@ -48,7 +49,7 @@ $log_file = $log_dir . "/factura_error.log";
 // ---------------------------------------------------------
 // PASO 1: Obtener Certificado (Folio y Serie)
 // ---------------------------------------------------------
-$url_cert = "http://ep-dot-SINUBE.appspot.com/blob?par=dGlwbz0xMQplbXA9VVJFMTgwNDI5VE02LTM5CnN1Yz1NYXRyaXoKdXN1PWF0ZW5jaW9uc29sdWNpb25lc3J5akBnbWFpbC5jb20KcHdkPXByb3ZlZWRvcmVzCnNpcz1PQlJBRE9SQ0FSTklDRVJJQQ==";
+$url_cert = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0xMQplbXA9VVJFMTgwNDI5VE02LTM5CnN1Yz1NYXRyaXoKdXN1PWF0ZW5jaW9uc29sdWNpb25lc3J5akBnbWFpbC5jb20KcHdkPXByb3ZlZWRvcmVzCnNpcz1PQlJBRE9SQ0FSTklDRVJJQQ==";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url_cert);
@@ -158,7 +159,7 @@ $xml_payload = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
 <Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
     permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-{$mov_id}-{$serie}-{$folio}" noCertificado="30001000000500003441" serie="{$serie}" folio="{$folio}"  
-    formaDePago="03" condicionesDePago="CONTADO" fechaPagoProbable="{$msTime}" metodoDePago="PUE" subtotal="{$subtotalGlobal}" descuento="0" porcentajeIVA="{$porcentajeIVA}" montoIVA="0" 
+    formaDePago="{$forma_pago}" condicionesDePago="CONTADO" fechaPagoProbable="{$msTime}" metodoDePago="PUE" subtotal="{$subtotalGlobal}" descuento="0" porcentajeIVA="{$porcentajeIVA}" montoIVA="0" 
     total="{$totalGlobal}" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
    <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$usoCFDI}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}"/>
    <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
@@ -167,7 +168,7 @@ $xml_payload = <<<XML
 </Comprobante>
 XML;
 
-$url_envio = "http://ep-dot-SINUBE.appspot.com/blob?par=dGlwbz00CmVtcD1VUkUxODA0MjlUTTYtMzkKc3VjPU1hdHJpegp1c3U9YXRlbmNpb25zb2x1Y2lvbmVzcnlqQGdtYWlsLmNvbQpwd2Q9cHJvdmVlZG9yZXM=";
+$url_envio = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz00CmVtcD1VUkUxODA0MjlUTTYtMzkKc3VjPU1hdHJpegp1c3U9YXRlbmNpb25zb2x1Y2lvbmVzcnlqQGdtYWlsLmNvbQpwd2Q9cHJvdmVlZG9yZXM=";
 
 // Guardar payload en el log para visualización
 error_log("[" . date('Y-m-d H:i:s') . "] XML GENERADO (Folio: $folio, MovID: $mov_id):\n$xml_payload\n-----------------------\n", 3, $log_file);

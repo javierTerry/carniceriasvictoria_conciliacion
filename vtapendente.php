@@ -105,10 +105,10 @@ $branch = $_GET['branch'] ?? '';
                                                     <select class="form-control select-victoria" id="fpay_selector">
                                                         <option value="">-- Seleccionar --</option>
                                                         <?php
-                                                        $sql_fpay = "SELECT id, name FROM fpago WHERE is_active = 1 ORDER BY name";
+                                                        $sql_fpay = "SELECT id, name, code FROM fpago WHERE is_active = 1 ORDER BY name";
                                                         $res_fpay = mysqli_query($conexion, $sql_fpay);
                                                         while ($fpay = mysqli_fetch_array($res_fpay, MYSQLI_ASSOC)) {
-                                                            echo "<option value='{$fpay['id']}' data-name='{$fpay['name']}'>{$fpay['name']}</option>";
+                                                            echo "<option value='{$fpay['id']}' data-name='{$fpay['name']}' data-code='{$fpay['code']}'>{$fpay['name']}</option>";
                                                         }
                                                         ?>
                                                     </select>

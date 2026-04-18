@@ -7,6 +7,7 @@ $(document).ready(function () {
     let managedItems = {};
     // Pool of available items from the ticket
     let availableItems = [];
+    let currentTicketFcode = '03'; // Default to Trasferencia or similar
 
     if (mov_id && branch) {
         viewTicketHTML(mov_id, branch);
@@ -34,6 +35,7 @@ $(document).ready(function () {
         const fpay_selector = $('#fpay_selector');
         const fpay_id = fpay_selector.val();
         const fpay_name = $('#fpay_selector option:selected').data('name');
+        const fpay_code = $('#fpay_selector option:selected').data('code') || '03';
         const amountInput = $('#manual_amount');
         let amountToSection = parseNum(amountInput.val());
         const ticketTotal = parseNum($('#global_ticket_total').val());
@@ -129,7 +131,7 @@ $(document).ready(function () {
 
         // Add the calculated selections to the managed items structure
         selections.forEach(sel => {
-            addItemToManagement(fpay_id, fpay_name, sel);
+            addItemToManagement(fpay_id, fpay_name, fpay_code, sel);
         });
 
         amountInput.val('');
@@ -149,10 +151,11 @@ $(document).ready(function () {
         });
     });
 
-    function addItemToManagement(fpay_id, fpay_name, item) {
+    function addItemToManagement(fpay_id, fpay_name, fpay_code, item) {
         if (!managedItems[fpay_id]) {
             managedItems[fpay_id] = {
                 name: fpay_name,
+                code: fpay_code,
                 items: []
             };
         }
@@ -315,6 +318,7 @@ $(document).ready(function () {
                     branch: branch,
                     monto: subtotal,
                     metodo_pago: group.name,
+                    forma_pago: group.code || '03',
                     items: itemsPayload
                 });
             }
@@ -407,7 +411,7 @@ $(document).ready(function () {
                         icon: 'success',
                         confirmButtonColor: '#34495e'
                     }).then(() => {
-                        window.location.href = `vtaqry.php?branch=${branch}&status=3`;
+                        window.location.href = `facturasqry.php?branch=${branch}`;
                     });
                 } else {
                     Swal.fire({
@@ -508,6 +512,13 @@ $(document).ready(function () {
                         }
                     });
                     console.log("Ticket items loaded into pool:", availableItems.length);
+                    
+                    // Capture fcode from HTML
+                    const fcodeInfo = $("#ticket_payment_info");
+                    if (fcodeInfo.length > 0) {
+                        currentTicketFcode = fcodeInfo.data("fcode") || '03';
+                        console.log("Captured fcode:", currentTicketFcode);
+                    }
                 } catch(e) {
                     console.error("Error parsing ticket items from DOM:", e);
                 }

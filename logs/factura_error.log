@@ -531,3 +531,239 @@ Array
 
 )
 [2026-04-17 23:49:37] Error extracción links: Facturanube devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 10null, Err: Falta el atrubuto Comprobante.Receptor.usoCFDI[Ljava.lang.StackTraceElement;@ef134af
+[2026-04-18 00:12:30] Error cURL obteniendo certificado. Code: 404, Msg: 
+[2026-04-18 00:12:41] Error cURL obteniendo certificado. Code: 404, Msg: 
+[2026-04-18 00:12:47] Error cURL obteniendo certificado. Code: 404, Msg: 
+[2026-04-18 00:13:58] Error cURL obteniendo certificado. Code: 404, Msg: 
+[2026-04-18 00:15:42] Error cURL obteniendo certificado. Code: 404, Msg: 
+[2026-04-18 00:16:51] XML GENERADO (Folio: 53, MovID: 195301):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195301-F-53" noCertificado="30001000000500003441" serie="F" folio="53"  
+    formaDePago="03" condicionesDePago="CONTADO" fechaPagoProbable="1776493011437" metodoDePago="PUE" subtotal="28632.4" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="28632.4" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="156.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="73" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="11417.2" montoIVA="0" importe="11417.2" subtotalDet="11417.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PULPA O BISTECK DE CERDO" cantidad="318.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="17215.2" montoIVA="0" importe="17215.2" subtotalDet="17215.2" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:16:51] Error envío SINUBE. Code: 404, Msg: , Response: 
+<html><head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<title>404 Page not found</title>
+</head>
+<body text=#000000 bgcolor=#ffffff>
+<h1>Error: Page not found</h1>
+<h2>The requested URL was not found on this server.</h2>
+<h2></h2>
+</body></html>
+
+[2026-04-18 00:17:24] XML GENERADO (Folio: 53, MovID: 195301):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195301-F-53" noCertificado="30001000000500003441" serie="F" folio="53"  
+    formaDePago="03" condicionesDePago="CONTADO" fechaPagoProbable="1776493044720" metodoDePago="PUE" subtotal="28632.4" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="28632.4" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="156.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="73" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="11417.2" montoIVA="0" importe="11417.2" subtotalDet="11417.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PULPA O BISTECK DE CERDO" cantidad="318.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="17215.2" montoIVA="0" importe="17215.2" subtotalDet="17215.2" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:17:27] Éxito envío SINUBE (Folio: 53, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NTMKbm9tYXJjaGl2bz1UQ0stMTk1MzAxLUYtNTMKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTUzCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NTMKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1MzAxLUYtNTMK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 5959d04d-f81d-42b2-a3de-df93a245cd9d
+    [folio] => 53
+    [serie] => F
+    [fechaFactura] => 2026-04-18T00:16:26
+)
+Array
+(
+)
+[2026-04-18 00:48:01] XML GENERADO (Folio: 54, MovID: 195300):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195300-F-54" noCertificado="30001000000500003441" serie="F" folio="54"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776494881011" metodoDePago="PUE" subtotal="1179.2" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="1179.2" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal1="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="5.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="78" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="452.4" montoIVA="0" importe="452.4" subtotalDet="452.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CUERO CON BARRIGA" cantidad="4.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="56" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="235.2" montoIVA="0" importe="235.2" subtotalDet="235.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ESPINAZO" cantidad="3.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="60" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="192" montoIVA="0" importe="192" subtotalDet="192" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BUCHE" cantidad="2.6" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="70" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="182" montoIVA="0" importe="182" subtotalDet="182" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CODILLO" cantidad="2.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="42" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="117.6" montoIVA="0" importe="117.6" subtotalDet="117.6" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:48:01] Éxito envío SINUBE (Folio: 54, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. El campo codigoPostal del cliente es requerido para CFDI 4.0[Ljava.lang.StackTraceElement;@3170e61b
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. El campo codigoPostal del cliente es requerido para CFDI 4.0[Ljava.lang.StackTraceElement;@3170e61b
+        )
+
+)
+[2026-04-18 00:48:01] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. El campo codigoPostal del cliente es requerido para CFDI 4.0[Ljava.lang.StackTraceElement;@3170e61b
+[2026-04-18 00:48:50] XML GENERADO (Folio: 54, MovID: 195300):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195300-F-54" noCertificado="30001000000500003441" serie="F" folio="54"  
+    formaDePago="04" condicionesDePago="CONTADO" fechaPagoProbable="1776494930122" metodoDePago="PUE" subtotal="1179.2" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="1179.2" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal1="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="5.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="78" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="452.4" montoIVA="0" importe="452.4" subtotalDet="452.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CUERO CON BARRIGA" cantidad="4.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="56" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="235.2" montoIVA="0" importe="235.2" subtotalDet="235.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ESPINAZO" cantidad="3.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="60" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="192" montoIVA="0" importe="192" subtotalDet="192" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BUCHE" cantidad="2.6" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="70" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="182" montoIVA="0" importe="182" subtotalDet="182" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CODILLO" cantidad="2.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="42" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="117.6" montoIVA="0" importe="117.6" subtotalDet="117.6" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:48:50] Éxito envío SINUBE (Folio: 54, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. El campo codigoPostal del cliente es requerido para CFDI 4.0[Ljava.lang.StackTraceElement;@24d3ff1b
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. El campo codigoPostal del cliente es requerido para CFDI 4.0[Ljava.lang.StackTraceElement;@24d3ff1b
+        )
+
+)
+[2026-04-18 00:48:50] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. El campo codigoPostal del cliente es requerido para CFDI 4.0[Ljava.lang.StackTraceElement;@24d3ff1b
+[2026-04-18 00:53:20] XML GENERADO (Folio: 54, MovID: 195300):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195300-F-54" noCertificado="30001000000500003441" serie="F" folio="54"  
+    formaDePago="04" condicionesDePago="CONTADO" fechaPagoProbable="1776495200034" metodoDePago="PUE" subtotal="1179.2" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="1179.2" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA 1" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="5.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="78" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="452.4" montoIVA="0" importe="452.4" subtotalDet="452.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CUERO CON BARRIGA" cantidad="4.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="56" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="235.2" montoIVA="0" importe="235.2" subtotalDet="235.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ESPINAZO" cantidad="3.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="60" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="192" montoIVA="0" importe="192" subtotalDet="192" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BUCHE" cantidad="2.6" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="70" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="182" montoIVA="0" importe="182" subtotalDet="182" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CODILLO" cantidad="2.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="42" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="117.6" montoIVA="0" importe="117.6" subtotalDet="117.6" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:53:23] Éxito envío SINUBE (Folio: 54, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@1f4ef1bf
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@1f4ef1bf
+        )
+
+)
+[2026-04-18 00:53:23] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@1f4ef1bf
+[2026-04-18 00:55:05] XML GENERADO (Folio: 55, MovID: 195300):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195300-F-55" noCertificado="30001000000500003441" serie="F" folio="55"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776495305607" metodoDePago="PUE" subtotal="1000" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="1000" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA 1" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="5.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="78" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="452.4" montoIVA="0" importe="452.4" subtotalDet="452.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CUERO CON BARRIGA" cantidad="4.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="56" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="235.2" montoIVA="0" importe="235.2" subtotalDet="235.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ESPINAZO" cantidad="3.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="60" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="192" montoIVA="0" importe="192" subtotalDet="192" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BUCHE" cantidad="1.72" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="70" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="120.4" montoIVA="0" importe="120.4" subtotalDet="120.4" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:55:08] Éxito envío SINUBE (Folio: 55, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@af0a9df
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@af0a9df
+        )
+
+)
+[2026-04-18 00:55:08] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@af0a9df
+[2026-04-18 00:55:08] XML GENERADO (Folio: 56, MovID: 195300):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195300-F-56" noCertificado="30001000000500003441" serie="F" folio="56"  
+    formaDePago="04" condicionesDePago="CONTADO" fechaPagoProbable="1776495308675" metodoDePago="PUE" subtotal="179.2" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="179.2" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA 1" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BUCHE" cantidad="0.88" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="70" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="61.6" montoIVA="0" importe="61.6" subtotalDet="61.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CODILLO" cantidad="2.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="42" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="117.6" montoIVA="0" importe="117.6" subtotalDet="117.6" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:55:10] Éxito envío SINUBE (Folio: 56, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@1935cd0a
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@1935cd0a
+        )
+
+)
+[2026-04-18 00:55:10] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al timbrar el XML2. CFDI40145 - El campo Nombre del receptor, debe pertenecer al nombre asociado al RFC registrado en el campo Rfc del Receptor. - [REST/error] [TimbFPendiente][Ljava.lang.StackTraceElement;@1935cd0a
+[2026-04-18 00:55:53] XML GENERADO (Folio: 57, MovID: 195300):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195300-F-57" noCertificado="30001000000500003441" serie="F" folio="57"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776495353725" metodoDePago="PUE" subtotal="1000" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="1000" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="5.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="78" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="452.4" montoIVA="0" importe="452.4" subtotalDet="452.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CUERO CON BARRIGA" cantidad="4.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="56" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="235.2" montoIVA="0" importe="235.2" subtotalDet="235.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ESPINAZO" cantidad="3.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="60" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="192" montoIVA="0" importe="192" subtotalDet="192" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BUCHE" cantidad="1.72" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="70" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="120.4" montoIVA="0" importe="120.4" subtotalDet="120.4" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:55:56] Éxito envío SINUBE (Folio: 57, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NTcKbm9tYXJjaGl2bz1UQ0stMTk1MzAwLUYtNTcKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTU3CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NTcKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1MzAwLUYtNTcK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => c973251f-32ea-454a-8ac4-04d80832b5c3
+    [folio] => 57
+    [serie] => F
+    [fechaFactura] => 2026-04-18T00:54:55
+)
+Array
+(
+)
+[2026-04-18 00:55:56] XML GENERADO (Folio: 58, MovID: 195300):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195300-F-58" noCertificado="30001000000500003441" serie="F" folio="58"  
+    formaDePago="04" condicionesDePago="CONTADO" fechaPagoProbable="1776495356698" metodoDePago="PUE" subtotal="179.2" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="179.2" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BUCHE" cantidad="0.88" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="70" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="61.6" montoIVA="0" importe="61.6" subtotalDet="61.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CODILLO" cantidad="2.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="42" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="117.6" montoIVA="0" importe="117.6" subtotalDet="117.6" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 00:55:59] Éxito envío SINUBE (Folio: 58, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NTgKbm9tYXJjaGl2bz1UQ0stMTk1MzAwLUYtNTgKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTU4CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NTgKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1MzAwLUYtNTgK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 94f683e5-38f2-421d-b269-31826221d36b
+    [folio] => 58
+    [serie] => F
+    [fechaFactura] => 2026-04-18T00:54:58
+)
+Array
+(
+)
