@@ -137,6 +137,8 @@ foreach ($ticket_items as $item) {
     $desc = htmlspecialchars($item['name'] ?? 'Producto General', ENT_XML1, 'UTF-8');
     $qty = (float)($item['qty'] ?? 1);
     if ($qty <= 0) $qty = 1;
+
+    $qty = round($qty, 4); 
     
     $totalItem = (float)($item['amount'] ?? 0); // Valor Bruto del ticket (ya incluye IVA)
     $priceItem = (float)($item['price'] ?? 0);  // Precio Bruto del ticket
@@ -230,12 +232,15 @@ if ($http_code_envio == 200) {
         exit;
     }
 
+
+    error_log(print_r(" Se inicia insert",true), 3, $log_file);
     // Intentar guardar en base de datos si tenemos la conexión
     $db_message = 'No se guardó en BD (Faltan parámetros de sucursal o mov_id)';
     if ($branchConn && !empty($mov_id)) {
         $sql = "INSERT INTO facturas (mov_id, uuid, monto, metodo_pago, usuario_id, serie, folio, xml_url, pdf_url, estatus, estado) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'Activa')";
         $stmt = mysqli_prepare($branchConn, $sql);
+        error_log(__FILE__."-".__LINE__, 3, $log_file);
         if ($stmt) {
             mysqli_stmt_bind_param($stmt, "ssdssssss", $mov_id, $uuid, $monto, $metodo_pago, $user_id, $serie, $folio, $link_xml, $link_pdf);
             if (mysqli_stmt_execute($stmt)) {
@@ -246,12 +251,16 @@ if ($http_code_envio == 200) {
             }
             mysqli_stmt_close($stmt);
         } else {
+            error_log(__FILE__."-".__LINE__, 3, $log_file);
             $db_message = 'Error al preparar la consulta de facturas';
         }
         mysqli_close($branchConn);
     } else if ($db_error) {
+        error_log(__FILE__."-".__LINE__, 3, $log_file);
         $db_message = $db_error;
     }
+
+    error_log(__FILE__."-".__LINE__, 3, $log_file);
 
     echo json_encode([
         'success' => true,

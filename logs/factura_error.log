@@ -767,3 +767,420 @@ SimpleXMLElement Object
 Array
 (
 )
+[2026-04-18 01:49:38] XML GENERADO (Folio: 59, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-59" noCertificado="30001000000500003441" serie="F" folio="59"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776498578318" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 01:49:44] Éxito envío SINUBE (Folio: 59, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NTkKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNTkKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTU5CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NTkKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNTkK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 3a032d6e-3a9c-4d6e-9fc4-896f8ce7fa0d
+    [folio] => 59
+    [serie] => F
+    [fechaFactura] => 2026-04-18T01:48:40
+)
+Array
+(
+)
+[2026-04-18 01:51:08] XML GENERADO (Folio: 60, MovID: 195297):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195297-F-60" noCertificado="30001000000500003441" serie="F" folio="60"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776498668431" metodoDePago="PUE" subtotal="865" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="865" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="5" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="78" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="390" montoIVA="0" importe="390" subtotalDet="390" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="papa ondulada" cantidad="12.5" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="38" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="475" montoIVA="0" importe="475" subtotalDet="475" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 01:51:12] Éxito envío SINUBE (Folio: 60, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjAKbm9tYXJjaGl2bz1UQ0stMTk1Mjk3LUYtNjAKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTYwCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjAKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1Mjk3LUYtNjAK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 83717ea1-31f2-4473-9ba2-891e868cd5e5
+    [folio] => 60
+    [serie] => F
+    [fechaFactura] => 2026-04-18T01:50:10
+)
+Array
+(
+)
+[2026-04-18 01:51:33] XML GENERADO (Folio: 61, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-61" noCertificado="30001000000500003441" serie="F" folio="61"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776498693109" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 01:51:36] Éxito envío SINUBE (Folio: 61, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjEKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjEKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTYxCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjEKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjEK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 204cf2c5-9d62-4b5f-ac03-b69bb1db2309
+    [folio] => 61
+    [serie] => F
+    [fechaFactura] => 2026-04-18T01:50:34
+)
+Array
+(
+)
+[2026-04-18 01:56:39] XML GENERADO (Folio: 62, MovID: 393682):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-393682-F-62" noCertificado="30001000000500003441" serie="F" folio="62"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776498999098" metodoDePago="PUE" subtotal="97.06" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="97.06" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PAPA 3/8" cantidad="2.0220833333333" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="48" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="97.06" montoIVA="0" importe="97.06" subtotalDet="97.06" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 01:56:39] Éxito envío SINUBE (Folio: 62, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 24-1null, Err: El atributo Comprobante.Conceptos.Concepto.cantidad acepta hasta 4 decimales[Ljava.lang.StackTraceElement;@43095f4
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 24-1null, Err: El atributo Comprobante.Conceptos.Concepto.cantidad acepta hasta 4 decimales[Ljava.lang.StackTraceElement;@43095f4
+        )
+
+)
+[2026-04-18 01:56:39] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 24-1null, Err: El atributo Comprobante.Conceptos.Concepto.cantidad acepta hasta 4 decimales[Ljava.lang.StackTraceElement;@43095f4
+[2026-04-18 02:00:32] XML GENERADO (Folio: 62, MovID: 393682):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-393682-F-62" noCertificado="30001000000500003441" serie="F" folio="62"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776499232942" metodoDePago="PUE" subtotal="97.06" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="97.06" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PAPA 3/8" cantidad="2.0221" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="48" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="97.06" montoIVA="0" importe="97.06" subtotalDet="97.06" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 02:00:36] Éxito envío SINUBE (Folio: 62, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjIKbm9tYXJjaGl2bz1UQ0stMzkzNjgyLUYtNjIKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTYyCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjIKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMzkzNjgyLUYtNjIK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 86c65ee8-6ddb-4a57-b3f6-c1fb18951288
+    [folio] => 62
+    [serie] => F
+    [fechaFactura] => 2026-04-18T01:59:34
+)
+Array
+(
+)
+[2026-04-18 02:04:39] XML GENERADO (Folio: 63, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-63" noCertificado="30001000000500003441" serie="F" folio="63"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776499479989" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 02:04:43] Éxito envío SINUBE (Folio: 63, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjMKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjMKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTYzCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjMKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjMK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 3212a78c-014a-4fd3-b891-43adfd80aab6
+    [folio] => 63
+    [serie] => F
+    [fechaFactura] => 2026-04-18T02:03:41
+)
+Array
+(
+)
+[2026-04-18 02:13:22] XML GENERADO (Folio: 64, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-64" noCertificado="30001000000500003441" serie="F" folio="64"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776500002897" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 02:13:25] Éxito envío SINUBE (Folio: 64, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjQKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjQKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTY0CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjQKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjQK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => d22a9116-3dc9-46e2-be78-751394dfb0d9
+    [folio] => 64
+    [serie] => F
+    [fechaFactura] => 2026-04-18T02:12:24
+)
+Array
+(
+)
+ Se inicia insert[2026-04-18 02:15:16] XML GENERADO (Folio: 65, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-65" noCertificado="30001000000500003441" serie="F" folio="65"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776500116539" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 02:15:19] Éxito envío SINUBE (Folio: 65, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjUKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjUKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTY1CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjUKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjUK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 5117949f-12e3-437a-aa0a-d542478b7fd0
+    [folio] => 65
+    [serie] => F
+    [fechaFactura] => 2026-04-18T02:14:18
+)
+Array
+(
+)
+ Se inicia insert[2026-04-18 02:17:01] XML GENERADO (Folio: 66, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-66" noCertificado="30001000000500003441" serie="F" folio="66"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776500221297" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 02:17:04] Éxito envío SINUBE (Folio: 66, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjYKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjYKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTY2CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjYKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjYK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 561c89e5-c248-4f25-b729-871fb0d2758e
+    [folio] => 66
+    [serie] => F
+    [fechaFactura] => 2026-04-18T02:16:02
+)
+Array
+(
+)
+ Se inicia insert[2026-04-18 02:17:31] XML GENERADO (Folio: 67, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-67" noCertificado="30001000000500003441" serie="F" folio="67"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776500251506" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 02:17:34] Éxito envío SINUBE (Folio: 67, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjcKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjcKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTY3CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjcKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjcK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 769b0031-63e3-4884-bce7-8162fed860c8
+    [folio] => 67
+    [serie] => F
+    [fechaFactura] => 2026-04-18T02:16:32
+)
+Array
+(
+)
+ Se inicia insert[2026-04-18 19:22:35] XML GENERADO (Folio: 68, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-68" noCertificado="30001000000500003441" serie="F" folio="68"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776561755340" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 19:22:42] Éxito envío SINUBE (Folio: 68, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjgKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjgKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTY4CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjgKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjgK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 5ad72a0d-6022-4653-9039-b9b72a6f79f6
+    [folio] => 68
+    [serie] => F
+    [fechaFactura] => 2026-04-18T19:21:37
+)
+Array
+(
+)
+ Se inicia insert[2026-04-18 19:23:20] XML GENERADO (Folio: 69, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-69" noCertificado="30001000000500003441" serie="F" folio="69"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776561800726" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 19:23:24] Éxito envío SINUBE (Folio: 69, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NjkKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNjkKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTY5CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NjkKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNjkK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => facbda33-6087-49b4-9c60-37ec82a05eb1
+    [folio] => 69
+    [serie] => F
+    [fechaFactura] => 2026-04-18T19:22:22
+)
+Array
+(
+)
+ Se inicia insert[2026-04-18 19:28:20] XML GENERADO (Folio: 70, MovID: 195295):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195295-F-70" noCertificado="30001000000500003441" serie="F" folio="70"  
+    formaDePago="99" condicionesDePago="CONTADO" fechaPagoProbable="1776562100258" metodoDePago="PUE" subtotal="204" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="204" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="MORONGA" cantidad="10.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="20" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="204" montoIVA="0" importe="204" subtotalDet="204" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 19:28:22] Éxito envío SINUBE (Folio: 70, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. Para CFDI 3.3 cuando método de pago es 'PUE' la forma de pago debe ser diferente de '99' - Validaciones[Ljava.lang.StackTraceElement;@5fc39db5
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. Para CFDI 3.3 cuando método de pago es 'PUE' la forma de pago debe ser diferente de '99' - Validaciones[Ljava.lang.StackTraceElement;@5fc39db5
+        )
+
+)
+[2026-04-18 19:28:22] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. Para CFDI 3.3 cuando método de pago es 'PUE' la forma de pago debe ser diferente de '99' - Validaciones[Ljava.lang.StackTraceElement;@5fc39db5
+[2026-04-18 19:28:53] XML GENERADO (Folio: 70, MovID: 195295):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195295-F-70" noCertificado="30001000000500003441" serie="F" folio="70"  
+    formaDePago="28" condicionesDePago="CONTADO" fechaPagoProbable="1776562133327" metodoDePago="PUE" subtotal="204" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="204" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="MORONGA" cantidad="10.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="20" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="204" montoIVA="0" importe="204" subtotalDet="204" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 19:28:56] Éxito envío SINUBE (Folio: 70, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NzAKbm9tYXJjaGl2bz1UQ0stMTk1Mjk1LUYtNzAKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTcwCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NzAKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1Mjk1LUYtNzAK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 1fbef5c1-0ec3-458b-af1c-0ceb6a5ab678
+    [folio] => 70
+    [serie] => F
+    [fechaFactura] => 2026-04-18T19:27:54
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-243/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-263[2026-04-18 19:29:22] XML GENERADO (Folio: 71, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-71" noCertificado="30001000000500003441" serie="F" folio="71"  
+    formaDePago="04" condicionesDePago="CONTADO" fechaPagoProbable="1776562162307" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 19:29:25] Éxito envío SINUBE (Folio: 71, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NzEKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNzEKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTcxCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NzEKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNzEK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => cfbbefbf-6c66-4b14-a8c9-5d8988faccb8
+    [folio] => 71
+    [serie] => F
+    [fechaFactura] => 2026-04-18T19:28:23
+)
+Array
+(
+)
+ Se inicia insert[2026-04-18 19:34:51] XML GENERADO (Folio: 72, MovID: 662591):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-662591-F-72" noCertificado="30001000000500003441" serie="F" folio="72"  
+    formaDePago="04" condicionesDePago="CONTADO" fechaPagoProbable="1776562491330" metodoDePago="PUE" subtotal="150" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="150" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="QUESO OAXACA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="75" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="150" montoIVA="0" importe="150" subtotalDet="150" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-18 19:34:54] Éxito envío SINUBE (Folio: 72, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NzIKbm9tYXJjaGl2bz1UQ0stNjYyNTkxLUYtNzIKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTcyCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NzIKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stNjYyNTkxLUYtNzIK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 07147552-2f73-4963-bafe-34b20a9423c4
+    [folio] => 72
+    [serie] => F
+    [fechaFactura] => 2026-04-18T19:33:52
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-243/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-263

@@ -114,7 +114,6 @@ if ($action == 'ajax') {
           <th>Fecha Factura</th>
           <th>Método Pago</th>
           <th class="text-right">Monto</th>
-          <th>Estatus</th>
           <th class="text-center">XML</th>
           <th class="text-center">PDF</th>
         </tr>
@@ -136,14 +135,6 @@ if ($action == 'ajax') {
             <td><?php echo $fecha_f; ?></td>
             <td><?php echo $r['metodo_pago']; ?></td>
             <td align="right" style="font-weight: bold; color: #26B99A;">$<?php echo number_format($r['monto'], 2); ?></td>
-            <td>
-                <?php if ($estado == 'Activa' || $estado == '1') { ?>
-                    <span class="badge badge-success">Activa</span>
-                <?php } else { ?>
-                    <span class="badge badge-danger"><?php echo $estado; ?></span>
-                <?php } ?>
-            </td>
-            
             <td class="text-center">
               <?php if (!empty($r['xml_url'])) { ?>
                   <a href="<?php echo htmlspecialchars($r['xml_url']); ?>" target="_blank" download title="Descargar XML">

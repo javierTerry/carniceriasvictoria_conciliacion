@@ -196,35 +196,39 @@ if ($action == 'ajax') {
               ?>
             </td>
             <td class="text-right">
-              <?php if ($status == 1 && $user_kind != 0 && $fecha_f == $hoy): ?>
-                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cancelar Venta'
-                  onclick="eliminar('<?php echo $r['id']; ?>')">
-                  <i class="glyphicon glyphicon-trash"></i>
+              <?php if ($status == 1): ?>
+                <?php if ($user_kind != 0 && $fecha_f == $hoy): ?>
+                  <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cancelar Venta'
+                    onclick="eliminar('<?php echo $r['id']; ?>')">
+                    <i class="glyphicon glyphicon-trash"></i>
+                  </button>
+                <?php endif; ?>
+                
+                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cambiar Estatus'
+                  onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
+                  <i class="glyphicon glyphicon-retweet"></i>
+                </button>
+
+                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
+                  onclick="printTicket('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
+                  <i class="glyphicon glyphicon-print"></i>
+                </button>
+                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
+                  onclick="viewTicketHTML('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
+                  <i class="glyphicon glyphicon-list-alt"></i>
                 </button>
               <?php endif; ?>
-              
-              <?php if ($status == 1): ?>
-              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cambiar Estatus'
-                onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
-                <i class="glyphicon glyphicon-retweet"></i>
-              </button>
-              <?php endif; ?>
 
-              <?php if ($status == 2): ?>
-              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Gestionar Acción Ticket'
-                onclick="window.location.href='vtapendente.php?mov_id=<?php echo $r['mov_id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
-                <i class="glyphicon glyphicon-cog"></i>
-              </button>
+              <?php if ($status == 2 && $status_filter == '2'): ?>
+                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Gestionar Acción Ticket'
+                  onclick="window.location.href='vtapendente.php?mov_id=<?php echo $r['mov_id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
+                  <i class="glyphicon glyphicon-cog"></i>
+                </button>
+                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
+                  onclick="viewTicketHTML('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
+                  <i class="glyphicon glyphicon-list-alt"></i>
+                </button>
               <?php endif; ?>
-
-              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
-                onclick="printTicket('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
-                <i class="glyphicon glyphicon-print"></i>
-              </button>
-              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
-                onclick="viewTicketHTML('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
-                <i class="glyphicon glyphicon-list-alt"></i>
-              </button>
             </td>
           </tr>
         <?php endforeach; ?>
