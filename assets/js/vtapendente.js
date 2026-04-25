@@ -3,8 +3,9 @@ $(document).ready(function () {
     const mov_id = urlParams.get('mov_id') || urlParams.get('id');
     const branch = urlParams.get('branch');
     
-    // Store items per payment method
+    // Store items per section (unique key)
     let managedItems = {};
+    let sectionCounter = 0;
     // Pool of available items from the ticket
     let availableItems = [];
     let currentTicketFcode = '03'; // Default to Trasferencia or similar
@@ -129,9 +130,13 @@ $(document).ready(function () {
             return;
         }
 
+        // Generate a unique section ID for this "Agregar" action
+        sectionCounter++;
+        const section_id = `section_${sectionCounter}`;
+
         // Add the calculated selections to the managed items structure
         selections.forEach(sel => {
-            addItemToManagement(forma_pago_id, forma_pago_name, forma_pago_code, sel);
+            addItemToManagement(section_id, forma_pago_id, forma_pago_name, forma_pago_code, sel);
         });
 
         amountInput.val('');
@@ -151,9 +156,10 @@ $(document).ready(function () {
         });
     });
 
-    function addItemToManagement(forma_pago_id, forma_pago_name, forma_pago_code, item) {
-        if (!managedItems[forma_pago_id]) {
-            managedItems[forma_pago_id] = {
+    function addItemToManagement(section_id, forma_pago_id, forma_pago_name, forma_pago_code, item) {
+        if (!managedItems[section_id]) {
+            managedItems[section_id] = {
+                forma_pago_id: forma_pago_id,
                 name: forma_pago_name,
                 code: forma_pago_code,
                 metodo_pago_cfdi: 'PUE', // Default
@@ -161,17 +167,17 @@ $(document).ready(function () {
                 items: []
             };
         }
-        managedItems[forma_pago_id].items.push(item);
+        managedItems[section_id].items.push(item);
     }
 
     function renderManagementTables() {
         $('#empty_management_msg').hide();
         let html = '';
         let totalAccumulated = 0;
-        const sortedKeys = Object.keys(managedItems).sort();
+        const sortedKeys = Object.keys(managedItems);
         
-        sortedKeys.forEach(forma_pago_id => {
-            const group = managedItems[forma_pago_id];
+        sortedKeys.forEach(section_id => {
+            const group = managedItems[section_id];
             let subtotal = 0;
             
             html += `
@@ -181,7 +187,7 @@ $(document).ready(function () {
                         <span style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; color: #73879C;">
                             <i class="fa fa-credit-card" style="color: #26B99A; margin-right: 5px;"></i> ${group.name}
                         </span>
-                        <button class="btn btn-link btn-xs" style="color: #d9534f; text-decoration: none; padding: 0; font-size: 10px; height: auto;" onclick="removeTable('${forma_pago_id}')" title="Eliminar Sección">
+                        <button class="btn btn-link btn-xs" style="color: #d9534f; text-decoration: none; padding: 0; font-size: 10px; height: auto;" onclick="removeTable('${section_id}')" title="Eliminar Sección">
                             <i class="fa fa-trash"></i> Eliminar
                         </button>
                     </div>
@@ -189,14 +195,14 @@ $(document).ready(function () {
                     <div class="row" style="margin: 0; padding-top: 5px; border-top: 1px solid #eee;">
                         <div class="col-xs-6" style="padding-left: 0; padding-right: 5px;">
                             <label style="font-size: 9px; color: #999; margin-bottom: 2px;">MÉTODO PAGO (CFDI):</label>
-                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${forma_pago_id}', 'metodo_pago_cfdi', this.value)">
+                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${section_id}', 'metodo_pago_cfdi', this.value)">
                                 <option value="PUE" ${group.metodo_pago_cfdi === 'PUE' ? 'selected' : ''}>PUE - Una sola exhibición</option>
                                 <option value="PPD" ${group.metodo_pago_cfdi === 'PPD' ? 'selected' : ''}>PPD - Parcialidades</option>
                             </select>
                         </div>
                         <div class="col-xs-6" style="padding-right: 0; padding-left: 5px;">
                             <label style="font-size: 9px; color: #999; margin-bottom: 2px;">USO CFDI:</label>
-                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${forma_pago_id}', 'uso_cfdi', this.value)">
+                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${section_id}', 'uso_cfdi', this.value)">
                                 <option value="G01" ${group.uso_cfdi === 'G01' ? 'selected' : ''}>G01 - Adquisición de mercancías</option>
                                 <option value="G02" ${group.uso_cfdi === 'G02' ? 'selected' : ''}>G02 - Devoluciones, desc. o bonif.</option>
                                 <option value="G03" ${group.uso_cfdi === 'G03' ? 'selected' : ''}>G03 - Gastos en general</option>
@@ -241,7 +247,7 @@ $(document).ready(function () {
                     <td class="text-right" style="padding: 4px 10px; vertical-align: middle; color: #73879C;">$${item.price.toFixed(2)}</td>
                     <td class="text-right" style="padding: 4px 10px; vertical-align: middle; font-weight: 600; color: #34495e;">$${item.amount.toFixed(2)}</td>
                     <td class="text-center" style="padding: 4px 10px; vertical-align: middle;">
-                        <button class="btn btn-default btn-xs" style="border-radius: 50%; color: #d9534f; border-color: #f2dede; padding: 0 4px; font-size: 9px;" onclick="removeItem('${forma_pago_id}', ${index})" title="Quitar">
+                        <button class="btn btn-default btn-xs" style="border-radius: 50%; color: #d9534f; border-color: #f2dede; padding: 0 4px; font-size: 9px;" onclick="removeItem('${section_id}', ${index})" title="Quitar">
                             <i class="fa fa-times" style="font-size: 9px;"></i>
                         </button>
                     </td>
@@ -270,9 +276,9 @@ $(document).ready(function () {
         }
     }
 
-    window.updateGroupField = function(forma_pago_id, field, value) {
-        if (managedItems[forma_pago_id]) {
-            managedItems[forma_pago_id][field] = value;
+    window.updateGroupField = function(section_id, field, value) {
+        if (managedItems[section_id]) {
+            managedItems[section_id][field] = value;
         }
     };
 
@@ -340,8 +346,8 @@ $(document).ready(function () {
     function completeTicketAction() {
         // Collect all invoices to be generated from managedItems
         let invoices = [];
-        Object.keys(managedItems).forEach(forma_pago_id => {
-            let group = managedItems[forma_pago_id];
+        Object.keys(managedItems).forEach(section_id => {
+            let group = managedItems[section_id];
             let subtotal = 0;
             
             // Reconstruir el catálogo de conceptos dinámico para esta proporción de pago
@@ -477,22 +483,22 @@ $(document).ready(function () {
         });
     }
 
-    window.removeItem = function(forma_pago_id, index) {
-        const item = managedItems[forma_pago_id].items[index];
+    window.removeItem = function(section_id, index) {
+        const item = managedItems[section_id].items[index];
         // Return to pool so it can be re-allocated later
         if (item.originalIndex !== undefined && availableItems[item.originalIndex]) {
             availableItems[item.originalIndex].remainingAmount += parseNum(item.amount);
             availableItems[item.originalIndex].remainingQty += parseNum(item.qty);
         }
 
-        managedItems[forma_pago_id].items.splice(index, 1);
-        if (managedItems[forma_pago_id].items.length === 0) {
-            delete managedItems[forma_pago_id];
+        managedItems[section_id].items.splice(index, 1);
+        if (managedItems[section_id].items.length === 0) {
+            delete managedItems[section_id];
         }
         renderManagementTables();
     };
 
-    window.removeTable = function(forma_pago_id) {
+    window.removeTable = function(section_id) {
         Swal.fire({
             title: '¿Eliminar sección?',
             text: "Se devolverán los importes al saldo pendiente.",
@@ -505,13 +511,13 @@ $(document).ready(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 // Return all items in this table to pool
-                managedItems[forma_pago_id].items.forEach(item => {
+                managedItems[section_id].items.forEach(item => {
                     if (item.originalIndex !== undefined && availableItems[item.originalIndex]) {
                         availableItems[item.originalIndex].remainingAmount += parseNum(item.amount);
                         availableItems[item.originalIndex].remainingQty += parseNum(item.qty);
                     }
                 });
-                delete managedItems[forma_pago_id];
+                delete managedItems[section_id];
                 renderManagementTables();
             }
         });

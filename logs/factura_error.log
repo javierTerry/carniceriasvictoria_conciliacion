@@ -1313,4 +1313,108 @@ SimpleXMLElement Object
 Array
 (
 )
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265[2026-04-25 01:05:12] XML GENERADO (Folio: 83, MovID: 195288):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195288-F-83" noCertificado="30001000000500003441" serie="F" folio="83"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1777100712297" metodoDePago="PPD" subtotal="42665.7" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="42665.7" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G01" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="63.5778" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="3433.2" montoIVA="0" importe="3433.2" subtotalDet="3433.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ESPILOMO" cantidad="210.6" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="58" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="12214.8" montoIVA="0" importe="12214.8" subtotalDet="12214.8" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CABEZA" cantidad="59.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="23" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1375.4" montoIVA="0" importe="1375.4" subtotalDet="1375.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="MANITAS" cantidad="25.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="30" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="756" montoIVA="0" importe="756" subtotalDet="756" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="RABOS" cantidad="51" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="36" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1836" montoIVA="0" importe="1836" subtotalDet="1836" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="20.9" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1776.5" montoIVA="0" importe="1776.5" subtotalDet="1776.5" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="9.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="833" montoIVA="0" importe="833" subtotalDet="833" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="19.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1649" montoIVA="0" importe="1649" subtotalDet="1649" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="59.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="3207.6" montoIVA="0" importe="3207.6" subtotalDet="3207.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="23.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1972" montoIVA="0" importe="1972" subtotalDet="1972" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PIERNA TORTERA" cantidad="16.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="83" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1344.6" montoIVA="0" importe="1344.6" subtotalDet="1344.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PIERNA TORTERA" cantidad="6.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="83" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="564.4" montoIVA="0" importe="564.4" subtotalDet="564.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="LENGUA DE CERDO" cantidad="1" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="50" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="50" montoIVA="0" importe="50" subtotalDet="50" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="215.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="11653.2" montoIVA="0" importe="11653.2" subtotalDet="11653.2" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-25 01:05:14] Éxito envío SINUBE (Folio: 83, Serie: F)
+SimpleXMLElement Object
+(
+    [error] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. Para CFDI 3.3 cuando método de pago es 'PPD' la forma de pago debe ser '99' - Validaciones[Ljava.lang.StackTraceElement;@77207d21
+)
+Array
+(
+    [0] => SimpleXMLElement Object
+        (
+            [0] => PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. Para CFDI 3.3 cuando método de pago es 'PPD' la forma de pago debe ser '99' - Validaciones[Ljava.lang.StackTraceElement;@77207d21
+        )
+
+)
+[2026-04-25 01:05:14] Error extracción links: SINUBE devolvió un error: PmCreaFacturaDeXML.crearFactura: pos: 29null, Err: Error al agregar la factura. Para CFDI 3.3 cuando método de pago es 'PPD' la forma de pago debe ser '99' - Validaciones[Ljava.lang.StackTraceElement;@77207d21
+[2026-04-25 01:05:15] XML GENERADO (Folio: 83, MovID: 195288):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195288-F-83" noCertificado="30001000000500003441" serie="F" folio="83"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1777100715109" metodoDePago="PUE" subtotal="40000" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="40000" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PIERNA" cantidad="264" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="14256" montoIVA="0" importe="14256" subtotalDet="14256" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="217.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="74" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="16087.6" montoIVA="0" importe="16087.6" subtotalDet="16087.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="178.8222" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="9656.4" montoIVA="0" importe="9656.4" subtotalDet="9656.4" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-25 01:05:18] Éxito envío SINUBE (Folio: 83, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89ODMKbm9tYXJjaGl2bz1UQ0stMTk1Mjg4LUYtODMKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTgzCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89ODMKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1Mjg4LUYtODMK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => dfb0ce4a-28d7-4774-aca0-7b22d1352507
+    [folio] => 83
+    [serie] => F
+    [fechaFactura] => 2026-04-25T01:04:16
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265[2026-04-25 01:06:14] XML GENERADO (Folio: 84, MovID: 195288):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195288-F-84" noCertificado="30001000000500003441" serie="F" folio="84"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1777100774400" metodoDePago="PUE" subtotal="40000" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="40000" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PIERNA" cantidad="264" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="14256" montoIVA="0" importe="14256" subtotalDet="14256" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PECHO" cantidad="217.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="74" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="16087.6" montoIVA="0" importe="16087.6" subtotalDet="16087.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="178.8222" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="9656.4" montoIVA="0" importe="9656.4" subtotalDet="9656.4" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-25 01:06:17] Éxito envío SINUBE (Folio: 84, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89ODQKbm9tYXJjaGl2bz1UQ0stMTk1Mjg4LUYtODQKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTg0CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89ODQKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1Mjg4LUYtODQK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 16285187-9d07-4d5d-9ce2-6686ad98afd6
+    [folio] => 84
+    [serie] => F
+    [fechaFactura] => 2026-04-25T01:05:15
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265[2026-04-25 01:06:17] XML GENERADO (Folio: 85, MovID: 195288):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195288-F-85" noCertificado="30001000000500003441" serie="F" folio="85"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1777100777576" metodoDePago="PUE" subtotal="42665.7" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="42665.7" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G01" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="63.5778" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="3433.2" montoIVA="0" importe="3433.2" subtotalDet="3433.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ESPILOMO" cantidad="210.6" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="58" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="12214.8" montoIVA="0" importe="12214.8" subtotalDet="12214.8" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CABEZA" cantidad="59.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="23" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1375.4" montoIVA="0" importe="1375.4" subtotalDet="1375.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="MANITAS" cantidad="25.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="30" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="756" montoIVA="0" importe="756" subtotalDet="756" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="RABOS" cantidad="51" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="36" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1836" montoIVA="0" importe="1836" subtotalDet="1836" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="20.9" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1776.5" montoIVA="0" importe="1776.5" subtotalDet="1776.5" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="9.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="833" montoIVA="0" importe="833" subtotalDet="833" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="19.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1649" montoIVA="0" importe="1649" subtotalDet="1649" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="59.4" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="3207.6" montoIVA="0" importe="3207.6" subtotalDet="3207.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BARRIGA" cantidad="23.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1972" montoIVA="0" importe="1972" subtotalDet="1972" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PIERNA TORTERA" cantidad="16.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="83" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="1344.6" montoIVA="0" importe="1344.6" subtotalDet="1344.6" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="PIERNA TORTERA" cantidad="6.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="83" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="564.4" montoIVA="0" importe="564.4" subtotalDet="564.4" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="LENGUA DE CERDO" cantidad="1" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="50" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="50" montoIVA="0" importe="50" subtotalDet="50" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="215.8" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="54" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="11653.2" montoIVA="0" importe="11653.2" subtotalDet="11653.2" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-25 01:06:20] Éxito envío SINUBE (Folio: 85, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89ODUKbm9tYXJjaGl2bz1UQ0stMTk1Mjg4LUYtODUKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTg1CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89ODUKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1Mjg4LUYtODUK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => a65d9561-f301-49f5-b225-c304464e0b8b
+    [folio] => 85
+    [serie] => F
+    [fechaFactura] => 2026-04-25T01:05:18
+)
+Array
+(
+)
  Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265
