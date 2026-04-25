@@ -153,7 +153,7 @@ if ($action == 'ajax') {
           <th>Cliente</th>
           <th>Fecha</th>
           <th>Hora</th>
-          <th>Método Pago</th>
+          <th>Forma Pago</th>
           <th>Fecha Fact.</th>
           <th>Monto</th>
           <th>Estatus</th>

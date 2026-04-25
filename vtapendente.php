@@ -101,8 +101,8 @@ $branch = $_GET['branch'] ?? '';
                                         <div style="width: 100%; margin-bottom: 15px;">
                                             <div class="form-group row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
                                                 <div class="col-sm-4 col-xs-12">
-                                                    <label for="fpay_selector" class="control-label" style="margin-bottom: 5px; display: block;">Método Pago:</label>
-                                                    <select class="form-control select-victoria" id="fpay_selector">
+                                                    <label for="fpayment_selector" class="control-label" style="margin-bottom: 5px; display: block;">Forma Pago:</label>
+                                                    <select class="form-control select-victoria" id="fpayment_selector">
                                                         <option value="">-- Seleccionar --</option>
                                                         <?php
                                                         $sql_fpay = "SELECT id, name, code FROM fpago WHERE is_active = 1 ORDER BY name";

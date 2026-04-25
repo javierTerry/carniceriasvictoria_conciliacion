@@ -1183,4 +1183,134 @@ SimpleXMLElement Object
 Array
 (
 )
- Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-243/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-263
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-243/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-263[2026-04-21 15:01:18] XML GENERADO (Folio: 78, MovID: 195293):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195293-F-78" noCertificado="30001000000500003441" serie="F" folio="78"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776805278191" metodoDePago="PUE" subtotal="100" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="100" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ARRACHERA DE TERNERA" cantidad="0.625" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="160" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="100" montoIVA="0" importe="100" subtotalDet="100" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-21 15:01:21] Éxito envío SINUBE (Folio: 78, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NzgKbm9tYXJjaGl2bz1UQ0stMTk1MjkzLUYtNzgKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTc4CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NzgKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1MjkzLUYtNzgK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 1ec4e54f-4781-45bd-81d5-13ada47ac30f
+    [folio] => 78
+    [serie] => F
+    [fechaFactura] => 2026-04-21T15:00:20
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-243/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-263[2026-04-21 15:01:22] XML GENERADO (Folio: 79, MovID: 195293):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195293-F-79" noCertificado="30001000000500003441" serie="F" folio="79"  
+    formaDePago="04" condicionesDePago="CONTADO" fechaPagoProbable="1776805282178" metodoDePago="PUE" subtotal="252" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="252" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ARRACHERA DE TERNERA" cantidad="1.575" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="160" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="252" montoIVA="0" importe="252" subtotalDet="252" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-21 15:01:25] Éxito envío SINUBE (Folio: 79, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89NzkKbm9tYXJjaGl2bz1UQ0stMTk1MjkzLUYtNzkKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTc5CmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89NzkKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1MjkzLUYtNzkK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 3843d597-0337-4738-ba63-dfaabf922fba
+    [folio] => 79
+    [serie] => F
+    [fechaFactura] => 2026-04-21T15:00:24
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-243/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-263[2026-04-21 15:42:48] XML GENERADO (Folio: 80, MovID: 195313):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195313-F-80" noCertificado="30001000000500003441" serie="F" folio="80"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1776807768224" metodoDePago="PUE" subtotal="10" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="10" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="ACEITE CRISTAL 1.5" cantidad="1" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="10" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="10" montoIVA="0" importe="10" subtotalDet="10" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-21 15:42:52] Éxito envío SINUBE (Folio: 80, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89ODAKbm9tYXJjaGl2bz1UQ0stMTk1MzEzLUYtODAKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTgwCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89ODAKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1MzEzLUYtODAK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 523886ea-25ab-485e-8b34-439eb41ba6ad
+    [folio] => 80
+    [serie] => F
+    [fechaFactura] => 2026-04-21T15:41:50
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-243/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-263[2026-04-25 00:53:44] XML GENERADO (Folio: 81, MovID: 195289):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195289-F-81" noCertificado="30001000000500003441" serie="F" folio="81"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1777100024525" metodoDePago="PUE" subtotal="280" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="280" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="HUESO AMERICANO" cantidad="5" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="40" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="200" montoIVA="0" importe="200" subtotalDet="200" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="HUESO AMERICANO" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="40" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="80" montoIVA="0" importe="80" subtotalDet="80" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-25 00:53:50] Éxito envío SINUBE (Folio: 81, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89ODEKbm9tYXJjaGl2bz1UQ0stMTk1Mjg5LUYtODEKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTgxCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89ODEKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1Mjg5LUYtODEK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => b5d7c634-b2d0-433d-bbd7-4d4831232efc
+    [folio] => 81
+    [serie] => F
+    [fechaFactura] => 2026-04-25T00:52:47
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265[2026-04-25 00:55:03] XML GENERADO (Folio: 82, MovID: 195289):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-195289-F-82" noCertificado="30001000000500003441" serie="F" folio="82"  
+    formaDePago="99" condicionesDePago="CONTADO" fechaPagoProbable="1777100103899" metodoDePago="PPD" subtotal="280" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="280" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G01" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="HUESO AMERICANO" cantidad="7" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="40" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="280" montoIVA="0" importe="280" subtotalDet="280" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-25 00:55:07] Éxito envío SINUBE (Folio: 82, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89ODIKbm9tYXJjaGl2bz1UQ0stMTk1Mjg5LUYtODIKc3VjdXJzYWw9TWF0cml6CmFkZGVuZGE9MApzZXJpZT1GCmZvbGlvPTgyCmVtcHJlc2E9VVJFMTgwNDI5VE02LTM5
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89ODIKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stMTk1Mjg5LUYtODIK
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => c9ca66cd-9192-4da6-a7d6-209a5a8a95ed
+    [folio] => 82
+    [serie] => F
+    [fechaFactura] => 2026-04-25T00:54:05
+)
+Array
+(
+)
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265

@@ -32,17 +32,17 @@ $(document).ready(function () {
             return;
         }
 
-        const fpay_selector = $('#fpay_selector');
-        const fpay_id = fpay_selector.val();
-        const fpay_name = $('#fpay_selector option:selected').data('name');
-        const fpay_code = $('#fpay_selector option:selected').data('code') || '03';
+        const fpayment_selector = $('#fpayment_selector');
+        const forma_pago_id = fpayment_selector.val();
+        const forma_pago_name = $('#fpayment_selector option:selected').data('name');
+        const forma_pago_code = $('#fpayment_selector option:selected').data('code') || '03';
         const amountInput = $('#manual_amount');
         let amountToSection = parseNum(amountInput.val());
         const ticketTotal = parseNum($('#global_ticket_total').val());
 
         // 1 & 2. Validation: Basic requirements
         let validationErrors = [];
-        if (!fpay_id) validationErrors.push("Seleccione un método de pago.");
+        if (!forma_pago_id) validationErrors.push("Seleccione una forma de pago.");
         if (amountToSection <= 0) validationErrors.push("Ingrese un monto válido mayor a 0.");
         if (availableItems.length === 0) validationErrors.push("No hay artículos cargados en la vista previa del ticket.");
 
@@ -131,7 +131,7 @@ $(document).ready(function () {
 
         // Add the calculated selections to the managed items structure
         selections.forEach(sel => {
-            addItemToManagement(fpay_id, fpay_name, fpay_code, sel);
+            addItemToManagement(forma_pago_id, forma_pago_name, forma_pago_code, sel);
         });
 
         amountInput.val('');
@@ -151,15 +151,17 @@ $(document).ready(function () {
         });
     });
 
-    function addItemToManagement(fpay_id, fpay_name, fpay_code, item) {
-        if (!managedItems[fpay_id]) {
-            managedItems[fpay_id] = {
-                name: fpay_name,
-                code: fpay_code,
+    function addItemToManagement(forma_pago_id, forma_pago_name, forma_pago_code, item) {
+        if (!managedItems[forma_pago_id]) {
+            managedItems[forma_pago_id] = {
+                name: forma_pago_name,
+                code: forma_pago_code,
+                metodo_pago_cfdi: 'PUE', // Default
+                uso_cfdi: 'G03',         // Default
                 items: []
             };
         }
-        managedItems[fpay_id].items.push(item);
+        managedItems[forma_pago_id].items.push(item);
     }
 
     function renderManagementTables() {
@@ -168,19 +170,53 @@ $(document).ready(function () {
         let totalAccumulated = 0;
         const sortedKeys = Object.keys(managedItems).sort();
         
-        sortedKeys.forEach(fpay_id => {
-            const group = managedItems[fpay_id];
+        sortedKeys.forEach(forma_pago_id => {
+            const group = managedItems[forma_pago_id];
             let subtotal = 0;
             
             html += `
             <div class="management-table-container" style="margin-bottom: 15px; border: 1px solid #e1e8ed; border-radius: 4px; overflow: hidden; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                <div style="background: #f8f9fa; color: #34495e; padding: 6px 10px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e1e8ed;">
-                    <span style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; color: #73879C;">
-                        <i class="fa fa-credit-card" style="color: #26B99A; margin-right: 5px;"></i> ${group.name}
-                    </span>
-                    <button class="btn btn-link btn-xs" style="color: #d9534f; text-decoration: none; padding: 0; font-size: 10px; height: auto;" onclick="removeTable('${fpay_id}')" title="Eliminar Sección">
-                        <i class="fa fa-trash"></i> Eliminar
-                    </button>
+                <div style="background: #f8f9fa; color: #34495e; padding: 6px 10px; font-weight: bold; border-bottom: 1px solid #e1e8ed;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; color: #73879C;">
+                            <i class="fa fa-credit-card" style="color: #26B99A; margin-right: 5px;"></i> ${group.name}
+                        </span>
+                        <button class="btn btn-link btn-xs" style="color: #d9534f; text-decoration: none; padding: 0; font-size: 10px; height: auto;" onclick="removeTable('${forma_pago_id}')" title="Eliminar Sección">
+                            <i class="fa fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                    
+                    <div class="row" style="margin: 0; padding-top: 5px; border-top: 1px solid #eee;">
+                        <div class="col-xs-6" style="padding-left: 0; padding-right: 5px;">
+                            <label style="font-size: 9px; color: #999; margin-bottom: 2px;">MÉTODO PAGO (CFDI):</label>
+                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${forma_pago_id}', 'metodo_pago_cfdi', this.value)">
+                                <option value="PUE" ${group.metodo_pago_cfdi === 'PUE' ? 'selected' : ''}>PUE - Una sola exhibición</option>
+                                <option value="PPD" ${group.metodo_pago_cfdi === 'PPD' ? 'selected' : ''}>PPD - Parcialidades</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-6" style="padding-right: 0; padding-left: 5px;">
+                            <label style="font-size: 9px; color: #999; margin-bottom: 2px;">USO CFDI:</label>
+                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${forma_pago_id}', 'uso_cfdi', this.value)">
+                                <option value="G01" ${group.uso_cfdi === 'G01' ? 'selected' : ''}>G01 - Adquisición de mercancías</option>
+                                <option value="G02" ${group.uso_cfdi === 'G02' ? 'selected' : ''}>G02 - Devoluciones, desc. o bonif.</option>
+                                <option value="G03" ${group.uso_cfdi === 'G03' ? 'selected' : ''}>G03 - Gastos en general</option>
+                                <option value="I01" ${group.uso_cfdi === 'I01' ? 'selected' : ''}>I01 - Construcciones</option>
+                                <option value="I02" ${group.uso_cfdi === 'I02' ? 'selected' : ''}>I02 - Mobiliario y equipo de oficina</option>
+                                <option value="I03" ${group.uso_cfdi === 'I03' ? 'selected' : ''}>I03 - Equipo de transporte</option>
+                                <option value="I04" ${group.uso_cfdi === 'I04' ? 'selected' : ''}>I04 - Equipo de cómputo</option>
+                                <option value="D01" ${group.uso_cfdi === 'D01' ? 'selected' : ''}>D01 - Honorarios médicos, dentales...</option>
+                                <option value="D02" ${group.uso_cfdi === 'D02' ? 'selected' : ''}>D02 - Gastos médicos por inc...</option>
+                                <option value="D03" ${group.uso_cfdi === 'D03' ? 'selected' : ''}>D03 - Gastos funerales</option>
+                                <option value="D04" ${group.uso_cfdi === 'D04' ? 'selected' : ''}>D04 - Donativos</option>
+                                <option value="D07" ${group.uso_cfdi === 'D07' ? 'selected' : ''}>D07 - Primas seguros gastos med.</option>
+                                <option value="D08" ${group.uso_cfdi === 'D08' ? 'selected' : ''}>D08 - Gastos transp. escolar obl.</option>
+                                <option value="D10" ${group.uso_cfdi === 'D10' ? 'selected' : ''}>D10 - Pagos servicios educativos</option>
+                                <option value="CP01" ${group.uso_cfdi === 'CP01' ? 'selected' : ''}>CP01 - Pagos</option>
+                                <option value="CN01" ${group.uso_cfdi === 'CN01' ? 'selected' : ''}>CN01 - Nómina</option>
+                                <option value="S01" ${group.uso_cfdi === 'S01' ? 'selected' : ''}>S01 - Sin efectos fiscales</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-condensed" style="margin-bottom: 0; font-size: 11px;">
@@ -205,7 +241,7 @@ $(document).ready(function () {
                     <td class="text-right" style="padding: 4px 10px; vertical-align: middle; color: #73879C;">$${item.price.toFixed(2)}</td>
                     <td class="text-right" style="padding: 4px 10px; vertical-align: middle; font-weight: 600; color: #34495e;">$${item.amount.toFixed(2)}</td>
                     <td class="text-center" style="padding: 4px 10px; vertical-align: middle;">
-                        <button class="btn btn-default btn-xs" style="border-radius: 50%; color: #d9534f; border-color: #f2dede; padding: 0 4px; font-size: 9px;" onclick="removeItem('${fpay_id}', ${index})" title="Quitar">
+                        <button class="btn btn-default btn-xs" style="border-radius: 50%; color: #d9534f; border-color: #f2dede; padding: 0 4px; font-size: 9px;" onclick="removeItem('${forma_pago_id}', ${index})" title="Quitar">
                             <i class="fa fa-times" style="font-size: 9px;"></i>
                         </button>
                     </td>
@@ -233,6 +269,12 @@ $(document).ready(function () {
             $('#empty_management_msg').show();
         }
     }
+
+    window.updateGroupField = function(forma_pago_id, field, value) {
+        if (managedItems[forma_pago_id]) {
+            managedItems[forma_pago_id][field] = value;
+        }
+    };
 
     function updateSummary(accumulated) {
         const ticketTotal = parseFloat($('#global_ticket_total').val()) || 0;
@@ -298,8 +340,8 @@ $(document).ready(function () {
     function completeTicketAction() {
         // Collect all invoices to be generated from managedItems
         let invoices = [];
-        Object.keys(managedItems).forEach(fpay_id => {
-            let group = managedItems[fpay_id];
+        Object.keys(managedItems).forEach(forma_pago_id => {
+            let group = managedItems[forma_pago_id];
             let subtotal = 0;
             
             // Reconstruir el catálogo de conceptos dinámico para esta proporción de pago
@@ -319,6 +361,8 @@ $(document).ready(function () {
                     monto: subtotal,
                     metodo_pago: group.name,
                     forma_pago: group.code || '03',
+                    metodo_pago_cfdi: group.metodo_pago_cfdi,
+                    uso_cfdi: group.uso_cfdi,
                     items: itemsPayload
                 });
             }
@@ -433,22 +477,22 @@ $(document).ready(function () {
         });
     }
 
-    window.removeItem = function(fpay_id, index) {
-        const item = managedItems[fpay_id].items[index];
+    window.removeItem = function(forma_pago_id, index) {
+        const item = managedItems[forma_pago_id].items[index];
         // Return to pool so it can be re-allocated later
         if (item.originalIndex !== undefined && availableItems[item.originalIndex]) {
             availableItems[item.originalIndex].remainingAmount += parseNum(item.amount);
             availableItems[item.originalIndex].remainingQty += parseNum(item.qty);
         }
 
-        managedItems[fpay_id].items.splice(index, 1);
-        if (managedItems[fpay_id].items.length === 0) {
-            delete managedItems[fpay_id];
+        managedItems[forma_pago_id].items.splice(index, 1);
+        if (managedItems[forma_pago_id].items.length === 0) {
+            delete managedItems[forma_pago_id];
         }
         renderManagementTables();
     };
 
-    window.removeTable = function(fpay_id) {
+    window.removeTable = function(forma_pago_id) {
         Swal.fire({
             title: '¿Eliminar sección?',
             text: "Se devolverán los importes al saldo pendiente.",
@@ -461,13 +505,13 @@ $(document).ready(function () {
         }).then((result) => {
             if (result.isConfirmed) {
                 // Return all items in this table to pool
-                managedItems[fpay_id].items.forEach(item => {
+                managedItems[forma_pago_id].items.forEach(item => {
                     if (item.originalIndex !== undefined && availableItems[item.originalIndex]) {
                         availableItems[item.originalIndex].remainingAmount += parseNum(item.amount);
                         availableItems[item.originalIndex].remainingQty += parseNum(item.qty);
                     }
                 });
-                delete managedItems[fpay_id];
+                delete managedItems[forma_pago_id];
                 renderManagementTables();
             }
         });
