@@ -54,7 +54,8 @@ if ($action == 'ajax') {
   $adjacents = 4;
   $offset = ($page - 1) * $per_page;
 
-  $sWhere = " WHERE A.created_at >= DATE_SUB(NOW(), INTERVAL 60 DAY) ";
+  $sWhere = " WHERE (YEAR(A.created_at) = YEAR(CURDATE()) OR A.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) ";
+  
   $params = [];
   $types = "";
 
@@ -190,12 +191,24 @@ if ($action == 'ajax') {
                 case 3:
                   echo '<span class="badge badge-primary">Facturado</span>';
                   break;
+                case 4:
+                  echo '<span class="badge badge-info">Agrupado</span>';
+                  break;
                 default:
                   echo '<span class="badge">' . $status . '</span>';
               }
               ?>
             </td>
             <td class="text-right">
+              <?php if ($status_filter === ''): ?>
+                <?php if ($status == 1): ?>
+                  <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Agrupar Ticket'
+                    onclick="agruparTicket('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo number_format($r['sumimp'], 2, '.', ''); ?>', '<?php echo $r['cust_id']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>')">
+                    <i class="glyphicon glyphicon-link"></i>
+                  </button>
+                <?php endif; ?>
+              <?php endif; ?>
+
               <?php if ($status == 1): ?>
                 <?php if ($user_kind != 0 && $fecha_f == $hoy): ?>
                   <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cancelar Venta'
@@ -203,9 +216,9 @@ if ($action == 'ajax') {
                     <i class="glyphicon glyphicon-trash"></i>
                   </button>
                 <?php endif; ?>
-                
+
                 <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cambiar Estatus'
-                  onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
+                  onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2, '.', ''); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
                   <i class="glyphicon glyphicon-retweet"></i>
                 </button>
 
@@ -219,7 +232,7 @@ if ($action == 'ajax') {
                 </button>
               <?php endif; ?>
 
-              <?php if ($status == 2 && $status_filter == '2'): ?>
+              <?php if (($status == 2 || $status == 4) && $status_filter == '2'): ?>
                 <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Gestionar Acción Ticket'
                   onclick="window.location.href='vtapendente.php?mov_id=<?php echo $r['mov_id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
                   <i class="glyphicon glyphicon-cog"></i>

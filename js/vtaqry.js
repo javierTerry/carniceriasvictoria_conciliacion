@@ -1,3 +1,5 @@
+window.current_page = 1;
+
 window.addEventListener('load', function () {
 	if (typeof $ !== 'undefined') {
 		load(1);
@@ -6,6 +8,7 @@ window.addEventListener('load', function () {
 
 
 function load(page) {
+	window.current_page = page;
 	var q = $("#q").val();
 	var per_page = $("#per_page").val();
 	var branch = $("#branch_filter").val();

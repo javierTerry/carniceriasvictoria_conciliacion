@@ -58,12 +58,6 @@ if (mysqli_connect_errno()) {
     die("Conexión Principal falló: " . mysqli_connect_errno() . " : " . mysqli_connect_error());
 }
 
-
-
-
-
-
-
 //verificar posibles ataques
 
 function proteger($v)
@@ -78,9 +72,6 @@ function proteger($v)
     return $v;
 
 }
-
-
-
 
 
 function encrypt($string, $key)
@@ -202,10 +193,3 @@ function sMesFecha($fecha)
 
 
 ?>
-
-
-
-
-
-
-

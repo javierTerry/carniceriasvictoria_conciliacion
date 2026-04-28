@@ -1417,4 +1417,30 @@ SimpleXMLElement Object
 Array
 (
 )
+ Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265[2026-04-27 22:26:51] XML GENERADO (Folio: 88, MovID: GRP-1):
+<?xml version="1.0" encoding="utf-8"?>
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-GRP-1-F-88" noCertificado="30001000000500003441" serie="F" folio="88"  
+    formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="1777350411044" metodoDePago="PUE" subtotal="1355.9" descuento="0" porcentajeIVA="16" montoIVA="0" 
+    total="1355.9" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+   <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
+   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   <Conceptos>
+       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="VARILLA" cantidad="2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="50" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="100" montoIVA="0" importe="100" subtotalDet="100" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="MANTECA" cantidad="5.6" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="50" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="280" montoIVA="0" importe="280" subtotalDet="280" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="JAMON CON HUESO" cantidad="13.2" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="56" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="739.2" montoIVA="0" importe="739.2" subtotalDet="739.2" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="BISTECK DE CERDO REBANADO" cantidad="1.5" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="85" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="127.5" montoIVA="0" importe="127.5" subtotalDet="127.5" objetoImp="02" />       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="CODILLO" cantidad="2.6" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="42" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="109.2" montoIVA="0" importe="109.2" subtotalDet="109.2" objetoImp="02" />   </Conceptos>
+</Comprobante>
+-----------------------
+[2026-04-27 22:26:55] Éxito envío SINUBE (Folio: 88, Serie: F)
+SimpleXMLElement Object
+(
+    [xml] => https://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0yCmZvbGlvRGVwb3NpdG89ODgKbm9tYXJjaGl2bz1UQ0stR1JQLTEtRi04OApzdWN1cnNhbD1NYXRyaXoKYWRkZW5kYT0wCnNlcmllPUYKZm9saW89ODgKZW1wcmVzYT1VUkUxODA0MjlUTTYtMzk=
+    [pdf] => https://ep-dot-facturanube.appspot.com/reporteMain?tipo=ZW1wcmVzYXJlcD1VUkUxODA0MjlUTTYtMzkKZW1wcmVzYW1vdj1VUkUxODA0MjlUTTYtMzkKc3VjdXJzYWw9TWF0cml6CnJlcG9ydGU9Q0ZESSA0LjAgLSBDT04gSVZBIC0gU0lOVUJFLUNPUElBCnNlcmllPUYKZm9saW89ODgKdGlwbz0zMQpwaWU9MAptdWVzdHJhaHRtbD0wCm5vbXBkZj1UQ0stR1JQLTEtRi04OAo=
+    [TipoProceso] => NUEVA FACTURA
+    [UUID] => 6eeeaa49-1385-4040-9b46-0dd225a192ab
+    [folio] => 88
+    [serie] => F
+    [fechaFactura] => 2026-04-27T22:25:52
+)
+Array
+(
+)
  Se inicia insert/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-245/var/www/html/carniceriasvictoria/syspv/conciliacion/ajax/facturar_api.php-265
