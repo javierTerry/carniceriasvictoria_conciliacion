@@ -168,7 +168,7 @@ $q_status = $_GET['status'] ?? '';
                 <h1 style="margin: 0; font-size: 1.8em; font-weight: bold; color: #1a2732; text-transform: uppercase;">
                     ConsolidaCión</h1>
                 <small style="display: block; font-size: 0.9em; color: #e74c3c; font-weight: bold; margin-top: -5px;">
-                    Ambiente Dev</small>
+                    Ambiente <?php echo $ambiente ?? 'Dev'; ?></small>
             </div>
 
             <ul class="nav navbar-nav navbar-right">
