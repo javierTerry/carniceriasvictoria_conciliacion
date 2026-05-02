@@ -1,0 +1,64 @@
+/* Global Layout Fixes - Carnicerias Victoria - Definitive Fix */
+
+/* 1. Normalize Scrollbars - Eliminate double scrollbars */
+html {
+    overflow: hidden !important; /* Hide browser level scroll to use body scroll */
+    height: 100% !important;
+}
+
+body {
+    background-color: #f7f7f7 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto !important; /* The body is the primary scroll container */
+    overflow-x: hidden !important;
+    height: 100% !important;
+}
+
+/* 2. Layout Width - Eliminate black bars at the sides */
+.container.body, 
+.main_container {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #f7f7f7 !important;
+    overflow: visible !important; /* Prevents nested scrollbars */
+}
+
+/* 3. Content Area */
+.right_col {
+    width: auto !important;
+    float: none !important;
+    margin-right: 0 !important;
+    background: #f7f7f7 !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+}
+
+/* 4. Footer Alignment */
+footer {
+    margin-left: 230px !important;
+    margin-right: 0 !important;
+    width: auto !important;
+    padding: 15px 20px !important;
+    background: #fff !important;
+    display: block !important;
+}
+
+/* 5. Responsive Adjustments */
+@media (max-width: 991px) {
+    footer {
+        margin-left: 0 !important;
+    }
+    
+    .right_col {
+        margin-left: 0 !important;
+    }
+}
+
+/* Hide mCustomScrollbar if it was generating the second bar */
+.mCSB_container, .mCustomScrollBox {
+    overflow: visible !important;
+}

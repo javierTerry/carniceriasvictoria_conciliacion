@@ -1,0 +1,172 @@
+:root {
+    --victoria-red: #b22222;
+    --victoria-gold: #d4af37;
+    --victoria-black: #1a1a1a;
+    --victoria-white: #ffffff;
+}
+
+/* Premium Header */
+.x_title {
+    background-color: var(--victoria-black) !important;
+    color: var(--victoria-white) !important;
+    border-bottom: 2px solid var(--victoria-gold) !important;
+    padding: 10px 15px !important;
+    border-radius: 4px 4px 0 0;
+}
+
+.x_title h2 {
+    color: var(--victoria-white) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Action Buttons Victoria Style */
+.action-btn-victoria {
+    background-color: var(--victoria-red) !important;
+    color: var(--victoria-white) !important;
+    border: 1px solid var(--victoria-gold) !important;
+    transition: all 0.3s ease;
+}
+
+.action-btn-victoria:hover {
+    background-color: var(--victoria-gold) !important;
+    color: var(--victoria-black) !important;
+    transform: scale(1.05);
+}
+
+/* Status Highlighting */
+.paid-highlight {
+    border-left: 4px solid var(--victoria-gold) !important;
+}
+
+.badge-success {
+    background-color: #28a745 !important;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-danger {
+    background-color: #6c757d !important; /* Gray */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-warning {
+    background-color: #ff9800 !important; /* Orange */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-info {
+    background-color: #17a2b8 !important; /* Blue/Cyan */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+.badge-primary {
+    background-color: #004085 !important; /* Dark Blue */
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: white !important;
+}
+
+/* Centered table cells */
+.table td,
+.table th {
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 14px !important;
+}
+
+/* Branch Specific Colors (Bubbles) */
+.label-obrador {
+    background-color: var(--victoria-gold) !important;
+    color: var(--victoria-black) !important;
+    font-weight: 700;
+    font-size: 14px !important;
+    padding: 4px 8px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.label-victoria1 {
+    background-color: var(--victoria-red) !important;
+    color: var(--victoria-white) !important;
+    font-weight: 700;
+    font-size: 14px !important;
+    padding: 4px 8px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.label-victoria2 {
+    background-color: #4b0082 !important;
+    /* Indigo */
+    color: var(--victoria-white) !important;
+    font-weight: 700;
+    font-size: 14px !important;
+    padding: 4px 8px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Select Victoria Style */
+.select-victoria {
+    border: 1px solid var(--victoria-gold) !important;
+    color: var(--victoria-black) !important;
+    font-weight: 600 !important;
+}
+
+.select-victoria:focus {
+    border-color: var(--victoria-red) !important;
+    box-shadow: 0 0 5px rgba(178, 34, 34, 0.5) !important;
+}
+
+.form-horizontal .control-label {
+    color: var(--victoria-black);
+    font-weight: 700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-group.row {
+        margin-bottom: 15px;
+    }
+
+    .form-horizontal .control-label {
+        text-align: left !important;
+        margin-bottom: 5px;
+    }
+}
+
+/* Modal Ticket Style */
+#ticketModal .modal-content {
+    border: 2px solid var(--victoria-gold);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#ticketModal .modal-header {
+    background-color: var(--victoria-black);
+    color: var(--victoria-white);
+    border-bottom: 2px solid var(--victoria-gold);
+}
+
+#ticketModal .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#ticketModal .close {
+    color: var(--victoria-white);
+    opacity: 0.8;
+}
+
+#ticketModal .close:hover {
+    opacity: 1;
+}
+
+#ticketFrame {
+    width: 100%;
+    height: 500px;
+    border: none;
+}
+
