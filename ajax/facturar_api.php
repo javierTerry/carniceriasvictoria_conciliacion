@@ -51,7 +51,7 @@ $log_file = $log_dir . "/factura_error.log";
 // ---------------------------------------------------------
 // PASO 1: Obtener Certificado (Folio y Serie)
 // ---------------------------------------------------------
-$url_cert = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0xMQplbXA9VVJFMTgwNDI5VE02LTM5CnN1Yz1NYXRyaXoKdXN1PWF0ZW5jaW9uc29sdWNpb25lc3J5akBnbWFpbC5jb20KcHdkPXByb3ZlZWRvcmVzCnNpcz1PQlJBRE9SQ0FSTklDRVJJQQ==";
+$url_cert = $api_url_cert;
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url_cert);
@@ -73,7 +73,7 @@ if ($response_cert === false || $http_code_cert != 200) {
     exit;
 }
 
-$target_cert = "30001000000500003441";
+$target_cert = $api_no_certificado;
 try {
     libxml_use_internal_errors(true);
     $xml_obj = simplexml_load_string($response_cert);
@@ -124,6 +124,13 @@ $usoCFDI = "G03";
 $regimenFiscal = "601";
 $esPersonaFisica = "0";
 
+$rfc_receptor = "HESC870321UY4";
+$razonSocial = "CHRISTIAN JAVIER HERNANDEZ SANCHEZ";
+$usoCFDI = "G03";
+$regimenFiscal = "612";
+$esPersonaFisica = "1";
+
+
 // Cálculos Globales (IVA 16%)
 $totalGlobal = (float)$monto; // El monto recibido incluye IVA
 $subtotalGlobal = $totalGlobal;//round($totalGlobal / 1.16, 2);
@@ -159,20 +166,35 @@ foreach ($ticket_items as $item) {
 XML;
 }
 
+$receptor =null;
+
+if ($esPersonaFisica) {
+    $receptor = <<<XML
+        <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$uso_cfdi}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}" nombre="CHRISTIAN JAVIER" apellidoPaterno="HERNANDEZ"/>
+        <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+    XML;
+} else {
+    $receptor = <<<XML
+        <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$uso_cfdi}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}"/>
+        <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+    XML;
+}
+
+
+
 $xml_payload = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
-<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
-    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-{$mov_id}-{$serie}-{$folio}" noCertificado="30001000000500003441" serie="{$serie}" folio="{$folio}"  
+<Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="{$api_rfc_emisor}" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-{$mov_id}-{$serie}-{$folio}" noCertificado="{$api_no_certificado}" serie="{$serie}" folio="{$folio}"  
     formaDePago="{$forma_pago}" condicionesDePago="CONTADO" fechaPagoProbable="{$msTime}" metodoDePago="{$metodo_pago_cfdi}" subtotal="{$subtotalGlobal}" descuento="0" porcentajeIVA="{$porcentajeIVA}" montoIVA="0" 
     total="{$totalGlobal}" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
-   <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$uso_cfdi}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}"/>
-   <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+   {$receptor}
    <Conceptos>
 {$conceptos_xml}   </Conceptos>
 </Comprobante>
 XML;
 
-$url_envio = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz00CmVtcD1VUkUxODA0MjlUTTYtMzkKc3VjPU1hdHJpegp1c3U9YXRlbmNpb25zb2x1Y2lvbmVzcnlqQGdtYWlsLmNvbQpwd2Q9cHJvdmVlZG9yZXM=";
+$url_envio = $api_url_envio;
 
 // Guardar payload en el log para visualización
 error_log("[" . date('Y-m-d H:i:s') . "] XML GENERADO (Folio: $folio, MovID: $mov_id):\n$xml_payload\n-----------------------\n", 3, $log_file);
