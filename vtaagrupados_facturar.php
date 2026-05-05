@@ -13,6 +13,17 @@ if (empty($group_id) || empty($branch)) {
 }
 ?>
 <link rel="stylesheet" href="assets/css/vtaqry.css?v=<?php echo time(); ?>">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 38px !important;
+        padding: 5px !important;
+        border: 1px solid #ccc !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
+</style>
 <style>
     .action-panel {
         background: #f8f9fa;
@@ -73,6 +84,31 @@ if (empty($group_id) || empty($branch)) {
                                 <span class="label label-warning" style="font-size: 14px;">ESTATUS: PENDIENTE DE FACTURA</span>
                             </div>
                         </div>
+                        <!-- Sección de Cliente para Facturación -->
+                        <div class="row" style="background: #fdfefe; border: 1px solid #e1e8ed; border-radius: 8px; margin: 0 0 20px 0; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div class="col-md-4 col-sm-12">
+                                <label for="client_selector" class="control-label" style="display: block; margin-bottom: 5px; color: #34495e; font-weight: 600;">Cliente para Facturación:</label>
+                                <select class="form-control" id="client_selector" style="width: 100%;">
+                                    <option value="">-- Buscar Cliente por Nombre o RFC --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8 col-sm-12">
+                                <label class="control-label" style="display: block; margin-bottom: 5px; color: #34495e; font-weight: 600;">Datos Fiscales:</label>
+                                <div id="client_labels" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; min-height: 38px;">
+                                    <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">RFC: <span id="lbl_rfc">---</span></span>
+                                    <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">Razón Social: <span id="lbl_razon_social">---</span></span>
+                                    <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">CP: <span id="lbl_cp">---</span></span>
+                                </div>
+                                <!-- Campos ocultos para datos fiscales del cliente -->
+                                <input type="hidden" id="client_rfc" value="">
+                                <input type="hidden" id="client_razon_social" value="">
+                                <input type="hidden" id="client_regimen" value="">
+                                <input type="hidden" id="client_es_fisica" value="">
+                                <input type="hidden" id="client_nombre" value="">
+                                <input type="hidden" id="client_ap_paterno" value="">
+                                <input type="hidden" id="client_cp" value="">
+                            </div>
+                        </div>
 
                         <div class="row">
                             <!-- Columna Izquierda: Vista Previa Consolidada (col-md-4) -->
@@ -100,7 +136,7 @@ if (empty($group_id) || empty($branch)) {
                                     </div>
                                     <div class="action-panel" id="management_panel">
                                         <div style="width: 100%; margin-bottom: 15px;">
-                                            <div class="form-group row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap;">
+                                            <div class="form-group row" style="margin: 0; display: flex; align-items: center; flex-wrap: wrap; width: 100%;">
                                                 <div class="col-sm-4 col-xs-12">
                                                     <label for="fpayment_selector" class="control-label" style="margin-bottom: 5px; display: block;">Forma Pago:</label>
                                                     <select class="form-control select-victoria" id="fpayment_selector">

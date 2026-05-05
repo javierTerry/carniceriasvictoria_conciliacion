@@ -97,6 +97,36 @@ function generateNextCode($conexion): string {
 
 // --- ACCIONES ---
 
+if ($action === 'select2') {
+    header('Content-Type: application/json');
+    $q = $_REQUEST['q'] ?? '';
+    
+    $sWhere = " WHERE is_active = 1 ";
+    if (!empty($q)) {
+        $sWhere .= " AND (nombre LIKE ? OR rfc LIKE ? OR razon_social LIKE ?) ";
+    }
+    
+    $stmt = $conexion_gen->prepare("SELECT * FROM cust $sWhere ORDER BY razon_social ASC LIMIT 20");
+    if (!empty($q)) {
+        $like_q = "%$q%";
+        $stmt->bind_param("sss", $like_q, $like_q, $like_q);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = [
+            'id' => $row['id'],
+            'text' => $row['rfc'] . " - " . $row['razon_social'],
+            'client_data' => $row 
+        ];
+    }
+    
+    echo json_encode(['results' => $data]);
+    exit;
+}
+
 if ($action === 'ajax') {
     // Listado con filtros
     $q = $_REQUEST['q'] ?? '';

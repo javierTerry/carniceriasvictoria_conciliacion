@@ -16,6 +16,56 @@ $(document).ready(function () {
         $('#ticket_preview').html('<div class="alert alert-danger">Error: Mov ID o Sucursal no proporcionados.</div>');
     }
 
+    // Inicializar Select2 para clientes
+    $('#client_selector').select2({
+        ajax: {
+            url: 'ajax/cust.php?action=select2',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return { q: params.term };
+            },
+            processResults: function (data) {
+                return { results: data.results };
+            },
+            cache: true
+        },
+        placeholder: '-- Buscar Cliente por Nombre o RFC --',
+        minimumInputLength: 3,
+        language: {
+            inputTooShort: function () { return "Por favor ingrese 3 o más caracteres"; },
+            searching: function () { return "Buscando..."; },
+            noResults: function () { return "No se encontraron resultados"; }
+        }
+    }).on('select2:select', function (e) {
+        const data = e.params.data.client_data;
+        $('#client_rfc').val(data.rfc);
+        $('#client_razon_social').val(data.razon_social);
+        $('#client_regimen').val(data.regimen_fiscal);
+        $('#client_es_fisica').val(data.es_persona_fisica);
+        $('#client_nombre').val(data.nombre);
+        $('#client_ap_paterno').val(data.ap_paterno);
+        $('#client_cp').val(data.cp);
+
+        // Actualizar etiquetas visuales
+        $('#lbl_rfc').text(data.rfc || '---');
+        $('#lbl_razon_social').text(data.razon_social || '---');
+        $('#lbl_cp').text(data.cp || '---');
+        
+        const toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+        toast.fire({
+            icon: 'success',
+            title: 'Cliente Seleccionado',
+            text: data.razon_social
+        });
+    });
+
     // Helper to clean and parse numbers reliably
     const parseNum = (val) => {
         if (typeof val === 'number') return val;
@@ -46,6 +96,7 @@ $(document).ready(function () {
         if (!forma_pago_id) validationErrors.push("Seleccione una forma de pago.");
         if (amountToSection <= 0) validationErrors.push("Ingrese un monto válido mayor a 0.");
         if (availableItems.length === 0) validationErrors.push("No hay artículos cargados en la vista previa del ticket.");
+        if (!$('#client_rfc').val()) validationErrors.push("Por favor seleccione un cliente para la facturación.");
 
         if (validationErrors.length > 0) {
             Swal.fire({
@@ -369,6 +420,14 @@ $(document).ready(function () {
                     forma_pago: group.code || '03',
                     metodo_pago_cfdi: group.metodo_pago_cfdi,
                     uso_cfdi: group.uso_cfdi,
+                    // Datos del cliente seleccionado
+                    rfc_receptor: $('#client_rfc').val(),
+                    razon_social: $('#client_razon_social').val(),
+                    regimen_fiscal: $('#client_regimen').val(),
+                    es_persona_fisica: $('#client_es_fisica').val(),
+                    nombre: $('#client_nombre').val(),
+                    ap_paterno: $('#client_ap_paterno').val(),
+                    codigo_postal: $('#client_cp').val(),
                     items: itemsPayload
                 });
             }

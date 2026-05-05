@@ -49,9 +49,16 @@ if (!is_dir($log_dir)) {
 $log_file = $log_dir . "/factura_error.log";
 
 // ---------------------------------------------------------
-// PASO 1: Obtener Certificado (Folio y Serie)
+// PASO 1: Obtener Certificado (Folio y Serie por Sucursal)
 // ---------------------------------------------------------
 $url_cert = $api_url_cert;
+$branchSeriesMap = [
+    'Obrador' => 'O',
+    'Victoria1' => 'V',
+    'Victoria2' => 'K',
+    'Cerdo en Pie' => 'CEP'
+];
+$target_serie = $branchSeriesMap[$branch] ?? '';
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url_cert);
@@ -81,24 +88,37 @@ try {
         throw new Exception("XML de certificado malformado.");
     }
 
-    $nodes = $xml_obj->xpath("//*[@noCertificado='$target_cert']");
+    // Buscar el foliador específico para la serie de la sucursal
+    if (!empty($target_serie)) {
+        $nodes = $xml_obj->xpath("//*[@noCertificado='$target_cert']/foliador[@serie='$target_serie']");
+    } else {
+        $nodes = $xml_obj->xpath("//*[@noCertificado='$target_cert']");
+    }
+
     if (!$nodes) {
-        throw new Exception("Certificado $target_cert no encontrado.");
+        throw new Exception("Serie '$target_serie' no encontrada en Sinube para esta sucursal.");
     }
 
     $node = $nodes[0];
-    if (isset($node->foliador)) {
+    
+    // Si el nodo es el foliador (vía XPath específico) o el certificado (vía fallback)
+    if ($node->getName() === 'foliador') {
+        $serie = (string) ($node['serie'] ?? '');
+        $folio = (string) ($node['folioActual'] ?? '');
+        $folio++;
+    } else if (isset($node->foliador)) {
         $serie = (string) ($node->foliador['serie'] ?? '');
         $folio = (string) ($node->foliador['folioActual'] ?? '');
         $folio++;
     } else {
-        throw new Exception("Datos de foliación incompletos valida con tu Administrador.");
+        throw new Exception("Datos de foliación no encontrados para la serie $target_serie.");
     }
 
     if (empty($serie) || empty($folio)) {
         throw new Exception("Datos de foliación incompletos (Serie: $serie, Folio: $folio).");
     }
 
+    error_log("[" . date('Y-m-d H:i:s') . "] Serie=$serie, Folio=$folio \n", 3, $log_file);
 } catch (Throwable $e) {
     error_log("[" . date('Y-m-d H:i:s') . "] Error extracción: " . $e->getMessage() . "\n", 3, $log_file);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
@@ -112,23 +132,17 @@ try {
 // Decodificar items del ticket (vienen del JS por POST)
 // ---------------------------------------------------------
 // PASO 2: Armar XML Dinámico y enviar a Sinube
-// ---------------------------------------------------------
-
-// Decodificar items del ticket (vienen del JS por POST)
 $ticket_items = $_POST['items'] ?? [];
 
-// Nodo Receptor Demo conforme a requerimiento
-$rfc_receptor = "OHM191218EH7";
-$razonSocial = "OBRADOR HNOS MIRANDA";
-$usoCFDI = "G03";
-$regimenFiscal = "601";
-$esPersonaFisica = "0";
-
-$rfc_receptor = "HESC870321UY4";
-$razonSocial = "CHRISTIAN JAVIER HERNANDEZ SANCHEZ";
-$usoCFDI = "G03";
-$regimenFiscal = "612";
-$esPersonaFisica = "1";
+// Nodo Receptor dinámico según selección de cliente
+$rfc_receptor = $_POST['rfc_receptor'] ?? "SIN RFC";
+$razonSocial = $_POST['razon_social'] ?? "SIN RAZON SOCIAL";
+$usoCFDI = $_POST['uso_cfdi'] ?? "G03";
+$regimenFiscal = $_POST['regimen_fiscal'] ?? "612";
+$esPersonaFisica = $_POST['es_persona_fisica'] ?? "1";
+$nombre = $_POST['nombre'] ?? "";
+$apellidoPaterno = $_POST['ap_paterno'] ?? "";
+$codigoPostal = $_POST['codigo_postal'] ?? "00000";
 
 
 // Cálculos Globales (IVA 16%)
@@ -168,15 +182,15 @@ XML;
 
 $receptor =null;
 
-if ($esPersonaFisica) {
+if ($esPersonaFisica == "1") {
     $receptor = <<<XML
-        <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$uso_cfdi}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}" nombre="CHRISTIAN JAVIER" apellidoPaterno="HERNANDEZ"/>
-        <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+        <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$uso_cfdi}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}" nombre="{$nombre}" apellidoPaterno="{$apellidoPaterno}"/>
+        <ReceptorDireccion pais="MEX" codigoPostal="{$codigoPostal}" ></ReceptorDireccion>
     XML;
 } else {
     $receptor = <<<XML
         <Receptor rfc="{$rfc_receptor}" razonSocial="{$razonSocial}" usoCFDI="{$uso_cfdi}" esPersonaFisica="{$esPersonaFisica}" regimenFiscal="{$regimenFiscal}"/>
-        <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
+        <ReceptorDireccion pais="MEX" codigoPostal="{$codigoPostal}" ></ReceptorDireccion>
     XML;
 }
 
