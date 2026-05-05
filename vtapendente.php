@@ -7,6 +7,7 @@ include "sidebar.php";
 $mov_id = $_GET['mov_id'] ?? $_GET['id'] ?? '';
 $branch = $_GET['branch'] ?? '';
 ?>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="assets/css/vtaqry.css?v=<?php echo time(); ?>">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
@@ -141,6 +142,7 @@ $branch = $_GET['branch'] ?? '';
                                                     <select class="form-control select-victoria" id="fpayment_selector">
                                                         <option value="">-- Seleccionar --</option>
                                                         <?php
+                                                        mysqli_set_charset($conexion, "utf8mb4");
                                                         $sql_fpay = "SELECT id, name, code FROM fpago WHERE is_active = 1 ORDER BY name";
                                                         $res_fpay = mysqli_query($conexion, $sql_fpay);
                                                         while ($fpay = mysqli_fetch_array($res_fpay, MYSQLI_ASSOC)) {
