@@ -157,9 +157,12 @@ $q_status = $_GET['status'] ?? '';
   </li> */ ?>
              <li class="<?php echo ($current_page == 'cust.php') ? 'active' : ''; ?>">
                 <a><i class="fa fa-folder-open"></i> CATÁLOGOS <span class="fa fa-chevron-down"></span></a>
-                <ul class="nav child_menu" style="<?php echo ($current_page == 'cust.php') ? 'display: block;' : ''; ?>">
+                <ul class="nav child_menu" style="<?php echo ($current_page == 'cust.php' || $current_page == 'prod.php') ? 'display: block;' : ''; ?>">
                     <li class="<?php echo ($current_page == 'cust.php') ? 'active' : ''; ?>">
                         <a href="cust.php">Clientes</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'prod.php') ? 'active' : ''; ?>">
+                        <a href="prod.php">Productos</a>
                     </li>
                 </ul>
             </li>

@@ -6,6 +6,7 @@
  */
 session_start();
 require_once "../config/config.php";
+require_once "../classes/ProductMapper.php";
 
 header('Content-Type: application/json');
 
@@ -43,84 +44,23 @@ if (!empty($branch)) {
 
 // Configuración ruta logs
 $log_dir = __DIR__ . "/../logs";
-if (!is_dir($log_dir)) {
-    @mkdir($log_dir, 0755, true);
-}
-$log_file = $log_dir . "/factura_error.log";
+$log_file = $log_dir . "/facturacion_individual.log";
 
 // ---------------------------------------------------------
 // PASO 1: Obtener Certificado (Folio y Serie por Sucursal)
 // ---------------------------------------------------------
-$url_cert = $api_url_cert;
-$branchSeriesMap = [
-    'Obrador' => 'O',
-    'Victoria1' => 'V',
-    'Victoria2' => 'K',
-    'Cerdo en Pie' => 'CEP'
-];
 $target_serie = $branchSeriesMap[$branch] ?? '';
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url_cert);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-$response_cert = curl_exec($ch);
-$http_code_cert = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curl_error_cert = curl_error($ch);
-curl_close($ch);
-
-if ($response_cert === false || $http_code_cert != 200) {
-    $error_msg = "[" . date('Y-m-d H:i:s') . "] Error cURL obteniendo certificado. Code: $http_code_cert, Msg: $curl_error_cert\n";
-    error_log($error_msg, 3, $log_file);
-    echo json_encode(['success' => false, 'message' => 'Error al consultar folio/serie en SINUBE.']);
-    exit;
-}
-
-$target_cert = $api_no_certificado;
 try {
-    libxml_use_internal_errors(true);
-    $xml_obj = simplexml_load_string($response_cert);
-    if ($xml_obj === false) {
-        throw new Exception("XML de certificado malformado.");
-    }
-
-    // Buscar el foliador específico para la serie de la sucursal
-    if (!empty($target_serie)) {
-        $nodes = $xml_obj->xpath("//*[@noCertificado='$target_cert']/foliador[@serie='$target_serie']");
-    } else {
-        $nodes = $xml_obj->xpath("//*[@noCertificado='$target_cert']");
-    }
-
-    if (!$nodes) {
-        throw new Exception("Serie '$target_serie' no encontrada en Sinube para esta sucursal.");
-    }
-
-    $node = $nodes[0];
+    $sinube = new SinubeHelper($log_file);
+    $folioData = $sinube->getFolioActual($api_url_cert, $api_no_certificado, $target_serie);
     
-    // Si el nodo es el foliador (vía XPath específico) o el certificado (vía fallback)
-    if ($node->getName() === 'foliador') {
-        $serie = (string) ($node['serie'] ?? '');
-        $folio = (string) ($node['folioActual'] ?? '');
-        $folio++;
-    } else if (isset($node->foliador)) {
-        $serie = (string) ($node->foliador['serie'] ?? '');
-        $folio = (string) ($node->foliador['folioActual'] ?? '');
-        $folio++;
-    } else {
-        throw new Exception("Datos de foliación no encontrados para la serie $target_serie.");
-    }
+    $serie = $folioData['serie'];
+    $folio = (string)($folioData['folioActual'] + 1); // Incrementar para la nueva factura
 
-    if (empty($serie) || empty($folio)) {
-        throw new Exception("Datos de foliación incompletos (Serie: $serie, Folio: $folio).");
-    }
-
-    error_log("[" . date('Y-m-d H:i:s') . "] Serie=$serie, Folio=$folio \n", 3, $log_file);
+    error_log("[" . date('Y-m-d H:i:s') . "] Folio Obtenido: Serie=$serie, Folio=$folio \n", 3, $log_file);
 } catch (Throwable $e) {
-    error_log("[" . date('Y-m-d H:i:s') . "] Error extracción: " . $e->getMessage() . "\n", 3, $log_file);
+    error_log("[" . date('Y-m-d H:i:s') . "] Error en PASO 1: " . $e->getMessage() . "\n", 3, $log_file);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     exit;
 }
@@ -156,8 +96,26 @@ $porcentajeIVA = "16";
 
 
 $conceptos_xml = "";
+$mapper = new ProductMapper($conexion_gen);
+
 foreach ($ticket_items as $item) {
-    $desc = htmlspecialchars($item['name'] ?? 'Producto General', ENT_XML1, 'UTF-8');
+    $desc_original = $item['name'] ?? 'Producto General';
+    $desc = htmlspecialchars($desc_original, ENT_XML1, 'UTF-8');
+    
+    // Buscar en el catálogo de productos (arts)
+    $productData = $mapper->findByDescription($desc_original);
+    
+    if (!$productData) {
+        $msg = "El producto '{$desc_original}'  no esta en el catalogo de productos .";
+        error_log("[" . date('Y-m-d H:i:s') . "] Error: $msg\n", 3, $log_file);
+        echo json_encode(['success' => false, 'message' => $msg]);
+        exit;
+    }
+
+    $productoSAT = $productData['clave_sat'] ?? '01010101';
+    $unidadSinube = !empty($productData['unidad']) ? $productData['unidad'] : 'PIEZA';
+    $unidadSAT = !empty($productData['unidad_sat']) ? $productData['unidad_sat'] : 'H87';
+
     $qty = (float)($item['qty'] ?? 1);
     if ($qty <= 0) $qty = 1;
 
@@ -166,17 +124,11 @@ foreach ($ticket_items as $item) {
     $totalItem = (float)($item['amount'] ?? 0); // Valor Bruto del ticket (ya incluye IVA)
     $priceItem = (float)($item['price'] ?? 0);  // Precio Bruto del ticket
     
-    // De acuerdo a las nuevas reglas:
-    // descripcion = producto
-    // cantidad = cantidad
-    // valorUnitario, montoBaseIVA, importe y subtotalDet = Valor Bruto (Sin dividir por 1.16)
-    // montoIVA = Cálculo del 16% sobre el valor bruto
-    
-    $ivaItemCalculado = "0";//round($totalItem * 0.16, 2);
+    $ivaItemCalculado = "0";
     $valUnitarioItem = round($priceItem, 4); 
     
     $conceptos_xml .= <<<XML
-       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="{$desc}" cantidad="{$qty}" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="{$valUnitarioItem}" descuento="0" tipoIVA="{$tipoIVA}" montoBaseIVA="{$totalItem}" montoIVA="{$ivaItemCalculado}" importe="{$totalItem}" subtotalDet="{$totalItem}" objetoImp="02" />
+       <Concepto productoSinube="{$productoSAT}" productoSAT="{$productoSAT}" descripcion="{$desc}" cantidad="{$qty}" unidadSinube="{$unidadSinube}" unidadSAT="{$unidadSAT}" valorUnitario="{$valUnitarioItem}" descuento="0" tipoIVA="{$tipoIVA}" montoBaseIVA="{$totalItem}" montoIVA="{$ivaItemCalculado}" importe="{$totalItem}" subtotalDet="{$totalItem}" objetoImp="02" />
 XML;
 }
 

@@ -28,9 +28,8 @@ if (!$targetConn) {
 mysqli_set_charset($targetConn, "utf8");
 
 if ($action == 'get_groups') {
-    $cust_id = intval($_GET['cust_id'] ?? 0);
-    // Obtener grupos activos (status = 1) filtrados por el cliente actual
-    $sql = "SELECT id, name, deposit_amount, total_tickets_amount, ticket_count FROM groups_tickets WHERE status = 1 AND cust_id = $cust_id ORDER BY created_at DESC";
+    // Obtener grupos activos (status = 1) - Se quita el filtro de cust_id para permitir agrupación global
+    $sql = "SELECT id, name, deposit_amount, total_tickets_amount, ticket_count FROM groups_tickets WHERE status = 1 ORDER BY created_at DESC";
     $query = mysqli_query($targetConn, $sql);
     $groups = [];
     while ($row = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
@@ -57,27 +56,28 @@ if ($action == 'add_to_group') {
 
     try {
         if ($group_id == 'new') {
+            // Regla: Reemplazar espacios por guiones bajos
+            $clean_name = str_replace(' ', '_', trim($group_name));
 
             // Create new group con cust_id
             $stmt = mysqli_prepare($targetConn, "INSERT INTO groups_tickets (name, deposit_amount, cust_id, status) VALUES (?, ?, ?, 1)");
-            mysqli_stmt_bind_param($stmt, "sdi", $group_name, $deposit_amount, $cust_id);
+            mysqli_stmt_bind_param($stmt, "sdi", $clean_name, $deposit_amount, $cust_id);
             if (!mysqli_stmt_execute($stmt)) {
                 throw new Exception("Error al crear el grupo: " . mysqli_error($targetConn));
             }
             $group_id = mysqli_insert_id($targetConn);
             mysqli_stmt_close($stmt);
-        } else {
-            // Validar que el grupo existente pertenezca al MISMO cliente
-            $stmt_grp_check = mysqli_prepare($targetConn, "SELECT cust_id FROM groups_tickets WHERE id = ?");
-            mysqli_stmt_bind_param($stmt_grp_check, "i", $group_id);
-            mysqli_stmt_execute($stmt_grp_check);
-            $res_grp_check = mysqli_stmt_get_result($stmt_grp_check);
-            $group_data = mysqli_fetch_array($res_grp_check, MYSQLI_ASSOC);
 
-            if ($group_data && intval($group_data['cust_id']) !== $cust_id) {
-                throw new Exception("Error: Se deben agrupar siempre tickets contemplando el mismo cliente para poder facturar.");
-            }
-            mysqli_stmt_close($stmt_grp_check);
+            // Regla: Agregar -ID al final de la descripción
+            $final_group_name = $clean_name . "-" . $group_id;
+            $stmt_upd = mysqli_prepare($targetConn, "UPDATE groups_tickets SET name = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt_upd, "si", $final_group_name, $group_id);
+            mysqli_stmt_execute($stmt_upd);
+            mysqli_stmt_close($stmt_upd);
+            
+            $group_name = $final_group_name;
+        } else {
+            // Se elimina la validación de coincidencia de cliente para permitir agrupación global
         }
 
         // Validate if ticket already in group

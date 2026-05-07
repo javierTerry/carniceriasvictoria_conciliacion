@@ -46,11 +46,22 @@ $(document).ready(function () {
         $('#client_nombre').val(data.nombre);
         $('#client_ap_paterno').val(data.ap_paterno);
         $('#client_cp').val(data.cp);
+        $('#client_metodo_pago').val(data.metodo_pago_code);
+        $('#client_uso_cfdi').val(data.uso_cfdi_code);
 
         // Actualizar etiquetas visuales
         $('#lbl_rfc').text(data.rfc || '---');
         $('#lbl_razon_social').text(data.razon_social || '---');
         $('#lbl_cp').text(data.cp || '---');
+        $('#lbl_metodo_pago').text(data.metodo_pago_code || '---');
+        $('#lbl_uso_cfdi').text(data.uso_cfdi_code || '---');
+
+        // Aplicar defaults del cliente a todas las secciones ya creadas
+        Object.keys(managedItems).forEach(section_id => {
+            if (data.metodo_pago_code) managedItems[section_id].metodo_pago_cfdi = data.metodo_pago_code;
+            if (data.uso_cfdi_code) managedItems[section_id].uso_cfdi = data.uso_cfdi_code;
+        });
+        renderManagementTables();
         
         const toast = Swal.mixin({
             toast: true,
@@ -213,8 +224,8 @@ $(document).ready(function () {
                 forma_pago_id: forma_pago_id,
                 name: forma_pago_name,
                 code: forma_pago_code,
-                metodo_pago_cfdi: 'PUE', // Default
-                uso_cfdi: 'G03',         // Default
+                metodo_pago_cfdi: $('#client_metodo_pago').val() || 'PUE', 
+                uso_cfdi: $('#client_uso_cfdi').val() || 'G03',         
                 items: []
             };
         }
@@ -247,30 +258,13 @@ $(document).ready(function () {
                         <div class="col-xs-6" style="padding-left: 0; padding-right: 5px;">
                             <label style="font-size: 9px; color: #999; margin-bottom: 2px;">MÉTODO PAGO (CFDI):</label>
                             <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${section_id}', 'metodo_pago_cfdi', this.value)">
-                                <option value="PUE" ${group.metodo_pago_cfdi === 'PUE' ? 'selected' : ''}>PUE - Una sola exhibición</option>
-                                <option value="PPD" ${group.metodo_pago_cfdi === 'PPD' ? 'selected' : ''}>PPD - Parcialidades</option>
+                                ${(window.SAT_METODO_PAGO || []).map(opt => `<option value="${opt.code}" ${group.metodo_pago_cfdi === opt.code ? 'selected' : ''}>${opt.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="col-xs-6" style="padding-right: 0; padding-left: 5px;">
                             <label style="font-size: 9px; color: #999; margin-bottom: 2px;">USO CFDI:</label>
                             <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${section_id}', 'uso_cfdi', this.value)">
-                                <option value="G01" ${group.uso_cfdi === 'G01' ? 'selected' : ''}>G01 - Adquisición de mercancías</option>
-                                <option value="G02" ${group.uso_cfdi === 'G02' ? 'selected' : ''}>G02 - Devoluciones, desc. o bonif.</option>
-                                <option value="G03" ${group.uso_cfdi === 'G03' ? 'selected' : ''}>G03 - Gastos en general</option>
-                                <option value="I01" ${group.uso_cfdi === 'I01' ? 'selected' : ''}>I01 - Construcciones</option>
-                                <option value="I02" ${group.uso_cfdi === 'I02' ? 'selected' : ''}>I02 - Mobiliario y equipo de oficina</option>
-                                <option value="I03" ${group.uso_cfdi === 'I03' ? 'selected' : ''}>I03 - Equipo de transporte</option>
-                                <option value="I04" ${group.uso_cfdi === 'I04' ? 'selected' : ''}>I04 - Equipo de cómputo</option>
-                                <option value="D01" ${group.uso_cfdi === 'D01' ? 'selected' : ''}>D01 - Honorarios médicos, dentales...</option>
-                                <option value="D02" ${group.uso_cfdi === 'D02' ? 'selected' : ''}>D02 - Gastos médicos por inc...</option>
-                                <option value="D03" ${group.uso_cfdi === 'D03' ? 'selected' : ''}>D03 - Gastos funerales</option>
-                                <option value="D04" ${group.uso_cfdi === 'D04' ? 'selected' : ''}>D04 - Donativos</option>
-                                <option value="D07" ${group.uso_cfdi === 'D07' ? 'selected' : ''}>D07 - Primas seguros gastos med.</option>
-                                <option value="D08" ${group.uso_cfdi === 'D08' ? 'selected' : ''}>D08 - Gastos transp. escolar obl.</option>
-                                <option value="D10" ${group.uso_cfdi === 'D10' ? 'selected' : ''}>D10 - Pagos servicios educativos</option>
-                                <option value="CP01" ${group.uso_cfdi === 'CP01' ? 'selected' : ''}>CP01 - Pagos</option>
-                                <option value="CN01" ${group.uso_cfdi === 'CN01' ? 'selected' : ''}>CN01 - Nómina</option>
-                                <option value="S01" ${group.uso_cfdi === 'S01' ? 'selected' : ''}>S01 - Sin efectos fiscales</option>
+                                ${(window.SAT_USO_CFDI || []).map(opt => `<option value="${opt.code}" ${group.uso_cfdi === opt.code ? 'selected' : ''}>${opt.name}</option>`).join('')}
                             </select>
                         </div>
                     </div>

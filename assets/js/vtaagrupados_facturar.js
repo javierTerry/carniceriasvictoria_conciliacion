@@ -44,11 +44,22 @@ $(document).ready(function () {
         $('#client_nombre').val(data.nombre);
         $('#client_ap_paterno').val(data.ap_paterno);
         $('#client_cp').val(data.cp);
+        $('#client_metodo_pago').val(data.metodo_pago_code);
+        $('#client_uso_cfdi').val(data.uso_cfdi_code);
 
         // Actualizar etiquetas visuales
         $('#lbl_rfc').text(data.rfc || '---');
         $('#lbl_razon_social').text(data.razon_social || '---');
         $('#lbl_cp').text(data.cp || '---');
+        $('#lbl_metodo_pago').text(data.metodo_pago_code || '---');
+        $('#lbl_uso_cfdi').text(data.uso_cfdi_code || '---');
+
+        // Aplicar defaults del cliente a todas las secciones ya creadas
+        Object.keys(managedItems).forEach(section_id => {
+            if (data.metodo_pago_code) managedItems[section_id].metodo_pago_cfdi = data.metodo_pago_code;
+            if (data.uso_cfdi_code) managedItems[section_id].uso_cfdi = data.uso_cfdi_code;
+        });
+        renderManagementTables();
         
         const toast = Swal.mixin({
             toast: true,
@@ -179,8 +190,8 @@ $(document).ready(function () {
                 forma_pago_id: forma_pago_id,
                 name: forma_pago_name,
                 code: forma_pago_code,
-                metodo_pago_cfdi: 'PUE',
-                uso_cfdi: 'G03',
+                metodo_pago_cfdi: $('#client_metodo_pago').val() || 'PUE',
+                uso_cfdi: $('#client_uso_cfdi').val() || 'G03',
                 items: []
             };
         }
@@ -198,33 +209,57 @@ $(document).ready(function () {
             let subtotal = 0;
             
             html += `
-            <div class="management-table-container" style="margin-bottom: 15px; border: 1px solid #e1e8ed; border-radius: 4px; overflow: hidden; background: white;">
-                <div style="background: #f8f9fa; color: #34495e; padding: 10px; font-weight: bold; border-bottom: 1px solid #e1e8ed;">
+            <div class="management-table-container" style="margin-bottom: 15px; border: 1px solid #e1e8ed; border-radius: 4px; overflow: hidden; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                <div style="background: #f8f9fa; color: #34495e; padding: 6px 10px; font-weight: bold; border-bottom: 1px solid #e1e8ed;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                        <span style="text-transform: uppercase; font-size: 11px;">
-                            <i class="fa fa-credit-card" style="color: #26B99A;"></i> ${group.name}
+                        <span style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; color: #73879C;">
+                            <i class="fa fa-credit-card" style="color: #26B99A; margin-right: 5px;"></i> ${group.name}
                         </span>
-                        <button class="btn btn-link btn-xs" style="color: #d9534f; text-decoration: none;" onclick="removeTable('${section_id}')">
-                            <i class="fa fa-trash"></i> Quitar
+                        <button class="btn btn-link btn-xs" style="color: #d9534f; text-decoration: none; padding: 0; font-size: 10px; height: auto;" onclick="removeTable('${section_id}')" title="Eliminar Sección">
+                            <i class="fa fa-trash"></i> Eliminar
                         </button>
+                    </div>
+                    
+                    <div class="row" style="margin: 0; padding-top: 5px; border-top: 1px solid #eee;">
+                        <div class="col-xs-6" style="padding-left: 0; padding-right: 5px;">
+                            <label style="font-size: 9px; color: #999; margin-bottom: 2px;">MÉTODO PAGO (CFDI):</label>
+                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${section_id}', 'metodo_pago_cfdi', this.value)">
+                                ${(window.SAT_METODO_PAGO || []).map(opt => `<option value="${opt.code}" ${group.metodo_pago_cfdi === opt.code ? 'selected' : ''}>${opt.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="col-xs-6" style="padding-right: 0; padding-left: 5px;">
+                            <label style="font-size: 9px; color: #999; margin-bottom: 2px;">USO CFDI:</label>
+                            <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${section_id}', 'uso_cfdi', this.value)">
+                                ${(window.SAT_USO_CFDI || []).map(opt => `<option value="${opt.code}" ${group.uso_cfdi === opt.code ? 'selected' : ''}>${opt.name}</option>`).join('')}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-condensed" style="margin-bottom: 0; font-size: 11px;">
+                         <thead style="background: #ffffff;">
+                            <tr style="color: #999; font-size: 9px; text-transform: uppercase;">
+                                <th style="padding: 4px 10px; border-top: none;">Producto</th>
+                                <th class="text-right" style="padding: 4px 10px; border-top: none;">Cant</th>
+                                <th class="text-right" style="padding: 4px 10px; border-top: none;">Precio</th>
+                                <th class="text-right" style="padding: 4px 10px; border-top: none;">Total</th>
+                                <th style="width: 30px; border-top: none;"></th>
+                            </tr>
+                         </thead>
                          <tbody>`;
             
             group.items.forEach((item, index) => {
                 subtotal += item.amount;
                 totalAccumulated += item.amount;
                 html += `
-                <tr>
-                    <td style="padding-left: 15px;">${item.name}</td>
-                    <td class="text-right">${item.qty.toFixed(3)}</td>
-                    <td class="text-right">$${item.price.toFixed(2)}</td>
-                    <td class="text-right"><strong>$${item.amount.toFixed(2)}</strong></td>
-                    <td class="text-center">
-                        <button class="btn btn-default btn-xs" style="color: #d9534f;" onclick="removeItem('${section_id}', ${index})">
-                            <i class="fa fa-times"></i>
+                <tr style="border-bottom: 1px solid #f8f9fa;">
+                    <td style="padding: 4px 10px; vertical-align: middle;">${item.name}</td>
+                    <td class="text-right" style="padding: 4px 10px; vertical-align: middle; color: #34495e;">${item.qty.toFixed(3)}</td>
+                    <td class="text-right" style="padding: 4px 10px; vertical-align: middle; color: #73879C;">$${item.price.toFixed(2)}</td>
+                    <td class="text-right" style="padding: 4px 10px; vertical-align: middle; font-weight: 600; color: #34495e;">$${item.amount.toFixed(2)}</td>
+                    <td class="text-center" style="padding: 4px 10px; vertical-align: middle;">
+                        <button class="btn btn-default btn-xs" style="border-radius: 50%; color: #d9534f; border-color: #f2dede; padding: 0 4px; font-size: 9px;" onclick="removeItem('${section_id}', ${index})" title="Quitar">
+                            <i class="fa fa-times" style="font-size: 9px;"></i>
                         </button>
                     </td>
                 </tr>`;
@@ -232,32 +267,14 @@ $(document).ready(function () {
             
             html += `
                          </tbody>
-                         <tfoot style="background: #fcfdfd; font-weight: bold;">
+                         <tfoot style="background: #fcfdfd; font-weight: bold; border-top: 1px solid #e1e8ed;">
                             <tr>
-                                <td colspan="3" class="text-right">SUB TOTAL:</td>
-                                <td class="text-right" style="color: #26B99A;">$${subtotal.toFixed(2)}</td>
+                                <td colspan="3" class="text-right" style="padding: 6px 10px; font-size: 10px; color: #999;">SUB TOTAL:</td>
+                                <td class="text-right" style="padding: 6px 10px; color: #26B99A; font-size: 11px;">$${subtotal.toFixed(2)}</td>
                                 <td></td>
                             </tr>
                          </tfoot>
                     </table>
-                </div>
-                <div class="panel-footer" style="padding: 5px 10px;">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <select class="form-control input-sm" onchange="updateGroupField('${section_id}', 'metodo_pago_cfdi', this.value)">
-                                <option value="PUE">PUE - Pago en una sola exhibición</option>
-                                <option value="PPD">PPD - Pago en parcialidades</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-6">
-                            <select class="form-control input-sm" onchange="updateGroupField('${section_id}', 'uso_cfdi', this.value)">
-                                <option value="G03" selected>G03 - Gastos en general</option>
-                                <option value="G01">G01 - Adquisición de mercancías</option>
-                                <option value="S01">S01 - Sin efectos fiscales</option>
-                                <option value="CP01">CP01 - Pagos</option>
-                            </select>
-                        </div>
-                    </div>
                 </div>
             </div>`;
         });
@@ -329,9 +346,12 @@ $(document).ready(function () {
             let itemsPayload = group.items.map(item => ({ name: item.name, qty: item.qty, price: item.price, amount: item.amount }));
             group.items.forEach(item => subtotal += item.amount);
             
+            // Obtener el nombre del grupo para usarlo como mov_id (regla de negocio)
+            const finalMovId = $('#raw_group_name').val() || ("GRP-" + group_id);
+
             if (subtotal > 0) {
                 invoices.push({
-                    mov_id: "GRP-" + group_id, 
+                    mov_id: finalMovId, 
                     branch: branch,
                     monto: subtotal,
                     metodo_pago: group.name,
@@ -427,6 +447,13 @@ $(document).ready(function () {
             data: { group_id: gid, branch: br, manage: 1 },
             success: function (response) {
                 $("#ticket_preview").html(response);
+                
+                // Actualizar descripción del grupo en la cabecera
+                const groupName = $('#raw_group_name').val();
+                if (groupName) {
+                    $('#group_name_display').text(`(${groupName})`);
+                }
+
                 availableItems = [];
                 try {
                     $("#ticket_preview .ticket-table tbody tr").each(function() {

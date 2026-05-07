@@ -27,7 +27,30 @@ $(document).ready(function() {
             updateRazonSocial();
         }
     });
+
+    // Poblar catálogos SAT en el modal
+    populateSatCatalogs();
 });
+
+/**
+ * Puebla los selectores de SAT con los datos cargados globalmente
+ */
+function populateSatCatalogs() {
+    var $metodo = $("#metodo_pago_code");
+    var $uso = $("#uso_cfdi_code");
+
+    if (window.SAT_METODO_PAGO && window.SAT_METODO_PAGO.length > 0) {
+        window.SAT_METODO_PAGO.forEach(function(opt) {
+            $metodo.append(new Option(opt.name, opt.code));
+        });
+    }
+
+    if (window.SAT_USO_CFDI && window.SAT_USO_CFDI.length > 0) {
+        window.SAT_USO_CFDI.forEach(function(opt) {
+            $uso.append(new Option(opt.name, opt.code));
+        });
+    }
+}
 
 /**
  * Maneja la visibilidad y atributos de los campos según el tipo de persona (RFC)
@@ -181,6 +204,8 @@ function editCust(data) {
     $("#municipio").val(data.municipio);
     $("#estado").val(data.estado);
     $("#cp").val(data.cp);
+    $("#metodo_pago_code").val(data.metodo_pago_code);
+    $("#uso_cfdi_code").val(data.uso_cfdi_code);
 
     $(".has-error").removeClass("has-error");
     handlePersonaLogic(data.rfc); 

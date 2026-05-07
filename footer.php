@@ -1,7 +1,7 @@
  
                 <footer><!-- footer content -->
                         <div class="pull-right">
-                             Este sistema esta en produccion
+                             Este sistema esta en <?php echo $ambiente; ?>
                         </div>
                         <div class="clearfix"></div>
                 </footer><!-- /footer content -->

@@ -134,6 +134,7 @@ $res_items = mysqli_query($targetConn, $sql_items);
 
     <?php if (isset($_GET['manage'])): ?>
         <input type="hidden" id="raw_ticket_total" value="<?php echo $calculated_total_amount; ?>">
+        <input type="hidden" id="raw_group_name" value="<?php echo htmlspecialchars($group['name']); ?>">
     <?php endif; ?>
 </div>
 <?php mysqli_close($targetConn); ?>

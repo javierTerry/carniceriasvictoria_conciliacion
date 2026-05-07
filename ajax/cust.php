@@ -19,7 +19,7 @@ function mapCustomerData(array $input): array {
         'razon_social', 'calle', 'noext', 'noint', 'colonia', 
         'municipio', 'estado', 'cp', 'email', 'phone', 
         'nombre', 'ap_paterno', 'ap_materno', 
-        'rfc', 'regimen_fiscal'
+        'rfc', 'regimen_fiscal', 'metodo_pago_code', 'uso_cfdi_code'
     ];
     
     $mapped = [];
@@ -65,6 +65,14 @@ function validateCustomerData(array $data): array {
 
     if (empty($data['regimen_fiscal'])) {
         $errors[] = "El Régimen Fiscal es obligatorio.";
+    }
+
+    if (empty($data['metodo_pago_code'])) {
+        $errors[] = "El Método de Pago (CFDI) es obligatorio.";
+    }
+
+    if (empty($data['uso_cfdi_code'])) {
+        $errors[] = "El Uso de CFDI es obligatorio.";
     }
 
     if (strlen($rfc) === 13) {
@@ -243,14 +251,17 @@ if ($action === 'save') {
             $sql = "UPDATE cust SET 
                     razon_social=?, calle=?, noext=?, noint=?, colonia=?, municipio=?, 
                     estado=?, cp=?, email=?, phone=?, 
-                    nombre=?, ap_paterno=?, ap_materno=?, rfc=?, regimen_fiscal=?, es_persona_fisica=? 
+                    nombre=?, ap_paterno=?, ap_materno=?, rfc=?, regimen_fiscal=?, 
+                    metodo_pago_code=?, uso_cfdi_code=?, es_persona_fisica=? 
                     WHERE id=?";
             $stmt = $conexion_gen->prepare($sql);
-            $stmt->bind_param("ssssssssssssssssi", 
+            $stmt->bind_param("ssssssssssssssssssi", 
                 $data['razon_social'], $data['calle'], $data['noext'], $data['noint'], 
                 $data['colonia'], $data['municipio'], $data['estado'], $data['cp'], $data['email'], 
                 $data['phone'], $data['nombre'], $data['ap_paterno'], $data['ap_materno'], 
-                $data['rfc'], $data['regimen_fiscal'], $data['es_persona_fisica'], $id
+                $data['rfc'], $data['regimen_fiscal'], 
+                $data['metodo_pago_code'], $data['uso_cfdi_code'], 
+                $data['es_persona_fisica'], $id
             );
             $msg = "Cliente actualizado correctamente.";
         } else {
@@ -260,15 +271,18 @@ if ($action === 'save') {
             $sql = "INSERT INTO cust (
                     code, razon_social, calle, noext, noint, colonia, municipio, 
                     estado, cp, email, phone, 
-                    nombre, ap_paterno, ap_materno, rfc, regimen_fiscal, es_persona_fisica,
+                    nombre, ap_paterno, ap_materno, rfc, regimen_fiscal, 
+                    metodo_pago_code, uso_cfdi_code, es_persona_fisica,
                     balance, is_new, is_active, lastin_at, lastout_at
-                    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 0.00, 1, 1, CURDATE(), CURDATE())";
+                    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 0.00, 1, 1, CURDATE(), CURDATE())";
             $stmt = $conexion_gen->prepare($sql);
-            $stmt->bind_param("ssssssssssssssssi", 
+            $stmt->bind_param("ssssssssssssssssssi", 
                 $new_code, $data['razon_social'], $data['calle'], $data['noext'], $data['noint'], 
                 $data['colonia'], $data['municipio'], $data['estado'], $data['cp'], $data['email'], 
                 $data['phone'], $data['nombre'], $data['ap_paterno'], $data['ap_materno'], 
-                $data['rfc'], $data['regimen_fiscal'], $data['es_persona_fisica']
+                $data['rfc'], $data['regimen_fiscal'], 
+                $data['metodo_pago_code'], $data['uso_cfdi_code'], 
+                $data['es_persona_fisica']
             );
             $msg = "Cliente registrado con éxito (Código: $new_code).";
         }

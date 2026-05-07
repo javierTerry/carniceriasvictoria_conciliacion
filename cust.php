@@ -110,6 +110,26 @@ include "sidebar.php";
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="metodo_pago_code" class="col-sm-4 control-label">Método Pago*</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" id="metodo_pago_code" name="metodo_pago_code" required>
+                                        <option value="">-- Seleccionar --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="uso_cfdi_code" class="col-sm-4 control-label">Uso CFDI*</label>
+                                <div class="col-sm-8">
+                                    <select class="form-control" id="uso_cfdi_code" name="uso_cfdi_code" required>
+                                        <option value="">-- Seleccionar --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- SECCIÓN DE IDENTIFICACIÓN -->
