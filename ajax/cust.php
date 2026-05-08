@@ -43,6 +43,9 @@ function mapCustomerData(array $input): array {
         $mapped['ap_materno'] = '';
     }
     
+    // Formatear CP a 5 dígitos con ceros a la izquierda
+    $mapped['cp'] = str_pad(substr(preg_replace('/[^0-9]/', '', (string)($mapped['cp'] ?? "00000")), 0, 5), 5, "0", STR_PAD_LEFT);
+
     return $mapped;
 }
 

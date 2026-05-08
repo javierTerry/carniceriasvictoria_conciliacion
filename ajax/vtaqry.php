@@ -155,7 +155,6 @@ if ($action == 'ajax') {
           <th>Fecha</th>
           <th>Hora</th>
           <th>Forma Pago</th>
-          <th>Fecha Fact.</th>
           <th>Monto</th>
           <th>Estatus</th>
           <th class="text-right">Acciones</th>
@@ -174,7 +173,6 @@ if ($action == 'ajax') {
             <td><?php echo $fecha_f; ?></td>
             <td><?php echo $r['hour_at']; ?></td>
             <td><?php echo $r['fname']; ?></td>
-            <td>---</td>
             <td align="right"><?php echo number_format($r['sumimp'], 2); ?></td>
             <td>
               <?php

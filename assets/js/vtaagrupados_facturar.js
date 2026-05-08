@@ -359,7 +359,8 @@ $(document).ready(function () {
                     metodo_pago_cfdi: group.metodo_pago_cfdi,
                     uso_cfdi: group.uso_cfdi,
                     // Datos del cliente seleccionado
-                    rfc_receptor: $('#client_rfc').val(),
+                    cust_id: $('#client_selector').val(),
+                    rfc_receptor: $('#client_rfc_receptor').val() || $('#client_rfc').val(),
                     razon_social: $('#client_razon_social').val(),
                     regimen_fiscal: $('#client_regimen').val(),
                     es_persona_fisica: $('#client_es_fisica').val(),

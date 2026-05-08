@@ -25,11 +25,11 @@ include "sidebar.php";
                                     onkeyup='load(1);'>
                             </div>
 
-                            <input type="hidden" id="branch_filter" value="<?php echo $_GET['branch'] ?? ''; ?>">
+                            <input type="hidden" id="branch_filter" value="<?php echo isset($_GET['branch']) ? $_GET['branch'] : ''; ?>">
 
-                            <label for="fpay_filter" class="col-md-1 control-label">Pago</label>
+                            <label for="client_filter" class="col-md-1 control-label">Cliente</label>
                             <div class="col-md-3">
-                                <input type="text" class="form-control" id="fpay_filter" placeholder="Forma de pago..."
+                                <input type="text" class="form-control" id="client_filter" placeholder="Nombre del cliente..."
                                     onkeyup='load(1);'>
                             </div>
 
@@ -66,17 +66,18 @@ include "sidebar.php";
 
 <script>
     function load(page) {
+        window.current_page = page;
         var q = $("#q").val();
         var per_page = $("#per_page").val();
         var branch = $("#branch_filter").val();
-        var fpay = $("#fpay_filter").val();
+        var client = $("#client_filter").val();
         var parametros = {
             "action": "ajax",
             "page": page,
             "q": q,
             "per_page": per_page,
             "branch": branch,
-            "fpay": fpay
+            "client": client
         };
         $("#resultados").fadeIn('slow');
         $.ajax({
@@ -88,6 +89,9 @@ include "sidebar.php";
             success: function (data) {
                 $(".outer_div").html(data).fadeIn('slow');
                 $("#resultados").html("");
+            },
+            error: function (xhr, status, error) {
+                $("#resultados").html('<div class="alert alert-danger">Error al cargar datos: ' + xhr.status + ' ' + error + '</div>');
             }
         });
     }

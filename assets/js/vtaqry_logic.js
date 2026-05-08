@@ -106,9 +106,9 @@ function changeStatusPrompt(mov_id, branch, cliente, monto, fname, status) {
                 title: 'Estatus cambiado a Pendiente exitosamente'
             });
 
-            // Recargamos los datos de la tabla
+            // Recargamos los datos de la tabla manteniendo la página actual
             if (typeof load === 'function') {
-                load(1);
+                load(window.current_page || 1);
             }
         }
     });
