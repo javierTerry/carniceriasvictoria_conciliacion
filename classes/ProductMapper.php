@@ -95,15 +95,37 @@ class ProductMapper {
     }
 
     /**
-     * Obtiene todos los productos del catálogo.
+     * Obtiene productos con soporte para búsqueda y paginación.
      */
-    public function findAll() {
-        $sql = "SELECT id, descripcion, clave_sat, servicios, unidad_sat, unidad FROM arts ORDER BY descripcion ASC";
+    public function findAll($q = '', $limit = 25, $offset = 0) {
+        $sWhere = "";
+        $params = array();
+        $types = "";
+
+        if (!empty($q)) {
+            $sWhere = " WHERE descripcion LIKE ? OR clave_sat LIKE ? ";
+            $search_q = "%$q%";
+            $params[] = $search_q;
+            $params[] = $search_q;
+            $types = "ss";
+        }
+
+        $sql = "SELECT id, descripcion, clave_sat, servicios, unidad_sat, unidad FROM arts $sWhere ORDER BY descripcion ASC LIMIT ?, ?";
         $stmt = $this->db->prepare($sql);
         if (!$stmt) {
             $this->log("Error en prepare findAll: " . $this->db->error, "ERROR");
             return array();
         }
+
+        $params[] = intval($offset);
+        $params[] = intval($limit);
+        $types .= "ii";
+
+        $bind_params = array($types);
+        foreach ($params as $key => $value) {
+            $bind_params[] = &$params[$key];
+        }
+        call_user_func_array(array($stmt, 'bind_param'), $bind_params);
         
         $stmt->execute();
         $stmt->store_result();
@@ -125,14 +147,24 @@ class ProductMapper {
     }
 
     /**
-     * Cuenta el total de productos en el catálogo.
+     * Cuenta el total de productos con soporte para filtros.
      */
-    public function count() {
-        $sql = "SELECT COUNT(*) FROM arts";
+    public function count($q = '') {
+        $sWhere = "";
+        if (!empty($q)) {
+            $sWhere = " WHERE descripcion LIKE ? OR clave_sat LIKE ? ";
+        }
+
+        $sql = "SELECT COUNT(*) FROM arts $sWhere";
         $stmt = $this->db->prepare($sql);
         if (!$stmt) {
             $this->log("Error en prepare count: " . $this->db->error, "ERROR");
             return 0;
+        }
+
+        if (!empty($q)) {
+            $search_q = "%$q%";
+            $stmt->bind_param("ss", $search_q, $search_q);
         }
         
         $stmt->execute();

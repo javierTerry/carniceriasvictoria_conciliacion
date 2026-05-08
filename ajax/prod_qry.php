@@ -64,8 +64,15 @@ if ($action == 'ajax') {
                 </tbody>
             </table>
             <div class="row">
-                <div class="col-md-12 text-center">
-                    <?php echo paginate('', $page, $total_pages, $adjacents); ?>
+                <div class="col-sm-6" style="padding-top: 15px;">
+                    <?php
+                    $start = $offset + 1;
+                    $end = min($offset + $per_page, $numrows);
+                    echo "Mostrando $start a $end de $numrows productos";
+                    ?>
+                </div>
+                <div class="col-sm-6 text-right">
+                    <?php if ($total_pages > 1) echo paginate('', $page, $total_pages, $adjacents); ?>
                 </div>
             </div>
         </div>
