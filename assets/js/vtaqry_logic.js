@@ -106,9 +106,9 @@ function changeStatusPrompt(mov_id, branch, cliente, monto, fname, status) {
                 title: 'Estatus cambiado a Pendiente exitosamente'
             });
 
-            // Recargamos los datos de la tabla
+            // Recargamos los datos de la tabla manteniendo la página actual
             if (typeof load === 'function') {
-                load(1);
+                load(window.current_page || 1);
             }
         }
     });
@@ -133,8 +133,12 @@ function agruparTicket(mov_id, branch, monto, cust_id, cliente) {
             });
 
             Swal.fire({
-                title: 'Agrupar Tickets - ' + cliente,
+                title: 'Agrupar Ticket #' + mov_id,
                 html: `
+                    <div style="text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee;">
+                        <p style="margin-bottom: 5px;"><b>Cliente Ticket:</b> ${cliente}</p>
+                        <p style="margin-bottom: 0;"><b>Monto:</b> $${parseFloat(monto).toFixed(2)}</p>
+                    </div>
                     <div style="text-align: left;">
                         <div class="form-group">
                             <label>Seleccionar Grupo:</label>

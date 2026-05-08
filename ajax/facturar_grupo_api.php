@@ -76,37 +76,23 @@ while ($item = mysqli_fetch_array($res_items, MYSQLI_ASSOC)) {
 }
 
 // ---------------------------------------------------------
-// REUTILIZACIÓN DE LÓGICA DE SINUBE (Basado en facturar_api.php)
+// REUTILIZACIÓN DE LÓGICA DE SINUBE (Basado en SinubeHelper)
 // ---------------------------------------------------------
+$log_dir = __DIR__ . "/../logs";
+$log_file = $log_dir . "/facturacion_grupal.log";
+$target_serie = $branchSeriesMap[$branch] ?? '';
 
 // PASO 1: Obtener Certificado (Folio y Serie)
-$url_cert = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz0xMQplbXA9VVJFMTgwNDI5VE02LTM5CnN1Yz1NYXRyaXoKdXN1PWF0ZW5jaW9uc29sdWNpb25lc3J5akBnbWFpbC5jb20KcHdkPXByb3ZlZWRvcmVzCnNpcz1PQlJBRE9SQ0FSTklDRVJJQQ==";
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url_cert);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-$response_cert = curl_exec($ch);
-curl_close($ch);
-
-if (!$response_cert) {
-    echo json_encode(['success' => false, 'message' => 'Error al consultar folio/serie en SINUBE.']);
-    exit;
-}
-
-$target_cert = "30001000000500003441";
 try {
-    $xml_obj = simplexml_load_string($response_cert);
-    $nodes = $xml_obj->xpath("//*[@noCertificado='$target_cert']");
-    if (!$nodes) throw new Exception("Certificado no encontrado.");
-    $node = $nodes[0];
-    $serie = (string) ($node->foliador['serie'] ?? '');
-    $folio = (string) ($node->foliador['folioActual'] ?? '');
-    $folio++;
-} catch (Exception $e) {
+    $sinube = new SinubeHelper($log_file);
+    $folioData = $sinube->getFolioActual($api_url_cert, $api_no_certificado, $target_serie);
+    
+    $serie = $folioData['serie'];
+    $folio = (string)($folioData['folioActual'] + 1);
+
+    error_log("[" . date('Y-m-d H:i:s') . "] Folio Grupo Obtenido: Serie=$serie, Folio=$folio \n", 3, $log_file);
+} catch (Throwable $e) {
+    error_log("[" . date('Y-m-d H:i:s') . "] Error en PASO 1 Grupal: " . $e->getMessage() . "\n", 3, $log_file);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     exit;
 }

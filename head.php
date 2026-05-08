@@ -66,6 +66,8 @@ if(count($row) == 0){
   $created_at = $row['created_at'];
 }
 
+// Cargar catálogos SAT globalmente (desde BD General)
+$sat_catalogs = getSATCatalogs();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -122,6 +124,10 @@ if(count($row) == 0){
            <!-- Global Layout Fixes -->
            <link rel="stylesheet" href="assets/css/layout.css?v=<?php echo time(); ?>">
 
+            <script>
+                window.SAT_USO_CFDI = <?php echo json_encode($sat_catalogs['uso_cfdi']); ?>;
+                window.SAT_METODO_PAGO = <?php echo json_encode($sat_catalogs['metodo_pago']); ?>;
+            </script>
       </head>
 
       <body class="nav-md">

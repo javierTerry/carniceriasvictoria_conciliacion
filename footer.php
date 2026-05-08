@@ -1,7 +1,7 @@
  
                 <footer><!-- footer content -->
                         <div class="pull-right">
-                             Este sistema esta en produccion
+                             Este sistema esta en <?php echo $ambiente; ?>
                         </div>
                         <div class="clearfix"></div>
                 </footer><!-- /footer content -->
@@ -12,6 +12,8 @@
         <script src="js/jquery/dist/jquery.min.js"></script>
         <!-- Bootstrap -->
         <script src="css/bootstrap/dist/js/bootstrap.min.js"></script>
+        <!-- Select2 -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <!-- FastClick -->
         <script src="js/fastclick/lib/fastclick.js"></script>
         <!-- NProgress -->

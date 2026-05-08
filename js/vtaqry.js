@@ -46,7 +46,7 @@ function eliminar(id) {
 				if (redirect) {
 					window.location.href = redirect;
 				} else {
-					load(1);
+					load(window.current_page || 1);
 				}
 			}
 		});
