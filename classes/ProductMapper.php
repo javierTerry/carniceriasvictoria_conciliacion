@@ -58,6 +58,92 @@ class ProductMapper {
     }
 
     /**
+     * Obtiene un producto por su ID único.
+     */
+    public function findById($id) {
+        $sql = "SELECT id, descripcion, clave_sat, servicios, unidad_sat, unidad FROM arts WHERE id = ? LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            $this->log("Error en prepare findById: " . $this->db->error, "ERROR");
+            return null;
+        }
+        
+        $id = intval($id);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->store_result();
+        
+        if ($stmt->num_rows === 0) {
+            $stmt->close();
+            return null;
+        }
+
+        $stmt->bind_result($r_id, $desc, $clave_sat, $servicios, $unidad_sat, $unidad);
+        $data = null;
+        if ($stmt->fetch()) {
+            $data = array(
+                'id' => $r_id,
+                'descripcion' => $desc,
+                'clave_sat' => $clave_sat,
+                'servicios' => $servicios,
+                'unidad_sat' => $unidad_sat,
+                'unidad' => $unidad
+            );
+        }
+        $stmt->close();
+        return $data;
+    }
+
+    /**
+     * Obtiene todos los productos del catálogo.
+     */
+    public function findAll() {
+        $sql = "SELECT id, descripcion, clave_sat, servicios, unidad_sat, unidad FROM arts ORDER BY descripcion ASC";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            $this->log("Error en prepare findAll: " . $this->db->error, "ERROR");
+            return array();
+        }
+        
+        $stmt->execute();
+        $stmt->store_result();
+        
+        $stmt->bind_result($id, $desc, $clave_sat, $servicios, $unidad_sat, $unidad);
+        $results = array();
+        while ($stmt->fetch()) {
+            $results[] = array(
+                'id' => $id,
+                'descripcion' => $desc,
+                'clave_sat' => $clave_sat,
+                'servicios' => $servicios,
+                'unidad_sat' => $unidad_sat,
+                'unidad' => $unidad
+            );
+        }
+        $stmt->close();
+        return $results;
+    }
+
+    /**
+     * Cuenta el total de productos en el catálogo.
+     */
+    public function count() {
+        $sql = "SELECT COUNT(*) FROM arts";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            $this->log("Error en prepare count: " . $this->db->error, "ERROR");
+            return 0;
+        }
+        
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+        
+        return intval($count);
+    }
+
+    /**
      * Registro de logs.
      */
     private function log($message, $level = 'INFO') {
