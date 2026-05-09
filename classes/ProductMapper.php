@@ -98,12 +98,12 @@ class ProductMapper {
      * Obtiene productos con soporte para búsqueda y paginación.
      */
     public function findAll($q = '', $limit = 25, $offset = 0) {
-        $sWhere = "";
+        $sWhere = " WHERE is_active = 1 ";
         $params = array();
         $types = "";
 
         if (!empty($q)) {
-            $sWhere = " WHERE descripcion LIKE ? OR clave_sat LIKE ? ";
+            $sWhere .= " AND (descripcion LIKE ? OR clave_sat LIKE ?) ";
             $search_q = "%$q%";
             $params[] = $search_q;
             $params[] = $search_q;
@@ -150,9 +150,9 @@ class ProductMapper {
      * Cuenta el total de productos con soporte para filtros.
      */
     public function count($q = '') {
-        $sWhere = "";
+        $sWhere = " WHERE is_active = 1 ";
         if (!empty($q)) {
-            $sWhere = " WHERE descripcion LIKE ? OR clave_sat LIKE ? ";
+            $sWhere .= " AND (descripcion LIKE ? OR clave_sat LIKE ?) ";
         }
 
         $sql = "SELECT COUNT(*) FROM arts $sWhere";
@@ -173,6 +173,111 @@ class ProductMapper {
         $stmt->close();
         
         return intval($count);
+    }
+
+    /**
+     * Crea un nuevo producto en el catálogo.
+     */
+    public function create($data) {
+        $this->log("Iniciando creación de producto: " . json_encode($data));
+        
+        $sql = "INSERT INTO arts (descripcion, clave_sat, servicios, unidad_sat, unidad) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        
+        if (!$stmt) {
+            $this->log("Error en prepare create: " . $this->db->error, "ERROR");
+            return false;
+        }
+
+        $stmt->bind_param("sisss", 
+            $data['descripcion'], 
+            $data['clave_sat'], 
+            $data['servicios'], 
+            $data['unidad_sat'], 
+            $data['unidad']
+        );
+
+        if ($stmt->execute()) {
+            $this->log("Producto creado exitosamente. ID: " . $stmt->insert_id);
+            $stmt->close();
+            return true;
+        } else {
+            $this->log("Error al ejecutar create: " . $stmt->error, "ERROR");
+            $stmt->close();
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza un producto existente.
+     */
+    public function update($id, $data) {
+        $this->log("Iniciando actualización de producto ID $id: " . json_encode($data));
+        
+        $sql = "UPDATE arts SET descripcion = ?, clave_sat = ?, servicios = ?, unidad_sat = ?, unidad = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        
+        if (!$stmt) {
+            $this->log("Error en prepare update: " . $this->db->error, "ERROR");
+            return false;
+        }
+
+        $id = intval($id);
+        $stmt->bind_param("sisssi", 
+            $data['descripcion'], 
+            $data['clave_sat'], 
+            $data['servicios'], 
+            $data['unidad_sat'], 
+            $data['unidad'],
+            $id
+        );
+
+        if ($stmt->execute()) {
+            $this->log("Producto actualizado exitosamente. Filas afectadas: " . $stmt->affected_rows);
+            $stmt->close();
+            return true;
+        } else {
+            $this->log("Error al ejecutar update: " . $stmt->error, "ERROR");
+            $stmt->close();
+            return false;
+        }
+    }
+
+    /**
+     * Elimina un producto por su ID (Eliminación lógica / Soft delete).
+     */
+    public function delete($id) {
+        $this->log("Iniciando eliminación (soft-delete) de producto ID $id");
+        
+        // Intentamos con la columna 'is_active'
+        $sql = "UPDATE arts SET is_active = 0 WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        
+        if (!$stmt) {
+            $this->log("Error en prepare delete con is_active: " . $this->db->error, "WARNING");
+            
+            // Si falla, intentamos con 'estado'
+            $sql = "UPDATE arts SET estado = 0 WHERE id = ?";
+            $stmt = $this->db->prepare($sql);
+            
+            if (!$stmt) {
+                $this->log("Error en prepare delete con estado: " . $this->db->error, "ERROR");
+                return false;
+            }
+        }
+
+        $id = intval($id);
+        $stmt->bind_param("i", $id);
+
+        if ($stmt->execute()) {
+            $this->log("Producto eliminado (soft-delete) exitosamente. Filas afectadas: " . $stmt->affected_rows);
+            $stmt->close();
+            return true;
+        } else {
+            $this->log("Error al ejecutar delete (soft): " . $stmt->error, "ERROR");
+            $stmt->close();
+            return false;
+        }
     }
 
     /**

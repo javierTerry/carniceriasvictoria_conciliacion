@@ -48,18 +48,47 @@ $("#prod_form").submit(function(event) {
         url: "ajax/prod_action.php",
         data: parametros,
         beforeSend: function(objeto) {
-            $("#resultados").html('<div class="alert alert-info">Procesando...</div>');
+            // Mostrar un indicador de carga si se desea (o dejar vacío)
         },
         success: function(datos) {
             if (datos.success) {
-                $("#resultados").html('<div class="alert alert-success">' + datos.message + '</div>');
-                setTimeout(function() {
-                    $("#prodModal").modal('hide');
-                    $("#resultados").html('');
-                }, 1500);
+                // Cerrar modal y recargar datos inmediatamente
+                $("#prodModal").modal('hide');
                 load(1);
+                
+                // Mostrar SweetAlert que se cierra en 2 segundos
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: datos.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                } else {
+                    alert(datos.message);
+                }
             } else {
-                $("#resultados").html('<div class="alert alert-danger">' + datos.message + '</div>');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: datos.message
+                    });
+                } else {
+                    alert(datos.message);
+                }
+            }
+            $('#btn_save').attr("disabled", false);
+        },
+        error: function() {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error de comunicación con el servidor'
+                });
+            } else {
+                alert('Error de comunicación con el servidor');
             }
             $('#btn_save').attr("disabled", false);
         }
@@ -95,21 +124,73 @@ function editProduct(id) {
 }
 
 /**
- * Elimina un producto previa confirmación.
+ * Elimina un producto previa confirmación con SweetAlert.
  */
-function deleteProduct(id) {
-    if (confirm("\u00bfRealmente deseas eliminar este producto?")) {
-        $.ajax({
-            type: "POST",
-            url: "ajax/prod_action.php",
-            data: { action: 'delete', id: id },
-            success: function(datos) {
-                if (datos.success) {
-                    load(1);
+function deleteProduct(id, descripcion, clave_sat) {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '¿Confirmas la eliminación?',
+            html: 'Se realizará el eliminado del producto:<br><b>' + descripcion + '</b><br>Clave SAT: ' + clave_sat,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                executeDelete(id);
+            }
+        });
+    } else {
+        if (confirm("¿Realmente deseas eliminar el producto: " + descripcion + "?")) {
+            executeDelete(id);
+        }
+    }
+}
+
+/**
+ * Función interna para ejecutar el AJAX de eliminación.
+ */
+function executeDelete(id) {
+    $.ajax({
+        type: "POST",
+        url: "ajax/prod_action.php",
+        data: { action: 'delete', id: id },
+        success: function(datos) {
+            if (datos.success) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Eliminado',
+                        text: datos.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+                load(1);
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: datos.message
+                    });
                 } else {
                     alert(datos.message);
                 }
             }
-        });
-    }
+        },
+        error: function() {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error de comunicación al intentar eliminar'
+                });
+            } else {
+                alert('Error de comunicación con el servidor');
+            }
+        }
+    });
 }
