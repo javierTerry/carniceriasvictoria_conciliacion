@@ -442,6 +442,7 @@ $(document).ready(function () {
         let totalInvoices = invoices.length;
         let successCount = 0;
         let firstError = null;
+        let consultaMessages = [];
 
         Swal.fire({
             title: 'Procesando...',
@@ -464,10 +465,14 @@ $(document).ready(function () {
                 Swal.update({ text: `Facturando ${completedInvoices} de ${totalInvoices}...` });
                 if (certResponse && certResponse.success) {
                     successCount++;
+                } else if (certResponse && certResponse.is_consulta) {
+                    consultaMessages.push(certResponse.message);
                 } else {
                     if (!firstError) firstError = (certResponse && certResponse.message) ? certResponse.message : "Error al obtener datos.";
                 }
-            }).fail(function() {
+            }).fail(function( response ) {
+
+                console.log(response);
                 completedInvoices++;
                 Swal.update({ text: `Facturando ${completedInvoices} de ${totalInvoices}...` });
                 if (!firstError) firstError = "Fallo al conectar con el servidor para la factura de " + invData.metodo_pago + ".";
@@ -475,15 +480,32 @@ $(document).ready(function () {
         });
 
         $.when.apply($, ajaxPromises).always(function() {
-            if (successCount === totalInvoices) {
+            if (successCount === totalInvoices && totalInvoices > 0) {
                 proceedWithLocalCompletion();
             } else {
+                let alertTitle = 'Atención en Facturación';
+                let alertIcon = 'warning';
+                let alertText = '';
+                
+                if (consultaMessages.length > 0) {
+                    alertText = consultaMessages.join("<br><br>");
+                    if (firstError) {
+                        alertText += "<br><br><b>Además ocurrió un error:</b> " + firstError;
+                    }
+                    if (successCount > 0) {
+                        alertText += `<br><br><em>(Solo se generaron exitosamente ${successCount} de ${totalInvoices} solicitadas)</em>`;
+                    }
+                } else {
+                    alertIcon = 'error';
+                    alertText = `Se lograron facturar ${successCount} de ${totalInvoices}. Error: ${firstError}`;
+                }
+
                 Swal.fire({
-                    title: 'Error en Facturación',
-                    text: `Se lograron facturar ${successCount} de ${totalInvoices}. Error: ${firstError}`,
-                    icon: 'error',
+                    title: alertTitle,
+                    html: `<div style="text-align:left; font-size:14px;">${alertText}</div>`,
+                    icon: alertIcon,
                     confirmButtonColor: '#34495e',
-                    confirmButtonText: 'Cerrar'
+                    confirmButtonText: 'Entendido'
                 });
             }
         });
