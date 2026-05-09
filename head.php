@@ -93,7 +93,7 @@ $sat_catalogs = getSATCatalogs();
             <meta name="msapplication-TileColor" content="#000000">
             <meta name="theme-color" content="#000000">
           
-           <title><?php echo $title." ".$nameusr; ?> </title>
+           <title><?php echo $ambiente." ".$title." ".$nameusr; ?> </title>
 
            <!-- Bootstrap -->
            <link href="css/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
