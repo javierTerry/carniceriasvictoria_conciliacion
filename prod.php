@@ -3,7 +3,7 @@
  * prod.php
  * Catálogo de Productos - CRUD
  */
-$title = "Catálogo de Productos | ConsolidaCión";
+$title = "Catálogo de Productos ";
 include "head.php";
 include "sidebar.php";
 ?>

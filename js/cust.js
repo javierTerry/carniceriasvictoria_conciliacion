@@ -161,12 +161,11 @@ function validateForm() {
 function load(page) {
     var q = $("#q").val();
     var per_page = $("#per_page").val();
-    $("#loader").fadeIn('slow');
+    
     $.ajax({
         url: 'ajax/cust.php?action=ajax&page=' + page + '&q=' + q + '&per_page=' + per_page,
         success: function(data) {
             $(".outer_div").html(data);
-            $('#loader').hide();
         }
     });
 }

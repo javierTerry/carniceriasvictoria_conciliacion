@@ -55,7 +55,7 @@ if ($action == 'ajax') {
                             <td><?php echo htmlspecialchars((string)$unidad); ?></td>
                             <td class="last">
                                 <button type="button" class='btn btn-default btn-xs' title='Editar' onclick="editProduct('<?php echo $id; ?>');"><i class="fa fa-pencil"></i></button>
-                                <button type="button" class='btn btn-danger btn-xs' title='Borrar' onclick="deleteProduct('<?php echo $id; ?>');"><i class="fa fa-trash"></i></button>
+                                <button type="button" class='btn btn-danger btn-xs' title='Borrar' onclick="deleteProduct('<?php echo $id; ?>', '<?php echo addslashes(htmlspecialchars((string)$descripcion, ENT_QUOTES)); ?>', '<?php echo addslashes(htmlspecialchars((string)$clave_sat, ENT_QUOTES)); ?>');"><i class="fa fa-trash"></i></button>
                             </td>
                         </tr>
                         <?php

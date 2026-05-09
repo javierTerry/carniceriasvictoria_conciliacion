@@ -40,7 +40,7 @@ if (isset($_SESSION['user_id']) && $_SESSION !== null) {
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="theme-color" content="#000000">
 
-    <title>Sys Ventas | Conciliacion </title>
+    <title><?php echo $ambiente; ?> Victoria | Conciliacion </title>
 
     <!-- Bootstrap -->
 

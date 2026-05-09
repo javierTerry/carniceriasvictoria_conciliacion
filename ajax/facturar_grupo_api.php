@@ -141,10 +141,41 @@ curl_close($ch2);
 
 if ($http_code == 200) {
     $xml_resp = simplexml_load_string($response_envio);
+    
+    // Validar Errores devueltos por el portal, incluso si es código 200
+    $error_matches = $xml_resp->xpath("/Respuesta/error");
+    if (!empty($error_matches) && trim((string)$error_matches[0]) !== '') {
+        $error_msg = trim((string)$error_matches[0]);
+        echo json_encode(array(
+            'success' => false, 'message' => "Error de facturación grupal: " . $error_msg
+        ));
+        mysqli_close($targetConn);
+        exit;
+    }
+
     $uuid_matches = $xml_resp->xpath("/Respuesta/UUID");
+    $xml_matches = $xml_resp->xpath("/Respuesta/xml");
+    $pdf_matches = $xml_resp->xpath("/Respuesta/pdf");
+    $fecha_matches = $xml_resp->xpath("/Respuesta/fechaFactura");
+    
     $uuid = isset($uuid_matches[0]) ? (string)$uuid_matches[0] : '';
-    $link_xml = (string)$xml_resp->xpath("/Respuesta/xml")[0];
-    $link_pdf = (string)$xml_resp->xpath("/Respuesta/pdf")[0];
+    $link_xml = isset($xml_matches[0]) ? (string)$xml_matches[0] : '';
+    $link_pdf = isset($pdf_matches[0]) ? (string)$pdf_matches[0] : '';
+    $fecha_factura = isset($fecha_matches[0]) ? (string)$fecha_matches[0] : '';
+
+    $objTipoProceso = $xml_resp->xpath("/Respuesta/@tipoProceso");
+    $tipoProceso = isset($objTipoProceso[0]) ? strtoupper((string)$objTipoProceso[0]) : '';
+
+    if ($tipoProceso === "CONSULTA") {
+        mysqli_close($targetConn);
+        echo json_encode(array(
+            'success' => false, 
+            'is_consulta' => true,
+            'message' => "La factura grupal ya fue generada previamente con esta Serie y Folio. UUID: " . $uuid . " (Fecha: " . $fecha_factura . ")",
+            'uuid' => $uuid
+        ));
+        exit;
+    }
 
     if (!empty($uuid)) {
         mysqli_begin_transaction($targetConn);
