@@ -155,6 +155,18 @@ $q_status = $_GET['status'] ?? '';
           </li>
       </ul>
   </li> */ ?>
+             <li class="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'active' : ''; ?>">
+                <a><i class="fa fa-paw"></i> CERDO EN PIE (CEP) <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu" style="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'display: block;' : ''; ?>">
+                    <li class="<?php echo ($current_page == 'cep_creacion.php') ? 'active' : ''; ?>">
+                        <a href="cep_creacion.php">Creación</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'facturasqry.php' && $q_branch == 'CEP') ? 'active' : ''; ?>">
+                        <a href="facturasqry.php?branch=CEP">Facturados</a>
+                    </li>
+                </ul>
+            </li>
+
              <li class="<?php echo ($current_page == 'cust.php') ? 'active' : ''; ?>">
                 <a><i class="fa fa-folder-open"></i> CATÁLOGOS <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu" style="<?php echo ($current_page == 'cust.php' || $current_page == 'prod.php') ? 'display: block;' : ''; ?>">

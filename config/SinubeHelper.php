@@ -49,6 +49,8 @@ class SinubeHelper {
             if ($xml === false) {
                 throw new Exception("XML de respuesta de Sinube malformado.");
             }
+             $this->log( $targetSerie, 'INFO');
+            $this->log((string)$xml, 'INFO');
 
             $certNodes = $xml->xpath("//certificado[@noCertificado='" . $targetCert . "']");
             if (!$certNodes || count($certNodes) === 0) {

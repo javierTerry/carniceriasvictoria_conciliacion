@@ -107,6 +107,16 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.label-cep {
+    background-color: #26B99A !important;
+    /* Green */
+    color: var(--victoria-white) !important;
+    font-weight: 700;
+    font-size: 14px !important;
+    padding: 4px 8px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 /* Select Victoria Style */
 .select-victoria {
     border: 1px solid var(--victoria-gold) !important;
