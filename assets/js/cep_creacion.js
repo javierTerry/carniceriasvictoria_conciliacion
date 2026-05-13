@@ -225,8 +225,9 @@ $(document).ready(function () {
                 const timestamp = new Date().getTime();
 
                 for (let i = 0; i < numFacturas; i++) {
+                    var incremental =i+1
                     invoices.push({
-                        mov_id: 'CEP-' + timestamp + '-' + i,
+                        mov_id: 'CEP-' + timestamp + '-' + incremental,
                         branch: 'CEP',
                         monto: totalFacturaIndividual.toFixed(2),
                         metodo_pago: forma_pago_name,
