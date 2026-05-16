@@ -47,6 +47,7 @@ if (!$sale) {
 }
 
 // 3. Items
+mysqli_set_charset($targetConn, "utf8mb4");
 $vta_internal_id = $sale['id'] ?? 0;
 $sql_items = "SELECT A.qty, B.name, A.price, A.amount 
               FROM vtaitem A 
@@ -100,7 +101,7 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
                         <?php echo number_format($item['qty'], 3); ?>
                     </td>
                     <td>
-                        <?php echo utf8_decode($item['name']); ?>
+                        <?php echo ($item['name']); ?>
                     </td>
                     <td class="text-right">
                         <?php echo number_format($item['price'], 2); ?>
