@@ -101,7 +101,7 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
                         <?php echo number_format($item['qty'], 3); ?>
                     </td>
                     <td>
-                        <?php echo utf8_decode($item['name']); ?>
+                        <?php echo ($item['name']); ?>
                     </td>
                     <td class="text-right">
                         <?php echo number_format($item['price'], 2); ?>

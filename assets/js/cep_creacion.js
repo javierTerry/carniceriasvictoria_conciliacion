@@ -48,6 +48,7 @@ $(document).ready(function () {
         // Actualizar etiquetas visuales estáticas
         $('#lbl_rfc').text(data.rfc || '---');
         $('#lbl_razon_social').text(data.razon_social || '---');
+        $('#lbl_regimen_fiscal').text(data.regimen_fiscal || '---');
         $('#lbl_cp').text(data.cp || '---');
         
         // Seleccionar los valores por defecto en los combos, si existen
