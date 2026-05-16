@@ -187,7 +187,7 @@ if ($http_code_envio == 200) {
             $uuid = isset($uuid_matches[0]) ? (string) $uuid_matches[0] : '';
             $fecha_factura = isset($fecha_matches[0]) ? (string) $fecha_matches[0] : '';
 
-            $objTipoProceso = $xml_obj->xpath("/Respuesta/TipoProceso");
+            $objTipoProceso = $xml_obj->xpath("/Respuesta/@tipoProceso");
             $tipoProceso = isset($objTipoProceso[0]) ? strtoupper((string) $objTipoProceso[0]) : '';
             error_log("[" . date('Y-m-d H:i:s') . "] " . print_r(" $tipoProceso \n", true), 3, $log_file);
 
@@ -197,7 +197,7 @@ if ($http_code_envio == 200) {
                 if ($branchConn)
                     mysqli_close($branchConn);
 
-                $mensaje = sprintf("Consulte a su administrador, La factura ya fue generada previamente. </br>Fecha:%s </br> Serie:%s y Folio:%s </br> UUID: %s ", $fecha_factura,$serie,$folio,$uuid );
+                $mensaje = sprintf("Consulte a su administrador, La factura ya fue generada previamente. </br>Fecha:%s </br> Serie:%s y Folio:%s </br> UUID: %s ", $fecha_factura, $serie, $folio, $uuid);
                 echo json_encode(array(
                     'success' => false,
                     'is_consulta' => true,
@@ -278,6 +278,7 @@ if ($http_code_envio == 200) {
                 'uuid' => $uuid
             )
         ));
+        exit;
     } catch (\Throwable $th) {
         //throw $th;
         echo json_encode(array(

@@ -75,86 +75,18 @@ $q_status = $_GET['status'] ?? '';
                         <a href="vtaagrupados.php?branch=Victoria2">Agrupados</a></li>
                 </ul>
             </li>
+             <li class="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'active' : ''; ?>">
+                <a><i class="fa fa-paw"></i> CERDO EN PIE (CEP) <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu" style="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'display: block;' : ''; ?>">
+                    <li class="<?php echo ($current_page == 'cep_creacion.php') ? 'active' : ''; ?>">
+                        <a href="cep_creacion.php">Creación</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'facturasqry.php' && $q_branch == 'CEP') ? 'active' : ''; ?>">
+                        <a href="facturasqry.php?branch=CEP">Facturados</a>
+                    </li>
+                </ul>
+            </li>
 
-            <?php /* if ($user_kind == 1 || $user_kind == 2) { ?>
-      <li>
-          <a><i class="fa fa-exchange"></i> Inventario <span class="fa fa-chevron-down"></span></a>
-          <ul class="nav child_menu">
-              <li class="<?php if (isset($active51)) {
-                  echo $active51;
-              } ?>">
-                  <a href="invnew.php"> Entrada/Salida</a>
-              </li>
-              <li class="<?php if (isset($active52)) {
-                  echo $active52;
-              } ?>">
-                  <a href="invqry.php"> Ver</a>
-              </li>
-          </ul>
-      </li>
-  <?php } */ ?>
-
-            <?php /* <li><a><i class="fa fa-print"></i> Reportes <span class="fa fa-chevron-down"></span></a>
-      <ul class="nav child_menu">
-          <li class="<?php if (isset($active61)) {
-              echo $active61;
-          } ?>">
-              <a href="corte.php"> Cierre</a>
-          </li>
-          <li class="<?php if (isset($active62)) {
-              echo $active62;
-          } ?>">
-              <a href="rvtadiat.php"> Documentos de Ventas</a>
-          </li>
-          <li class="<?php if (isset($active62)) {
-              echo $active62;
-          } ?>">
-              <a href="rvtadiac.php"> Analisis de Ingresos</a>
-          </li>
-          <li class="<?php if (isset($active63)) {
-              echo $active62;
-          } ?>">
-              <a href="rvtadia.php"> Analisis de Venta Producto </a>
-          </li>
-          <!--<li class="<?php if (isset($active64)) {
-              echo $active62;
-          } ?>">
-                      <a href="rvtadiadet.php"> Venta Dia </a>
-                  </li> 
-                  <li class="<?php if (isset($active65)) {
-                      echo $active62;
-                  } ?>">
-                      <a href="rvtaprod.php"> Venta Producto </a>
-                  </li>
-                  -->
-
-          <li class="<?php if (isset($active66)) {
-              echo $active63;
-          } ?>">
-              <a href="rcxcdia.php"> Cobranza Dia</a>
-          </li>
-          <li class="<?php if (isset($active67)) {
-              echo $active64;
-          } ?>">
-              <a href="rexidia.php"> Existencia Dia</a>
-          </li>
-          <li class="<?php if (isset($active68)) {
-              echo $active65;
-          } ?>">
-              <a href="rcomdia.php"> Compra Dia</a>
-          </li>
-          <li class="<?php if (isset($active69)) {
-              echo $active66;
-          } ?>">
-              <a href="ranadia.php"> Compra/Venta Dia</a>
-          </li>
-          <li class="<?php if (isset($active70)) {
-              echo $active67;
-          } ?>">
-              <a href="rcat.php"> Catalogos </a>
-          </li>
-      </ul>
-  </li> */ ?>
              <li class="<?php echo ($current_page == 'cust.php') ? 'active' : ''; ?>">
                 <a><i class="fa fa-folder-open"></i> CATÁLOGOS <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu" style="<?php echo ($current_page == 'cust.php' || $current_page == 'prod.php') ? 'display: block;' : ''; ?>">

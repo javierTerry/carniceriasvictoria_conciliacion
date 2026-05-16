@@ -3,11 +3,11 @@
  * Lógica frontend corregida para el catálogo de clientes con validación visual unificada (Bulk)
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
     load(1);
 
     // Manejo del envío del formulario con validación en bloque
-    $("#cust_form").submit(function(event) {
+    $("#cust_form").submit(function (event) {
         event.preventDefault();
         if (validateForm()) {
             saveCust();
@@ -15,13 +15,13 @@ $(document).ready(function() {
     });
 
     // Lógica dinámica basada en el RFC
-    $("#rfc").on('input', function() {
+    $("#rfc").on('input', function () {
         var rfc = $(this).val().trim();
         handlePersonaLogic(rfc);
     });
 
     // Concatenación para Razón Social (Persona Física)
-    $(".persona-fisica-input").on('input', function() {
+    $(".persona-fisica-input").on('input', function () {
         var rfc = $("#rfc").val().trim();
         if (rfc.length === 13) {
             updateRazonSocial();
@@ -38,16 +38,23 @@ $(document).ready(function() {
 function populateSatCatalogs() {
     var $metodo = $("#metodo_pago_code");
     var $uso = $("#uso_cfdi_code");
+    var $regimen = $("#regimen_fiscal");
 
     if (window.SAT_METODO_PAGO && window.SAT_METODO_PAGO.length > 0) {
-        window.SAT_METODO_PAGO.forEach(function(opt) {
+        window.SAT_METODO_PAGO.forEach(function (opt) {
             $metodo.append(new Option(opt.name, opt.code));
         });
     }
 
     if (window.SAT_USO_CFDI && window.SAT_USO_CFDI.length > 0) {
-        window.SAT_USO_CFDI.forEach(function(opt) {
+        window.SAT_USO_CFDI.forEach(function (opt) {
             $uso.append(new Option(opt.name, opt.code));
+        });
+    }
+
+    if (window.SAT_REGIMEN_FISCAL && window.SAT_REGIMEN_FISCAL.length > 0) {
+        window.SAT_REGIMEN_FISCAL.forEach(function (opt) {
+            $regimen.append(new Option(opt.codigo_sat + " - " + opt.descripcion, opt.codigo_sat));
         });
     }
 }
@@ -59,23 +66,68 @@ function handlePersonaLogic(rfc) {
     var $divFisica = $("#div_campos_fisica");
     var $razonSocial = $("#razon_social");
     var $fisicaInputs = $(".persona-fisica-input");
+    var $regimen = $("#regimen_fiscal");
+
+    // Guardar el valor actual para intentar restaurarlo tras el filtrado
+    var currentRegimen = $regimen.val();
 
     if (rfc.length === 13) {
         // PERSONA FÍSICA
         $divFisica.show();
         $razonSocial.attr('readonly', true);
-        $fisicaInputs.prop('disabled', false).attr('required', true); 
+        $fisicaInputs.prop('disabled', false).attr('required', true);
         updateRazonSocial();
+        filterRegimenOptions(1); // 1 = Física
     } else if (rfc.length === 12) {
         // PERSONA MORAL
         $divFisica.hide();
         $razonSocial.attr('readonly', false);
-        $fisicaInputs.val('').prop('disabled', true).removeAttr('required'); 
+        $fisicaInputs.val('').prop('disabled', true).removeAttr('required');
+        filterRegimenOptions(0); // 0 = Moral
     } else {
         // RFC incompleto o inválido
         $divFisica.hide();
         $razonSocial.attr('readonly', false);
         $fisicaInputs.val('').prop('disabled', true).removeAttr('required');
+        resetRegimenOptions();
+    }
+
+    // Intentar restaurar el valor si aún es válido (existe en la lista filtrada)
+    if (currentRegimen) {
+        $regimen.val(currentRegimen);
+    }
+}
+
+/**
+ * Filtra las opciones del select de Régimen Fiscal según el tipo de persona
+ */
+function filterRegimenOptions(esFisica) {
+    var $regimen = $("#regimen_fiscal");
+    $regimen.find('option:not([value=""])').remove();
+
+    if (window.SAT_REGIMEN_FISCAL) {
+        window.SAT_REGIMEN_FISCAL.forEach(function (opt) {
+            var show = false;
+            if (esFisica === 1 && opt.es_persona_fisica == 1) show = true;
+            if (esFisica === 0 && opt.es_persona_fisica == 0) show = true;
+
+            if (show) {
+                $regimen.append(new Option(opt.codigo_sat + " - " + opt.descripcion, opt.codigo_sat));
+            }
+        });
+    }
+}
+
+/**
+ * Restablece todas las opciones del Régimen Fiscal
+ */
+function resetRegimenOptions() {
+    var $regimen = $("#regimen_fiscal");
+    $regimen.find('option:not([value=""])').remove();
+    if (window.SAT_REGIMEN_FISCAL) {
+        window.SAT_REGIMEN_FISCAL.forEach(function (opt) {
+            $regimen.append(new Option(opt.codigo_sat + " - " + opt.descripcion, opt.codigo_sat));
+        });
     }
 }
 
@@ -86,7 +138,7 @@ function updateRazonSocial() {
     var nombre = $("#nombre").val().trim();
     var apPaterno = $("#ap_paterno").val().trim();
     var apMaterno = $("#ap_materno").val().trim();
-    
+
     var full = [nombre, apPaterno, apMaterno].filter(Boolean).join(' ');
     $("#razon_social").val(full);
 }
@@ -106,7 +158,7 @@ function validateForm() {
     $form.find(".has-error").removeClass("has-error");
 
     // 1. Validar automáticamente todos los campos marcados como 'required' (Bulk Check)
-    $form.find("[required]").each(function() {
+    $form.find("[required]").each(function () {
         var $input = $(this);
         // Si el campo está deshabilitado, no lo validamos
         if ($input.prop('disabled')) return;
@@ -114,14 +166,14 @@ function validateForm() {
         if (!$input.val().trim()) {
             isValid = false;
             $input.closest(".form-group").addClass("has-error");
-            
+
             var label = $input.closest(".form-group").find("label").text().replace('*', '').trim();
             messages.push("El campo <b>" + label + "</b> es obligatorio.");
         }
     });
 
     // 2. Validaciones de formato adicionales
-    
+
     // RFC (Longitud)
     if (rfc && rfc.length !== 12 && rfc.length !== 13) {
         isValid = false;
@@ -161,10 +213,10 @@ function validateForm() {
 function load(page) {
     var q = $("#q").val();
     var per_page = $("#per_page").val();
-    
+
     $.ajax({
         url: 'ajax/cust.php?action=ajax&page=' + page + '&q=' + q + '&per_page=' + per_page,
-        success: function(data) {
+        success: function (data) {
             $(".outer_div").html(data);
         }
     });
@@ -178,7 +230,7 @@ function openModalAdd() {
     $("#cust_id").val("");
     $("#cust_form")[0].reset();
     $(".has-error").removeClass("has-error");
-    handlePersonaLogic(""); 
+    handlePersonaLogic("");
     $("#custModal").modal("show");
 }
 
@@ -188,6 +240,11 @@ function openModalAdd() {
 function editCust(data) {
     $("#custModalLabel").text("Editar Cliente");
     $("#cust_id").val(data.id);
+    
+    // Primero aplicamos la lógica de persona para filtrar regímenes
+    handlePersonaLogic(data.rfc);
+
+    // Ahora asignamos los valores
     $("#rfc").val(data.rfc);
     $("#regimen_fiscal").val(data.regimen_fiscal);
     $("#nombre").val(data.nombre);
@@ -207,7 +264,6 @@ function editCust(data) {
     $("#uso_cfdi_code").val(data.uso_cfdi_code);
 
     $(".has-error").removeClass("has-error");
-    handlePersonaLogic(data.rfc); 
     $("#custModal").modal("show");
 }
 
@@ -225,7 +281,7 @@ function saveCust() {
         url: "ajax/cust.php?action=save",
         data: $("#cust_form").serialize(),
         dataType: "json",
-        success: function(response) {
+        success: function (response) {
             $("#btn_save").attr("disabled", false).text("Guardar Datos");
             if (response.status === "success") {
                 $("#custModal").modal("hide");
@@ -239,7 +295,7 @@ function saveCust() {
                     // Enfocar el campo con error para ayudar al usuario
                     $field.focus();
                 }
-                
+
                 Swal.fire({
                     title: 'Atención',
                     html: '<div class="text-left">' + response.message + '</div>',
@@ -247,7 +303,7 @@ function saveCust() {
                 });
             }
         },
-        error: function() {
+        error: function () {
             $("#btn_save").attr("disabled", false).text("Guardar Datos");
             Swal.fire('Error', 'Error crítico en el servidor.', 'error');
         }
@@ -274,7 +330,7 @@ function deleteCust(id) {
                 url: "ajax/cust.php?action=delete",
                 data: { id: id },
                 dataType: "json",
-                success: function(response) {
+                success: function (response) {
                     if (response.status === "success") {
                         Swal.fire('Eliminado', response.message, 'success');
                         load(1);
