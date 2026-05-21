@@ -13,6 +13,9 @@ if (empty($group_id) || empty($branch)) {
     exit;
 }
 
+$observacion_raw = isset($_POST['observacion']) ? $_POST['observacion'] : '';
+$observacion = htmlspecialchars(trim($observacion_raw), ENT_XML1, 'UTF-8');
+
 $branchesConfigs = getBranchesConfig();
 if (!isset($branchesConfigs[$branch])) {
     echo json_encode(['success' => false, 'message' => 'Sucursal no válida']);
@@ -118,7 +121,7 @@ $xml_payload = <<<XML
 <Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="URE180429TM6-39" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
     permiteAgregarProductosNoInv="1" nomArchivoDescarga="GRP-{$group_id}-{$serie}-{$folio}" noCertificado="30001000000500003441" serie="{$serie}" folio="{$folio}"  
     formaDePago="01" condicionesDePago="CONTADO" fechaPagoProbable="{$msTime}" metodoDePago="PUE" subtotal="{$monto_total}" descuento="0" porcentajeIVA="16" montoIVA="0" 
-    total="{$monto_total}" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+    total="{$monto_total}" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06" observacion="{$observacion}">
    <Receptor rfc="OHM191218EH7" razonSocial="OBRADOR HNOS MIRANDA" usoCFDI="G03" esPersonaFisica="0" regimenFiscal="601"/>
    <ReceptorDireccion pais="MEX" codigoPostal="54030" ></ReceptorDireccion>
    <Conceptos>

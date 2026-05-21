@@ -2,6 +2,7 @@
 session_start();
 require_once "../config/config.php";
 require_once "../classes/ProductMapper.php";
+require_once "../classes/Mailer.php";
 
 $monto = isset($_POST['monto']) ? $_POST['monto'] : 0;
 $metodo_pago = isset($_POST['metodo_pago']) ? $_POST['metodo_pago'] : 'Efectivo';
@@ -12,6 +13,8 @@ $forma_pago = mb_strtoupper(isset($_POST['forma_pago']) ? $_POST['forma_pago'] :
 $metodo_pago_cfdi = mb_strtoupper(isset($_POST['metodo_pago_cfdi']) ? $_POST['metodo_pago_cfdi'] : 'PUE', 'UTF-8');
 $uso_cfdi = mb_strtoupper(isset($_POST['uso_cfdi']) ? $_POST['uso_cfdi'] : 'G03', 'UTF-8');
 $cust_id = isset($_POST['cust_id']) ? $_POST['cust_id'] : 1;
+$observacion_raw = isset($_POST['observacion']) ? $_POST['observacion'] : '';
+$observacion = htmlspecialchars(trim($observacion_raw), ENT_XML1, 'UTF-8');
 
 if (empty($mov_id) || empty($branch)) {
 }
@@ -62,6 +65,16 @@ $esPersonaFisica = isset($_POST['es_persona_fisica']) ? $_POST['es_persona_fisic
 $nombre = mb_strtoupper(isset($_POST['nombre']) ? $_POST['nombre'] : "", 'UTF-8');
 $apellidoPaterno = mb_strtoupper(isset($_POST['ap_paterno']) ? $_POST['ap_paterno'] : "", 'UTF-8');
 $codigoPostal = str_pad(substr(preg_replace('/[^0-9]/', '', (string) (isset($_POST['codigo_postal']) ? $_POST['codigo_postal'] : "00000")), 0, 5), 5, "0", STR_PAD_LEFT);
+
+// Convert character '&' to '&amp;' if detected, avoiding double-encoding if already encoded
+if (strpos($razonSocial, '&') !== false) {
+    $razonSocial = str_replace('&amp;', '&', $razonSocial);
+    $razonSocial = str_replace('&', '&amp;', $razonSocial);
+}
+if (strpos($nombre, '&') !== false) {
+    $nombre = str_replace('&amp;', '&', $nombre);
+    $nombre = str_replace('&', '&amp;', $nombre);
+}
 
 $totalGlobal = (float) $monto;
 $subtotalGlobal = $totalGlobal;
@@ -125,7 +138,7 @@ $xml_payload = <<<XML
 <Comprobante exportacion="01" version="CFDI 4.0" sistema="OBRADORCARNICERIA" generar="Factura" rfcEmisor="{$api_rfc_emisor}" sucursal="Matriz" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
     permiteAgregarProductosNoInv="1" nomArchivoDescarga="TCK-{$mov_id}-{$serie}-{$folio}" noCertificado="{$api_no_certificado}" serie="{$serie}" folio="{$folio}"  
     formaDePago="{$forma_pago}" condicionesDePago="CONTADO" fechaPagoProbable="{$msTime}" metodoDePago="{$metodo_pago_cfdi}" subtotal="{$subtotalGlobal}" descuento="0" porcentajeIVA="{$porcentajeIVA}" montoIVA="0" 
-    total="{$totalGlobal}" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06">
+    total="{$totalGlobal}" monedaSinube="MXN" monedaSAT="MXN" difZonaHoraria="-06" observacion="{$observacion}">
    {$receptor}
    <Conceptos>
 {$conceptos_xml}   </Conceptos>
@@ -159,24 +172,33 @@ if ($http_code_envio == 200) {
         $link_pdf = '';
         $uuid = '';
 
-
+        error_log("[" . date('Y-m-d H:i:s') . "] " .__FILE__."-".__LINE__."\n" , 3, $log_file);
         if ($xml_obj) {
             error_log("[" . date('Y-m-d H:i:s') . "] " . print_r($xml_obj, true), 3, $log_file);
 
             // Validar Errores devueltos por el portal, incluso si es código 200
             $error_matches = $xml_obj->xpath("/Respuesta/error");
+
+            error_log("[" . date('Y-m-d H:i:s') . "] " .print_r($error_matches,true)."\n" , 3, $log_file);
+            error_log("[" . date('Y-m-d H:i:s') . "] " .__FILE__."-".__LINE__."\n" , 3, $log_file);
+
             if (!empty($error_matches) && trim((string) $error_matches[0]) !== '') {
                 $error_msg = trim((string) $error_matches[0]);
+
+                error_log("[" . date('Y-m-d H:i:s') . "] " .__FILE__."-".__LINE__."\n" , 3, $log_file);
+                error_log("[" . date('Y-m-d H:i:s') . "] " .print_r($error_msg,true)."\n" , 3, $log_file);
                 echo json_encode(array(
                     'success' => false,
                     'message' => "Error de facturación: " . $error_msg,
                     'details' => 'No se cambió estatus'
                 ));
+               
                 if ($branchConn)
                     mysqli_close($branchConn);
-                exit;
+                exit();
             }
 
+            error_log("[" . date('Y-m-d H:i:s') . "] " .__FILE__."-".__LINE__."\n" , 3, $log_file);
             $xml_matches = $xml_obj->xpath("/Respuesta/xml");
             $pdf_matches = $xml_obj->xpath("/Respuesta/pdf");
             $uuid_matches = $xml_obj->xpath("/Respuesta/UUID");
@@ -252,6 +274,49 @@ if ($http_code_envio == 200) {
                 if (mysqli_stmt_execute($stmt)) {
                     $db_message = 'Factura guardada en la base de datos GENERAL correctamente';
                     error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
+
+                    /*
+                    try {
+                        $mailer = new Mailer();
+
+                        $para = 'javierv31@gmail.com';
+                        $asunto = 'Confirmación de su Factura';
+                        
+                        // Cuerpo del correo con HTML básico
+                        $mensajeHtml = "
+                            <html>
+                            <head><title>Notificación</title></head>
+                            <body>
+                                <h2>¡Gracias por tu preferencia!</h2>
+                                <h3>Ticket: $mov_id - Serie: $serie - Folio: $folio </h3>
+
+                                <p>Tu orden ha sido procesada correctamente dentro de nuestra plataforma.</p>
+                                <p>Descarga tu xml -> $link_xml</p>
+                                <p>Descarga tu pdf -> $link_pdf</p>
+                                <hr>
+                                <small>Este es un correo automático, por favor no respondas a este mensaje.</small>
+                            </body>
+                            </html>
+                        ";
+
+                        // Ejemplo opcional con un archivo adjunto (ej. un PDF generado)
+                        $adjuntos = [
+                            // __DIR__ . '/comprobantes/factura_123.pdf'
+                        ];
+
+                        // Ejecución modular
+                        if ($mailer->send($para, $asunto, $mensajeHtml, $adjuntos)) {
+                            $db_message =sprintf("%s\n El correo fue enviado exitosamente a %s.",$db_message,$para) ;
+                            error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
+                        }
+
+                    } catch (\Exception $e) {
+                        $db_message =sprintf("%s\n El correo no fue enviado  a %s.",$db_message,$para) ;
+                        error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
+                        
+                    }
+                    */
+
                 } else {
                     $db_message = 'Error al insertar en la tabla facturas GENERAL: ' . mysqli_stmt_error($stmt);
                     error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
