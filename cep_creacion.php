@@ -42,6 +42,10 @@ $branch = "CEP";
                                 <select class="form-control" id="client_selector" style="width: 100%;">
                                     <option value="">-- Buscar Cliente por Nombre o RFC --</option>
                                 </select>
+                                <div style="margin-top: 15px;">
+                                    <label for="observacion" class="control-label" style="display: block; margin-bottom: 5px; color: #34495e; font-weight: 600;">Observación:</label>
+                                    <input type="text" class="form-control" id="observacion" placeholder="Observaciones de la factura..." style="border-radius: 4px;">
+                                </div>
                             </div>
                             <div class="col-md-8 col-sm-12">
                                 <label class="control-label" style="display: block; margin-bottom: 5px; color: #34495e; font-weight: 600;">Datos Fiscales:</label>

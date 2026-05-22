@@ -243,6 +243,7 @@ $(document).ready(function () {
                         nombre: $('#client_nombre').val(),
                         ap_paterno: $('#client_ap_paterno').val(),
                         codigo_postal: $('#client_cp').val(),
+                        observacion: $('#observacion').val(),
                         items: [{
                             name: product_name,
                             qty: qty,

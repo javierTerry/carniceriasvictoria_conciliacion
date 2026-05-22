@@ -227,6 +227,7 @@ $(document).ready(function () {
                 code: forma_pago_code,
                 metodo_pago_cfdi: $('#client_metodo_pago').val() || 'PUE', 
                 uso_cfdi: $('#client_uso_cfdi').val() || 'G03',         
+                observacion: '',
                 items: []
             };
         }
@@ -267,6 +268,12 @@ $(document).ready(function () {
                             <select class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px;" onchange="updateGroupField('${section_id}', 'uso_cfdi', this.value)">
                                 ${(window.SAT_USO_CFDI || []).map(opt => `<option value="${opt.code}" ${group.uso_cfdi === opt.code ? 'selected' : ''}>${opt.name}</option>`).join('')}
                             </select>
+                        </div>
+                    </div>
+                    <div class="row" style="margin: 5px 0 0 0; padding-top: 5px; border-top: 1px solid #eee;">
+                        <div class="col-xs-12" style="padding: 0 10px;">
+                            <label style="font-size: 9px; color: #999; margin-bottom: 2px;">OBSERVACIÓN:</label>
+                            <input type="text" class="form-control input-xs" style="height: 22px; font-size: 10px; padding: 2px 5px; border-radius: 4px;" value="${group.observacion || ''}" onchange="updateGroupField('${section_id}', 'observacion', this.value)" placeholder="Observaciones para esta factura...">
                         </div>
                     </div>
                 </div>
@@ -424,6 +431,7 @@ $(document).ready(function () {
                     nombre: $('#client_nombre').val(),
                     ap_paterno: $('#client_ap_paterno').val(),
                     codigo_postal: $('#client_cp').val(),
+                    observacion: group.observacion || '',
                     items: itemsPayload
                 });
             }

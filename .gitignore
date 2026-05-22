@@ -3,3 +3,5 @@ plan_de_accion.md
 config/config.php
 logs/*
 sql/*
+composer.json
+composer.lock
