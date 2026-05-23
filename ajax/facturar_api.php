@@ -298,7 +298,7 @@ if ($http_code_envio == 200) {
                         // Si el cliente no tiene correo registrado, usamos un fallback y dejamos constancia en logs
                         $email_sent_to = $para;
                         if (empty($para)) {
-                            $para = 'javierv31@gmail.com'; // Fallback
+                            $para = 'ocv.facturacion1@gmail.com'; // Fallback
                             $email_sent_to = "fallback ($para)";
                         }
                         

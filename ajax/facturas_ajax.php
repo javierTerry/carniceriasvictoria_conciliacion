@@ -94,7 +94,7 @@ if ($action == 'ajax') {
                     <th class="text-right">Monto</th>
                     <th class="text-center">XML</th>
                     <th class="text-center">PDF</th>
-                    
+                    <th class="text-center">Email</th>
                 </tr>
             </thead>
             <tbody>
@@ -136,7 +136,15 @@ if ($action == 'ajax') {
                             } ?>
                         </td>
                          
-                        
+                        <td class="text-center">
+                            <?php if (!empty($r['xml_url']) || !empty($r['pdf_url'])) { ?>
+                                <a href="javascript:void(0);" onclick="enviarCorreoFactura(<?php echo $r['id']; ?>, '<?php echo htmlspecialchars($r['cliente_email'] ? $r['cliente_email'] : ''); ?>')" title="Enviar Factura por Correo" style="cursor: pointer;">
+                                    <i class="fa fa-envelope" style="font-size: 20px; color: #3498db;"></i>
+                                </a>
+                            <?php } else {
+                                echo "-";
+                            } ?>
+                        </td>
                         
                     </tr>
                 <?php endforeach; ?>
