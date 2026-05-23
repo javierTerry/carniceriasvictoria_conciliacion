@@ -275,47 +275,118 @@ if ($http_code_envio == 200) {
                     $db_message = 'Factura guardada en la base de datos GENERAL correctamente';
                     error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
 
-                    /*
+                    
                     try {
                         $mailer = new Mailer();
 
-                        $para = 'javierv31@gmail.com';
-                        $asunto = 'Confirmación de su Factura';
+                        // Buscar el correo electrónico y nombre del cliente en el catálogo 'cust'
+                        $para = '';
+                        $nombre_cliente = $razonSocial;
+                        if (!empty($cust_id)) {
+                            $sql_cust_email = "SELECT email, razon_social FROM cust WHERE id = " . intval($cust_id);
+                            $res_cust_email = mysqli_query($conexion_gen, $sql_cust_email);
+                            if ($res_cust_email && $row_cust = mysqli_fetch_assoc($res_cust_email)) {
+                                if (!empty($row_cust['email'])) {
+                                    $para = trim($row_cust['email']);
+                                }
+                                if (!empty($row_cust['razon_social'])) {
+                                    $nombre_cliente = $row_cust['razon_social'];
+                                }
+                            }
+                        }
+
+                        // Si el cliente no tiene correo registrado, usamos un fallback y dejamos constancia en logs
+                        $email_sent_to = $para;
+                        if (empty($para)) {
+                            $para = 'javierv31@gmail.com'; // Fallback
+                            $email_sent_to = "fallback ($para)";
+                        }
                         
-                        // Cuerpo del correo con HTML básico
+                        $asunto = 'Factura Electrónica Victoria - Folio: ' . $serie . ' ' . $folio;
+                        
+                        // Cuerpo del correo con diseño HTML premium y responsivo
                         $mensajeHtml = "
                             <html>
-                            <head><title>Notificación</title></head>
+                            <head>
+                                <meta charset='UTF-8'>
+                                <title>Factura Electrónica</title>
+                                <style>
+                                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; color: #2c3e50; }
+                                    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
+                                    .header { background: linear-gradient(135deg, #2c3e50, #1a252f); padding: 30px; text-align: center; color: #ffffff; }
+                                    .header h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
+                                    .content { padding: 35px; }
+                                    .greeting { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #2c3e50; }
+                                    .details-box { background-color: #fdfefe; border-left: 4px solid #27ae60; padding: 20px; margin-bottom: 25px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.01); border-top: 1px solid #f0f4f7; border-right: 1px solid #f0f4f7; border-bottom: 1px solid #f0f4f7; }
+                                    .details-box table { width: 100%; border-collapse: collapse; }
+                                    .details-box td { padding: 6px 0; font-size: 14px; }
+                                    .details-box td.label { font-weight: bold; color: #7f8c8d; width: 120px; }
+                                    .details-box td.value { color: #2c3e50; }
+                                    .btn-container { text-align: center; margin: 30px 0 10px; }
+                                    .btn { display: inline-block; padding: 12px 24px; font-size: 14px; font-weight: bold; text-decoration: none; border-radius: 5px; transition: all 0.3s ease; text-align: center; margin: 0 8px; }
+                                    .btn-xml { background-color: #34495e; color: #ffffff !important; border: 1px solid #2c3e50; }
+                                    .btn-pdf { background-color: #e74c3c; color: #ffffff !important; border: 1px solid #c0392b; }
+                                    .footer { background-color: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #95a5a6; border-top: 1px solid #ecf0f1; }
+                                </style>
+                            </head>
                             <body>
-                                <h2>¡Gracias por tu preferencia!</h2>
-                                <h3>Ticket: $mov_id - Serie: $serie - Folio: $folio </h3>
-
-                                <p>Tu orden ha sido procesada correctamente dentro de nuestra plataforma.</p>
-                                <p>Descarga tu xml -> $link_xml</p>
-                                <p>Descarga tu pdf -> $link_pdf</p>
-                                <hr>
-                                <small>Este es un correo automático, por favor no respondas a este mensaje.</small>
+                                <div class='container'>
+                                    <div class='header'>
+                                        <h2>Comprobante Fiscal Digital</h2>
+                                    </div>
+                                    <div class='content'>
+                                        <div class='greeting'>Estimado(a) $nombre_cliente,</div>
+                                        <p>Le informamos que se ha generado exitosamente su comprobante fiscal correspondiente a su consumo en <strong>Carnicerías Victoria</strong>.</p>
+                                        
+                                        <div class='details-box'>
+                                            <table>
+                                                <tr>
+                                                    <td class='label'>Ticket:</td>
+                                                    <td class='value'>$mov_id</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class='label'>Serie:</td>
+                                                    <td class='value'>$serie</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class='label'>Folio:</td>
+                                                    <td class='value'>$folio</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class='label'>Monto Total:</td>
+                                                    <td class='value' style='font-weight: bold; color: #27ae60;'>$" . number_format($totalGlobal, 2) . " MXN</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        
+                                        <p style='text-align: center; font-size: 14px; color: #7f8c8d; margin-bottom: 20px;'>Puede descargar los archivos digitales de su factura utilizando los siguientes botones:</p>
+                                        
+                                        <div class='btn-container'>
+                                            <a href='$link_xml' class='btn btn-xml' target='_blank'>Descargar XML</a>
+                                            <a href='$link_pdf' class='btn btn-pdf' target='_blank'>Descargar PDF</a>
+                                        </div>
+                                    </div>
+                                    <div class='footer'>
+                                        <p>Este es un envío automático generado por el Sistema de Facturación Victoria.<br>Por favor no responda a este correo.</p>
+                                    </div>
+                                </div>
                             </body>
                             </html>
                         ";
 
-                        // Ejemplo opcional con un archivo adjunto (ej. un PDF generado)
-                        $adjuntos = [
-                            // __DIR__ . '/comprobantes/factura_123.pdf'
-                        ];
+                        $adjuntos = [];
 
                         // Ejecución modular
                         if ($mailer->send($para, $asunto, $mensajeHtml, $adjuntos)) {
-                            $db_message =sprintf("%s\n El correo fue enviado exitosamente a %s.",$db_message,$para) ;
+                            $db_message = sprintf("%s\n El correo fue enviado exitosamente a %s.", $db_message, $email_sent_to);
                             error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
                         }
 
                     } catch (\Exception $e) {
-                        $db_message =sprintf("%s\n El correo no fue enviado  a %s.",$db_message,$para) ;
+                        $db_message = sprintf("%s\n El correo no fue enviado a %s. Detalle: %s", $db_message, $email_sent_to, $e->getMessage());
                         error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
-                        
                     }
-                    */
+                    
 
                 } else {
                     $db_message = 'Error al insertar en la tabla facturas GENERAL: ' . mysqli_stmt_error($stmt);

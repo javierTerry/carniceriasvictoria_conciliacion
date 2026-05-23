@@ -50,14 +50,20 @@ $branch = "CEP";
                             <div class="col-md-8 col-sm-12">
                                 <label class="control-label" style="display: block; margin-bottom: 5px; color: #34495e; font-weight: 600;">Datos Fiscales:</label>
                                 <div class="row" style="margin-bottom: 10px;">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4 col-sm-6">
                                         <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed; display: block; margin-bottom: 5px;">Razón Social: <span id="lbl_razon_social">---</span></span>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2 col-sm-6">
+                                        <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed; display: block; margin-bottom: 5px;">RFC: <span id="lbl_rfc">---</span></span>
+                                    </div>
+                                    <div class="col-md-2 col-sm-4">
                                         <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed; display: block; margin-bottom: 5px;">CP: <span id="lbl_cp">---</span></span>
                                     </div>
-                                    <div class="col-md-3">
-                                        <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed; display: block; margin-bottom: 5px;">Regimen Fiscal: <span id="lbl_regimen_fiscal">---</span></span>
+                                    <div class="col-md-2 col-sm-4">
+                                        <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed; display: block; margin-bottom: 5px;">Regimen: <span id="lbl_regimen_fiscal">---</span></span>
+                                     </div>
+                                    <div class="col-md-2 col-sm-4">
+                                        <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed; display: block; margin-bottom: 5px;">Email: <span id="lbl_email">---</span></span>
                                      </div>
                                 </div>
                                 <div class="row">

@@ -8,9 +8,9 @@ use PHPMailer\PHPMailer\Exception;
 
 error_log(__DIR__);
 
-require __DIR__ . '../../config/smtp.php';
+require_once __DIR__ . '/../config/smtp.php';
 // Asegúrate de apuntar correctamente al autoloader de Composer o a tus includes manuales
-require __DIR__ . '../../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 
 class Mailer 

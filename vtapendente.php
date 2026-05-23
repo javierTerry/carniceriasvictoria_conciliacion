@@ -96,11 +96,13 @@ $branch = $_GET['branch'] ?? '';
                                 <div id="client_labels" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; min-height: 38px;">
                                     <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">RFC: <span id="lbl_rfc">---</span></span>
                                     <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">Razón Social: <span id="lbl_razon_social">---</span></span>
+                                    <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">Email: <span id="lbl_email">---</span></span>
+                                </div>
+                                <div id="client_labels" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; min-height: 38px;">
                                     <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">CP: <span id="lbl_cp">---</span></span>
                                     <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">Método Pago: <span id="lbl_metodo_pago">---</span></span>
                                     <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">Uso CFDI: <span id="lbl_uso_cfdi">---</span></span>
                                     <span class="label label-default" style="font-size: 12px; padding: 6px 10px; background-color: #f0f2f5; color: #73879C; border: 1px solid #e1e8ed;">Regimen Fiscal: <span id="lbl_regimen_fiscal">---</span></span>
-                                    
                                 </div>
                                 <!-- Campos ocultos para datos fiscales del cliente -->
                                 <input type="hidden" id="client_rfc" value="">

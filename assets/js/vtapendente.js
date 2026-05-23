@@ -56,6 +56,7 @@ $(document).ready(function () {
         $('#lbl_metodo_pago').text(data.metodo_pago_code || '---');
         $('#lbl_uso_cfdi').text(data.uso_cfdi_code || '---');
         $('#lbl_regimen_fiscal').text(data.regimen_fiscal || '---');
+        $('#lbl_email').text(data.email || '---');
 
         // Aplicar defaults del cliente a todas las secciones ya creadas
         Object.keys(managedItems).forEach(section_id => {
