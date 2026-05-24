@@ -1,6 +1,11 @@
 <?php
 require_once "../config/config.php";
 
+$log_dir = __DIR__ . "/../logs";
+$log_file = $log_dir . "/facturas_ajax.log";
+
+
+
 $user_kind = isset($_SESSION['user_kind']) ? $_SESSION['user_kind'] : 0;
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
 
@@ -199,7 +204,7 @@ if ($action == 'ajax') {
         $serie = $r['serie'] ?? '';
         $folio = $r['folio'] ?? '';
         $totalGlobal = floatval($r['monto'] ?? 0);
-        
+        error_log("[" . date('Y-m-d H:i:s') . "] " . __LINE__, 3, $log_file);
         // Plantilla premium idéntica a la automática para mantener uniformidad
         $mensajeHtml = "
             <html>
@@ -272,6 +277,7 @@ if ($action == 'ajax') {
         
         if ($mailer->send($para, $asunto, $mensajeHtml)) {
             echo json_encode(['status' => 'success', 'message' => "Correo enviado exitosamente a $para."]);
+            error_log("[" . date('Y-m-d H:i:s') . "] " . __LINE__, 3, $log_file);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'No se pudo enviar el correo.']);
         }
