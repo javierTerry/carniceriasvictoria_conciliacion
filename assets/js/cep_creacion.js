@@ -50,6 +50,7 @@ $(document).ready(function () {
         $('#lbl_razon_social').text(data.razon_social || '---');
         $('#lbl_regimen_fiscal').text(data.regimen_fiscal || '---');
         $('#lbl_cp').text(data.cp || '---');
+        $('#lbl_email').text(data.email || '---');
         
         // Seleccionar los valores por defecto en los combos, si existen
         if (data.metodo_pago_code) {

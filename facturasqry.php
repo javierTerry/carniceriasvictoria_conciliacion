@@ -96,6 +96,74 @@ include "sidebar.php";
         });
     }
 
+    function enviarCorreoFactura(id, email) {
+        let textMsg = "Se enviará el XML y el PDF de esta factura al correo registrado del cliente en el catálogo.";
+        if (email && email.trim() !== '') {
+            textMsg = "Se enviará el XML y el PDF de esta factura";
+            textTitle = "¿Enviar factura a <strong style='color:#3498db;'>"+ email +"</strong>?";
+        } else {
+            textMsg = "Se enviará el XML y el PDF de esta factura al correo registrado en el catálogo (no se encontró correo configurado).";
+            textTitle = "¿Enviar factura a <strong style='color:#3498db;'>"+ email +"</strong>?";
+        }
+
+        Swal.fire({
+            title: textTitle,
+            html: textMsg,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#26B99A',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, enviar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Enviando Correo',
+                    text: 'Por favor, espere un momento...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "ajax/facturas_ajax.php",
+                    data: { action: "send_email", id: id },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            Swal.fire({
+                                title: '¡Enviado!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonColor: '#26B99A'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Atención',
+                                html: response.message,
+                                icon: 'warning',
+                                confirmButtonColor: '#3085d6'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No se pudo procesar la solicitud. Intente nuevamente más tarde.',
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
     $(document).ready(function () {
         load(1);
     });

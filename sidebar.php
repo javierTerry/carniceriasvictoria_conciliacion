@@ -41,6 +41,9 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Obrador' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
                         <a href="vtaagrupados.php?branch=Obrador">Agrupados</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Obrador' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
+                        <a href="factura_libre.php?branch=Obrador">Factura Libre</a></li>
                 </ul>
             </li>
 
@@ -57,6 +60,9 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
                         <a href="vtaagrupados.php?branch=Victoria1">Agrupados</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
+                        <a href="factura_libre.php?branch=Victoria1">Factura Libre</a></li>
                 </ul>
             </li>
 
@@ -73,6 +79,9 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
                         <a href="vtaagrupados.php?branch=Victoria2">Agrupados</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
+                        <a href="factura_libre.php?branch=Victoria2">Factura Libre</a></li>
                 </ul>
             </li>
              <li class="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'active' : ''; ?>">

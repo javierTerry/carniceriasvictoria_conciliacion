@@ -4,22 +4,40 @@ date_default_timezone_set('America/Mexico_City');
 
 function getSmtpConfig()
 {
+
+    error_log(__DIR__);
     return [
+        // Método de envío de correo: 'smtp' o 'gmail_api'
+        'mailer_method' => 'gmail_api',
+
         'smtp' => [
             // Para Gmail usa: smtp.gmail.com
             // Para GoDaddy (servicios cPanel/dedicados) usa: smtp.titan.email o el asignado en tu panel
             'host' => 'smtp.gmail.com', 
             'auth' => true,
-            'username' => 'javier.hernandez.negocio21@gmail.com',
-            'password' => 'irow gypt yvrh umfl', // Si es Gmail, AQUÍ VA LA CONTRASEÑA DE APLICACIÓN
+            'username' => 'ocv.facturacion1@gmail.com',
+            'password' => 'xygv libz bxcc kxoo', // Si es Gmail, AQUÍ VA LA CONTRASEÑA DE APLICACIÓN
             'encryption' => 'tls',                // 'tls' o 'ssl'
             'port' => 587,                        // 587 para TLS, 465 para SSL
-            'from_email' => 'javier.hernandez.negocio21@gmail.com',
+            'from_email' => 'ocv.facturacion1@gmail.com',
+            'from_name' => 'Sistema de Notificaciones Victoria',
+        ],
+
+        'gmail_api' => [
+            // Configuración para el SDK Oficial de Google (Gmail API)
+            // Se puede configurar mediante credenciales directas de OAuth2:
+            'client_id' => '',
+            'client_secret' => '',
+            'refresh_token' => '',
+            
+            // O alternativamente especificando las rutas a los archivos credentials.json y token.json
+            'credentials_path' => __DIR__ . '/gmail/client.json',
+            'token_path' => __DIR__ . '/gmail/token.json',
+            
+            'from_email' => 'ocv.facturacion1@gmail.com',
             'from_name' => 'Sistema de Notificaciones Victoria',
         ]
-];
-
-
+    ];
 }
 
 
