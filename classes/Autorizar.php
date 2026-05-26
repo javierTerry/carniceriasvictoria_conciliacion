@@ -6,7 +6,7 @@ use Google\Client;
 use Google\Service\Gmail;
 
 $client = new Client();
-$client->setAuthConfig('client_secret_375206210163-2kmhfor5fs9q6lb8nhe4hp3ab0hm3v6t.apps.googleusercontent.com'); // Cambia por tu ruta real
+$client->setAuthConfig('/home/znjdcxinp0ui/www/syspv/conciliacion/dev/v1/classes/client_secret_375206210163-2kmhfor5fs9q6lb8nhe4hp3ab0hm3v6t.apps.googleusercontent.com'); // Cambia por tu ruta real
 $client->addScope(Gmail::GMAIL_SEND);
 // Modifica esto según la URL que configuraste en Google Cloud Console
 $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']); 

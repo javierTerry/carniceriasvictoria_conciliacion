@@ -4,9 +4,11 @@ date_default_timezone_set('America/Mexico_City');
 
 function getSmtpConfig()
 {
+
+    error_log(__DIR__);
     return [
         // Método de envío de correo: 'smtp' o 'gmail_api'
-        'mailer_method' => 'smtp',
+        'mailer_method' => 'gmail_api',
 
         'smtp' => [
             // Para Gmail usa: smtp.gmail.com
@@ -29,8 +31,8 @@ function getSmtpConfig()
             'refresh_token' => '',
             
             // O alternativamente especificando las rutas a los archivos credentials.json y token.json
-            'credentials_path' => __DIR__ . '/gmail_credentials.json',
-            'token_path' => __DIR__ . '/gmail_token.json',
+            'credentials_path' => __DIR__ . '/gmail/client.json',
+            'token_path' => __DIR__ . '/gmail/token.json',
             
             'from_email' => 'ocv.facturacion1@gmail.com',
             'from_name' => 'Sistema de Notificaciones Victoria',
