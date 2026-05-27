@@ -84,6 +84,25 @@ $q_status = $_GET['status'] ?? '';
                         <a href="factura_libre.php?branch=Victoria2">Factura Libre</a></li>
                 </ul>
             </li>
+
+            <li class="<?php echo ($q_branch == 'Produccion') ? 'active' : ''; ?>">
+                <a><i class="fa fa-industry"></i> PRODUCCIÓN <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu" style="<?php echo ($q_branch == 'Produccion') ? 'display: block;' : ''; ?>">
+                    <li class="<?php echo ($q_branch == 'Produccion' && empty($q_status)) ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Produccion">Tickets</a></li>
+                    <li class="<?php echo ($q_branch == 'Produccion' && $q_status == '2') ? 'active' : ''; ?>"><a
+                            href="vtaqry.php?branch=Produccion&status=2">Pendientes</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Produccion' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>">
+                        <a href="facturasqry.php?branch=Produccion">Facturados</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Produccion' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
+                        <a href="vtaagrupados.php?branch=Produccion">Agrupados</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Produccion' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
+                        <a href="factura_libre.php?branch=Produccion">Factura Libre</a></li>
+                </ul>
+            </li>
              <li class="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'active' : ''; ?>">
                 <a><i class="fa fa-paw"></i> CERDO EN PIE (CEP) <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu" style="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'display: block;' : ''; ?>">

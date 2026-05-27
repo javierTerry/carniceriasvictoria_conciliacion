@@ -28,7 +28,7 @@ if ($action == 'ajax') {
     }
 
     if ($client_filter !== '') {
-        $sWhere .= " AND C.name LIKE '%$client_filter%' ";
+        $sWhere .= " AND (C.razon_social LIKE '%$client_filter%' OR C.nombre LIKE '%$client_filter%') ";
     }
 
     if (!empty($q)) {
