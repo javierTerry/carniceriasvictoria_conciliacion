@@ -13,7 +13,7 @@ $branchSeriesMap = [
     'Obrador' => 'O',
     'Victoria1' => 'V',
     'Victoria2' => 'K',
-    'Produccion' => 'O'
+    'Produccion' => 'P'
 ];
 $display_serie = isset($branchSeriesMap[$branch]) ? $branchSeriesMap[$branch] : '';
 ?>
