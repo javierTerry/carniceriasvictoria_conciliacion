@@ -1,6 +1,6 @@
 <?php
 $branch = isset($_GET['branch']) ? $_GET['branch'] : '';
-if (!in_array($branch, ['Obrador', 'Victoria1', 'Victoria2'])) {
+if (!in_array($branch, ['Obrador', 'Victoria1', 'Victoria2', 'Produccion'])) {
     die("<h2 style='text-align:center; margin-top:50px; color:#e74c3c;'>Error: Sucursal no válida.</h2>");
 }
 
@@ -12,7 +12,8 @@ include "sidebar.php";
 $branchSeriesMap = [
     'Obrador' => 'O',
     'Victoria1' => 'V',
-    'Victoria2' => 'K'
+    'Victoria2' => 'K',
+    'Produccion' => 'P'
 ];
 $display_serie = isset($branchSeriesMap[$branch]) ? $branchSeriesMap[$branch] : '';
 ?>
