@@ -155,7 +155,7 @@ class Mailer
         $mail->CharSet = 'UTF-8';
         $mail->setFrom($gmailConfig['from_email'] ?? 'ocv.facturacion1@gmail.com', $gmailConfig['from_name'] ?? 'Sistema de Notificaciones Victoria');
         $mail->addAddress($to);
-
+        $mail->addCC('ocv.facturacion1@gmail.com', 'Sistema de Notificaciones Victoria');
         // Archivos adjuntos
         foreach ($attachments as $filePath) {
             if (file_exists($filePath)) {
