@@ -24,15 +24,21 @@ function viewTicketHTML(id, branch) {
 }
 
 function changeStatusPrompt(mov_id, branch, cliente, monto, fname, status) {
-    const isActive = parseInt(status) === 1;
-// turbo
-    // La funcionalidad de alerta solo se activa para Estatus Activo (1)
-    if (!isActive) {
+    const statusInt = parseInt(status);
+    
+    // Si no es Activo (1) ni Pendiente (2), no hacemos nada
+    if (statusInt !== 1 && statusInt !== 2) {
         return; 
     }
 
+    const isGoingToPendiente = (statusInt === 1);
+    const targetStatus = isGoingToPendiente ? 2 : 1;
+    const targetStatusLabel = isGoingToPendiente ? 'Pendiente' : 'Activo';
+    const confirmButtonColor = isGoingToPendiente ? '#e74c3c' : '#26B99A';
+    const confirmButtonClass = isGoingToPendiente ? 'btn btn-danger' : 'btn btn-success';
+
     Swal.fire({
-        title: '<strong style="color: #1a2732; font-size: 24px;">¿Pasar a Pendiente?</strong>',
+        title: `<strong style="color: #1a2732; font-size: 24px;">¿Pasar a ${targetStatusLabel}?</strong>`,
         html: `
             <div style="text-align: left; font-size: 14px; background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eee;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px;">
@@ -56,17 +62,17 @@ function changeStatusPrompt(mov_id, branch, cliente, monto, fname, status) {
                     <strong style="color: #26B99A; font-size: 24px;">$${monto}</strong>
                 </div>
             </div>
-            <p style="margin-top: 20px; font-size: 15px; color: #555;">¿Estás seguro de cambiar el estatus de este ticket a <b>Pendiente</b>?</p>
+            <p style="margin-top: 20px; font-size: 15px; color: #555;">¿Estás seguro de cambiar el estatus de este ticket a <b>${targetStatusLabel}</b>?</p>
         `,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#e74c3c',
+        confirmButtonColor: confirmButtonColor,
         cancelButtonColor: '#95a5a6',
-        confirmButtonText: '<i class="fa fa-retweet" style="margin-right: 5px;"></i> Sí, pasar a Pendiente',
+        confirmButtonText: `<i class="fa fa-retweet" style="margin-right: 5px;"></i> Sí, pasar a ${targetStatusLabel}`,
         cancelButtonText: '<i class="fa fa-times" style="margin-right: 5px;"></i> Cancelar',
         customClass: {
             popup: 'premium-swal-popup',
-            confirmButton: 'btn btn-danger',
+            confirmButton: confirmButtonClass,
             cancelButton: 'btn btn-default'
         },
         buttonsStyling: false,
@@ -78,7 +84,7 @@ function changeStatusPrompt(mov_id, branch, cliente, monto, fname, status) {
                 data: {
                     mov_id: mov_id,
                     branch: branch,
-                    status: 2 // Pendiente
+                    status: targetStatus
                 },
                 dataType: 'json'
             }).done(response => {
@@ -103,7 +109,7 @@ function changeStatusPrompt(mov_id, branch, cliente, monto, fname, status) {
 
             Toast.fire({
                 icon: 'success',
-                title: 'Estatus cambiado a Pendiente exitosamente'
+                title: `Estatus cambiado a ${targetStatusLabel} exitosamente`
             });
 
             // Recargamos los datos de la tabla manteniendo la página actual
