@@ -207,8 +207,26 @@ if ($action == 'ajax') {
     $r = mysqli_fetch_assoc($query);
     $email = trim($r['email'] ?? '');
     $nombre_cliente = trim($r['razon_social'] ?? '');
+    $cust_id = intval($r['cust_id'] ?? 0);
     
-    if (empty($email)) {
+    $para_emails = [];
+    if (!empty($email)) {
+        $para_emails[] = $email;
+    }
+    
+    if ($cust_id > 0) {
+        $sql_add_emails = "SELECT email FROM cust_emails WHERE cust_id = $cust_id AND is_active = 1";
+        $res_add_emails = mysqli_query($conexion_gen, $sql_add_emails);
+        if ($res_add_emails) {
+            while ($row_add = mysqli_fetch_assoc($res_add_emails)) {
+                if (!empty($row_add['email'])) {
+                    $para_emails[] = trim($row_add['email']);
+                }
+            }
+        }
+    }
+    
+    if (empty($para_emails)) {
         echo json_encode(['status' => 'error', 'message' => 'El cliente no tiene un correo electrónico registrado en el catálogo.']);
         exit;
     }
@@ -218,7 +236,7 @@ if ($action == 'ajax') {
         require_once "../classes/Mailer.php";
         $mailer = new Mailer();
         
-        $para = $email;
+        $para = implode(', ', array_unique($para_emails));
         $asunto = 'Reenvío de Factura Electrónica Victoria - Folio: ' . ($r['serie'] ?? '') . ' ' . ($r['folio'] ?? '');
         
         $link_xml = $r['xml_url'] ?? '';
@@ -264,6 +282,10 @@ if ($action == 'ajax') {
                         
                         <div class='details-box'>
                             <table>
+                                <tr>
+                                    <td class='ambiente'>Ambiente:</td>
+                                    <td class='value'>$ambiente </td>
+                                </tr>
                                 <tr>
                                     <td class='label'>Ticket:</td>
                                     <td class='value'>$mov_id</td>
@@ -404,12 +426,30 @@ if ($action == 'ajax') {
     }
 
     $email_message = "No se envió correo (sin correo registrado)";
+    
+    $para_emails = [];
     if (!empty($email)) {
+        $para_emails[] = $email;
+    }
+    
+    if ($cust_id > 0) {
+        $sql_add_emails = "SELECT email FROM cust_emails WHERE cust_id = " . intval($cust_id) . " AND is_active = 1";
+        $res_add_emails = mysqli_query($conexion_gen, $sql_add_emails);
+        if ($res_add_emails) {
+            while ($row_add = mysqli_fetch_assoc($res_add_emails)) {
+                if (!empty($row_add['email'])) {
+                    $para_emails[] = trim($row_add['email']);
+                }
+            }
+        }
+    }
+    
+    if (!empty($para_emails)) {
         try {
             require_once "../classes/Mailer.php";
             $mailer = new Mailer();
             
-            $para = $email;
+            $para = implode(', ', array_unique($para_emails));
             $asunto = 'Notificación de Cancelación de Factura Electrónica Victoria - Folio: ' . $serie . ' ' . $folio;
             
             $mensajeHtml = "

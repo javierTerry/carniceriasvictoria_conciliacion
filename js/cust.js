@@ -195,6 +195,16 @@ function validateForm() {
         messages.push("El formato del <b>Email</b> es incorrecto.");
     }
 
+    // Validar correos adicionales (Formato)
+    $(".additional-email-input").each(function () {
+        var add_email = $(this).val().trim();
+        if (add_email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(add_email)) {
+            isValid = false;
+            $(this).closest(".form-group").addClass("has-error");
+            messages.push("El formato de uno de los <b>Correos Adicionales</b> es incorrecto.");
+        }
+    });
+
     if (!isValid) {
         Swal.fire({
             title: 'Resumen de Campos Pendientes',
@@ -230,6 +240,7 @@ function openModalAdd() {
     $("#cust_id").val("");
     $("#cust_form")[0].reset();
     $(".has-error").removeClass("has-error");
+    $("#additional_emails_container").empty();
     handlePersonaLogic("");
     $("#custModal").modal("show");
 }
@@ -264,6 +275,21 @@ function editCust(data) {
     $("#uso_cfdi_code").val(data.uso_cfdi_code);
 
     $(".has-error").removeClass("has-error");
+
+    // Limpiar y cargar correos adicionales
+    $("#additional_emails_container").empty();
+    $.ajax({
+        url: 'ajax/cust.php?action=get_emails&cust_id=' + data.id,
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success' && response.emails) {
+                response.emails.forEach(function (row) {
+                    addEmailRow(row.email);
+                });
+            }
+        }
+    });
+
     $("#custModal").modal("show");
 }
 
@@ -342,3 +368,32 @@ function deleteCust(id) {
         }
     });
 }
+
+/**
+ * Agrega dinámicamente un renglón de correo adicional
+ */
+function addEmailRow(emailValue = "") {
+    var rowId = 'email_row_' + Date.now() + Math.random().toString(36).substr(2, 5);
+    var html = `
+        <div class="form-group row additional-email-row" id="${rowId}" style="margin-bottom: 10px;">
+            <label class="col-sm-4 control-label">Correo Adicional</label>
+            <div class="col-sm-6">
+                <input type="email" class="form-control additional-email-input" name="additional_emails[]" value="${emailValue}" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeEmailRow('${rowId}')">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    $("#additional_emails_container").append(html);
+}
+
+/**
+ * Elimina un renglón de correo adicional
+ */
+function removeEmailRow(rowId) {
+    $("#" + rowId).remove();
+}
+

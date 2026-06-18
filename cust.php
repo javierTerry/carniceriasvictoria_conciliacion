@@ -211,6 +211,21 @@ include "sidebar.php";
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- SECCIÓN DE CORREOS ADICIONALES -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 style="border-bottom: 1px solid #eee; padding-bottom: 5px; color: #2A3F54;">
+                                <i class="fa fa-envelope-o"></i> Correos Adicionales (Opcionales)
+                                <button type="button" class="btn btn-xs btn-info pull-right" onclick="addEmailRow()">
+                                    <i class="fa fa-plus"></i> Agregar Correo
+                                </button>
+                            </h5>
+                            <div id="additional_emails_container" style="margin-top: 10px;">
+                                <!-- Se poblará dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- SECCIÓN DIRECCIÓN -->
                     <div class="row">
