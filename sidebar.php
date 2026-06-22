@@ -13,8 +13,16 @@ $q_status = $_GET['status'] ?? '';
             <?php if ($user_kind == 1 || $user_kind == 2) {
                 ?>
 
-                <li class="<?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
-                    <a href="dashboard.php"><i class="fa fa-bars-progress"></i> Resumen</a>
+                <li class="<?php echo ($current_page == 'dashboard.php' || $current_page == 'resumen_facturas.php') ? 'active' : ''; ?>">
+                    <a><i class="fa fa-bars-progress"></i> RESUMEN <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="<?php echo ($current_page == 'dashboard.php' || $current_page == 'resumen_facturas.php') ? 'display: block;' : ''; ?>">
+                        <li class="<?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
+                            <a href="dashboard.php">Inicio</a>
+                        </li>
+                        <li class="<?php echo ($current_page == 'resumen_facturas.php') ? 'active' : ''; ?>">
+                            <a href="resumen_facturas.php">Facturas</a>
+                        </li>
+                    </ul>
                 </li>
             <?php } ?>
 
