@@ -138,6 +138,24 @@ if ($action === 'select2') {
     exit;
 }
 
+if ($action === 'get_emails') {
+    header('Content-Type: application/json');
+    $cust_id = intval($_GET['cust_id'] ?? 0);
+    $emails = [];
+    if ($cust_id > 0) {
+        $stmt = $conexion_gen->prepare("SELECT id, email FROM cust_emails WHERE cust_id = ? AND is_active = 1 ORDER BY id ASC");
+        $stmt->bind_param("i", $cust_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $emails[] = $row;
+        }
+        $stmt->close();
+    }
+    echo json_encode(['status' => 'success', 'emails' => $emails]);
+    exit;
+}
+
 if ($action === 'ajax') {
     // Listado con filtros
     $q = $_REQUEST['q'] ?? '';
@@ -243,6 +261,16 @@ if ($action === 'save') {
     $data = mapCustomerData($_POST);
     $errors = validateCustomerData($data);
     
+    $additional_emails = $_POST['additional_emails'] ?? [];
+    if (is_array($additional_emails)) {
+        foreach ($additional_emails as $email_val) {
+            $email_val = trim($email_val);
+            if (!empty($email_val) && !filter_var($email_val, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = "El correo adicional '$email_val' no tiene un formato válido.";
+            }
+        }
+    }
+    
     if (!empty($errors)) {
         sys_log("$workflow Fallo en validación backend: " . implode(", ", $errors), "WARNING");
         echo json_encode(['status' => 'error', 'message' => implode("<br>", $errors)]);
@@ -291,6 +319,32 @@ if ($action === 'save') {
         }
 
         if ($stmt->execute()) {
+            if ($id === 0) {
+                $id = $stmt->insert_id;
+                if (!$id) {
+                    $id = mysqli_insert_id($conexion_gen);
+                }
+            }
+
+            // Eliminar correos adicionales anteriores para este cliente
+            $stmt_del = $conexion_gen->prepare("DELETE FROM cust_emails WHERE cust_id = ?");
+            $stmt_del->bind_param("i", $id);
+            $stmt_del->execute();
+            $stmt_del->close();
+
+            // Insertar los nuevos correos adicionales
+            if (!empty($additional_emails) && is_array($additional_emails)) {
+                $stmt_ins = $conexion_gen->prepare("INSERT INTO cust_emails (cust_id, email, is_active) VALUES (?, ?, 1)");
+                foreach ($additional_emails as $email_val) {
+                    $email_val = trim($email_val);
+                    if (!empty($email_val)) {
+                        $stmt_ins->bind_param("is", $id, $email_val);
+                        $stmt_ins->execute();
+                    }
+                }
+                $stmt_ins->close();
+            }
+
             sys_log("$workflow $msg (RFC: {$data['rfc']})", "INFO");
             echo json_encode(['status' => 'success', 'message' => $msg]);
         } else {

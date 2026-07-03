@@ -280,20 +280,32 @@ if ($http_code_envio == 200) {
                         $mailer = new Mailer();
 
                         // Buscar el correo electrónico y nombre del cliente en el catálogo 'cust'
-                        $para = '';
+                        $para_emails = [];
                         $nombre_cliente = $razonSocial;
                         if (!empty($cust_id)) {
                             $sql_cust_email = "SELECT email, razon_social FROM cust WHERE id = " . intval($cust_id);
                             $res_cust_email = mysqli_query($conexion_gen, $sql_cust_email);
                             if ($res_cust_email && $row_cust = mysqli_fetch_assoc($res_cust_email)) {
                                 if (!empty($row_cust['email'])) {
-                                    $para = trim($row_cust['email']);
+                                    $para_emails[] = trim($row_cust['email']);
                                 }
                                 if (!empty($row_cust['razon_social'])) {
                                     $nombre_cliente = $row_cust['razon_social'];
                                 }
                             }
+                            // Buscar correos adicionales del cliente
+                            $sql_add_emails = "SELECT email FROM cust_emails WHERE cust_id = " . intval($cust_id) . " AND is_active = 1";
+                            $res_add_emails = mysqli_query($conexion_gen, $sql_add_emails);
+                            if ($res_add_emails) {
+                                while ($row_add = mysqli_fetch_assoc($res_add_emails)) {
+                                    if (!empty($row_add['email'])) {
+                                        $para_emails[] = trim($row_add['email']);
+                                    }
+                                }
+                            }
                         }
+                        
+                        $para = implode(', ', array_unique($para_emails));
 
                         // Si el cliente no tiene correo registrado, usamos un fallback y dejamos constancia en logs
                         $email_sent_to = $para;
@@ -355,6 +367,10 @@ if ($http_code_envio == 200) {
                                                 <tr>
                                                     <td class='label'>Monto Total:</td>
                                                     <td class='value' style='font-weight: bold; color: #27ae60;'>$" . number_format($totalGlobal, 2) . " MXN</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class='ambiente'>Ambiente:</td>
+                                                    <td class='value'>$ambiente </td>
                                                 </tr>
                                             </table>
                                         </div>

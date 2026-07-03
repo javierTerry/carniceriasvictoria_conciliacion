@@ -231,6 +231,12 @@ if ($action == 'ajax') {
               <?php endif; ?>
 
               <?php if (($status == 2 || $status == 4) && $status_filter == '2'): ?>
+                <?php if ($status == 2): ?>
+                  <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cambiar Estatus a Activo'
+                    onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2, '.', ''); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
+                    <i class="glyphicon glyphicon-retweet"></i>
+                  </button>
+                <?php endif; ?>
                 <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Gestionar Acción Ticket'
                   onclick="window.location.href='vtapendente.php?mov_id=<?php echo $r['mov_id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
                   <i class="glyphicon glyphicon-cog"></i>

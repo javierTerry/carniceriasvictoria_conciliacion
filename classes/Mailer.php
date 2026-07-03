@@ -63,7 +63,13 @@ class Mailer
 
             // Destinatarios y Remitente
             $mail->setFrom($this->config['smtp']['from_email'], $this->config['smtp']['from_name']);
-            $mail->addAddress($to);
+            
+            $emails = array_filter(array_map('trim', explode(',', $to)));
+            foreach ($emails as $email) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $mail->addAddress($email);
+                }
+            }
 
             // Archivos adjuntos (opcional)
             foreach ($attachments as $filePath) {
@@ -154,8 +160,14 @@ class Mailer
         $mail = new PHPMailer(true);
         $mail->CharSet = 'UTF-8';
         $mail->setFrom($gmailConfig['from_email'] ?? 'ocv.facturacion1@gmail.com', $gmailConfig['from_name'] ?? 'Sistema de Notificaciones Victoria');
-        $mail->addAddress($to);
-
+        
+        $emails = array_filter(array_map('trim', explode(',', $to)));
+        foreach ($emails as $email) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $mail->addAddress($email);
+            }
+        }
+        $mail->addCC('cyovictoriafacturacion22@gmail.com', 'Sistema de Notificaciones Victoria');
         // Archivos adjuntos
         foreach ($attachments as $filePath) {
             if (file_exists($filePath)) {

@@ -164,6 +164,74 @@ include "sidebar.php";
         });
     }
 
+    function confirmarCancelacion(id, serie, folio, email) {
+        let textMsg = "Esta acción cancelará el comprobante fiscal Serie: <strong>" + (serie || '') + "</strong> Folio: <strong>" + (folio || '') + "</strong> en Sinube y ante el SAT.<br><br>";
+        if (email && email.trim() !== '') {
+            textMsg += "Se enviará la notificación de cancelación a <strong style='color:#e74c3c;'>" + email + "</strong>.";
+        } else {
+            textMsg += "<span style='color:#e74c3c;'>El cliente no tiene un correo registrado, no se enviará notificación.</span>";
+        }
+
+        Swal.fire({
+            title: '¿Confirmar Cancelación de CFDI?',
+            html: textMsg,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cancelar factura',
+            cancelButtonText: 'No, regresar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Procesando Cancelación',
+                    text: 'Por favor, espere un momento...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "ajax/facturas_ajax.php",
+                    data: { action: "cancel_invoice", id: id },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            Swal.fire({
+                                title: '¡Factura Cancelada!',
+                                html: '<strong>Detalle Sinube:</strong> ' + response.sinube_message + '<br><strong>Notificación:</strong> ' + response.email_message,
+                                icon: 'success',
+                                confirmButtonColor: '#26B99A'
+                            }).then(() => {
+                                load(window.current_page || 1);
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Atención / Fallo',
+                                html: response.message,
+                                icon: 'warning',
+                                confirmButtonColor: '#3085d6'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'No se pudo procesar la solicitud de cancelación. Intente nuevamente más tarde.',
+                            icon: 'error',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
     $(document).ready(function () {
         load(1);
     });
