@@ -39,7 +39,7 @@ $q_status = $_GET['status'] ?? '';
             <li class="<?php echo ($q_branch == 'Obrador') ? 'active' : ''; ?>">
                 <a><i class="fa fa-building"></i> OBRADOR <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu" style="<?php echo ($q_branch == 'Obrador') ? 'display: block;' : ''; ?>">
-                    <li class="<?php echo ($q_branch == 'Obrador' && empty($q_status)) ? 'active' : ''; ?>"><a
+                    <li class="<?php echo ($q_branch == 'Obrador' && empty($q_status) && $current_page == 'vtaqry.php') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Obrador">Tickets</a></li>
                     <li class="<?php echo ($q_branch == 'Obrador' && $q_status == '2') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Obrador&status=2">Pendientes</a></li>
@@ -52,13 +52,16 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Obrador' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
                         <a href="factura_libre.php?branch=Obrador">Factura Libre</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Obrador' && $current_page == 'depositos.php') ? 'active' : ''; ?>">
+                        <a href="depositos.php?branch=Obrador">Depósitos</a></li>
                 </ul>
             </li>
 
             <li class="<?php echo ($q_branch == 'Victoria1') ? 'active' : ''; ?>">
                 <a><i class="fa fa-store"></i> VICTORIA 1 <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu" style="<?php echo ($q_branch == 'Victoria1') ? 'display: block;' : ''; ?>">
-                    <li class="<?php echo ($q_branch == 'Victoria1' && empty($q_status)) ? 'active' : ''; ?>"><a
+                    <li class="<?php echo ($q_branch == 'Victoria1' && empty($q_status) && $current_page == 'vtaqry.php') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Victoria1">Tickets</a></li>
                     <li class="<?php echo ($q_branch == 'Victoria1' && $q_status == '2') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Victoria1&status=2">Pendientes</a></li>
@@ -71,13 +74,16 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
                         <a href="factura_libre.php?branch=Victoria1">Factura Libre</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'depositos.php') ? 'active' : ''; ?>">
+                        <a href="depositos.php?branch=Victoria1">Depósitos</a></li>
                 </ul>
             </li>
 
             <li class="<?php echo ($q_branch == 'Victoria2') ? 'active' : ''; ?>">
                 <a><i class="fa fa-store"></i> VICTORIA 2 <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu" style="<?php echo ($q_branch == 'Victoria2') ? 'display: block;' : ''; ?>">
-                    <li class="<?php echo ($q_branch == 'Victoria2' && empty($q_status)) ? 'active' : ''; ?>"><a
+                    <li class="<?php echo ($q_branch == 'Victoria2' && empty($q_status) && $current_page == 'vtaqry.php') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Victoria2">Tickets</a></li>
                     <li class="<?php echo ($q_branch == 'Victoria2' && $q_status == '2') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Victoria2&status=2">Pendientes</a></li>
@@ -90,13 +96,16 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
                         <a href="factura_libre.php?branch=Victoria2">Factura Libre</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'depositos.php') ? 'active' : ''; ?>">
+                        <a href="depositos.php?branch=Victoria2">Depósitos</a></li>
                 </ul>
             </li>
 
             <li class="<?php echo ($q_branch == 'Produccion') ? 'active' : ''; ?>">
                 <a><i class="fa fa-industry"></i> PRODUCCIÓN <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu" style="<?php echo ($q_branch == 'Produccion') ? 'display: block;' : ''; ?>">
-                    <li class="<?php echo ($q_branch == 'Produccion' && empty($q_status)) ? 'active' : ''; ?>"><a
+                    <li class="<?php echo ($q_branch == 'Produccion' && empty($q_status) && $current_page == 'vtaqry.php') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Produccion">Tickets</a></li>
                     <li class="<?php echo ($q_branch == 'Produccion' && $q_status == '2') ? 'active' : ''; ?>"><a
                             href="vtaqry.php?branch=Produccion&status=2">Pendientes</a></li>
@@ -109,6 +118,9 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Produccion' && $current_page == 'factura_libre.php') ? 'active' : ''; ?>">
                         <a href="factura_libre.php?branch=Produccion">Factura Libre</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Produccion' && $current_page == 'depositos.php') ? 'active' : ''; ?>">
+                        <a href="depositos.php?branch=Produccion">Depósitos</a></li>
                 </ul>
             </li>
              <li class="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'active' : ''; ?>">
