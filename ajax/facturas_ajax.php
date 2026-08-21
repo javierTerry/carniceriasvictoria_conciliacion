@@ -339,7 +339,7 @@ if ($action == 'ajax') {
     }
 
     // Buscar datos de la factura
-    $sql = "SELECT A.*, C.email, C.razon_social FROM facturas A LEFT JOIN cust C ON A.cust_id = C.id WHERE A.id = $invoice_id";
+    $sql = "SELECT A.*, C.email, C.razon_social, C.rfc FROM facturas A LEFT JOIN cust C ON A.cust_id = C.id WHERE A.id = $invoice_id";
     $query = mysqli_query($conexion_gen, $sql);
     if (!$query || mysqli_num_rows($query) == 0) {
         echo json_encode(['status' => 'error', 'message' => 'Factura no encontrada en la base de datos general.']);
@@ -355,15 +355,38 @@ if ($action == 'ajax') {
     $serie = $r['serie'] ?? '';
     $folio = $r['folio'] ?? '';
     $uuid = $r['uuid'] ?? '';
+    $monto = isset($r['monto']) ? number_format((float)$r['monto'], 2, '.', '') : '0.00';
     $cust_id = $r['cust_id'] ?? 0;
     $email = trim($r['email'] ?? '');
     $nombre_cliente = trim($r['razon_social'] ?? '');
+    $rfc_receptor = trim($r['rfc'] ?? '');
+    if (empty($rfc_receptor)) {
+        $rfc_receptor = "XAXX010101000";
+    }
 
-    // Usar la URL de cancelación cargada de forma manual en config/config.php
-    global $api_url_cancel;
+    // Configuración para facturación y cancelación desde config/config.php
+    global $api_url_cancel, $api_sistema, $api_zona_horaria, $api_rfc_emisor, $api_pruebas, $api_url_blob;
 
-    // XML Payload
-    $xml_payload = '<Factura sistema="' . $api_sistema . '" serie="' . $serie . '" folio="' . $folio . '" zonaHoraria="' . $api_zona_horaria . '"/>';
+    // Paso 1: Consultar estatus CFDI ante el SAT (tipo 2000)
+    $sinube = new SinubeHelper($log_file);
+    $estatus_cfdi_xml = '';
+    try {
+        $estatus_cfdi_xml = $sinube->consultarEstatusCFDI(
+            $api_rfc_emisor,
+            $api_pruebas,
+            $api_rfc_emisor,
+            $rfc_receptor,
+            $monto,
+            $uuid,
+            $api_url_blob
+        );
+        error_log("[" . date('Y-m-d H:i:s') . "] Estatus CFDI SAT (tipo 2000) obtenido: " . $estatus_cfdi_xml . "\n", 3, $log_file);
+    } catch (Exception $e) {
+        error_log("[" . date('Y-m-d H:i:s') . "] Error al consultar estatus CFDI SAT (tipo 2000): " . $e->getMessage() . "\n", 3, $log_file);
+    }
+
+    // Paso 2: Construir XML Payload para la petición formal de cancelación incorporando estatusCfdiXml
+    $xml_payload = '<Factura sistema="' . $api_sistema . '" serie="' . $serie . '" folio="' . $folio . '" zonaHoraria="' . $api_zona_horaria . '" estatusCfdiXml="' . htmlspecialchars($estatus_cfdi_xml, ENT_QUOTES | ENT_XML1, 'UTF-8') . '"/>';
 
     error_log("[" . date('Y-m-d H:i:s') . "] Solicitud de cancelación enviada a Sinube. XML: " . $xml_payload . "\n", 3, $log_file);
 
