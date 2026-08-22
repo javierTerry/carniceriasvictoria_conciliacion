@@ -137,8 +137,38 @@ if ($action == 'ajax') {
   $total_pages = ceil($numrows / $per_page);
   $reload = './vtaqry.php';
 
-  // Manual Slicing for Pagination
+  // Squeeze and collect all mov_ids from display_rows to query general invoices in a single batch
   $display_rows = array_slice($all_rows, $offset, $per_page);
+
+  $facturas_map = [];
+  if (!empty($display_rows) && isset($conexion_gen)) {
+    $mov_ids = array_unique(array_filter(array_column($display_rows, 'mov_id')));
+    if (!empty($mov_ids)) {
+      $placeholders = implode(',', array_fill(0, count($mov_ids), '?'));
+      $sql_fac = "SELECT id, mov_id, sucursal, serie, folio, uuid, estatus, estado, xml_url, pdf_url, fecha_factura 
+                  FROM `" . $db_name_gen . "`.`facturas` 
+                  WHERE mov_id IN ($placeholders) 
+                  ORDER BY id DESC";
+      $stmt_fac = mysqli_prepare($conexion_gen, $sql_fac);
+      if ($stmt_fac) {
+        $types_fac = str_repeat('s', count($mov_ids));
+        mysqli_stmt_bind_param($stmt_fac, $types_fac, ...$mov_ids);
+        if (mysqli_stmt_execute($stmt_fac)) {
+          $res_fac = mysqli_stmt_get_result($stmt_fac);
+          while ($fac_row = mysqli_fetch_assoc($res_fac)) {
+            $key_branch = $fac_row['mov_id'] . '_' . ($fac_row['sucursal'] ?? '');
+            if (!isset($facturas_map[$key_branch])) {
+              $facturas_map[$key_branch] = $fac_row;
+            }
+            if (!isset($facturas_map[$fac_row['mov_id']])) {
+              $facturas_map[$fac_row['mov_id']] = $fac_row;
+            }
+          }
+        }
+        mysqli_stmt_close($stmt_fac);
+      }
+    }
+  }
 
   if ($numrows > 0) {
     include 'pagination.php';
@@ -165,6 +195,14 @@ if ($action == 'ajax') {
           $status = intval($r['status']);
           $fecha_f = date('d-m-Y', strtotime($r['created_at']));
           $row_class = ($status == 1) ? "paid-highlight" : "";
+
+          // Invoice status check
+          $mov_id = $r['mov_id'];
+          $branch_label = $r['branch_label'];
+          $fac = $facturas_map[$mov_id . '_' . $branch_label] ?? ($facturas_map[$mov_id] ?? null);
+          $has_invoice = !empty($fac);
+          $is_invoice_cancelled = $has_invoice && (($fac['estado'] ?? '') === 'Cancelada' || (isset($fac['estatus']) && $fac['estatus'] == 0));
+          $is_invoice_active = $has_invoice && !$is_invoice_cancelled;
           ?>
           <tr class="<?php echo $row_class; ?>">
             <td><span class="label <?php echo $r['branch_class']; ?>"><?php echo $r['branch_label']; ?></span></td>
@@ -176,30 +214,45 @@ if ($action == 'ajax') {
             <td align="right"><?php echo number_format($r['sumimp'], 2); ?></td>
             <td>
               <?php
-              switch ($status) {
-                case 1:
-                  echo '<span class="badge badge-success">Activo</span>';
-                  break;
-                case 0:
-                  echo '<span class="badge badge-danger">Inactivo</span>';
-                  break;
-                case 2:
-                  echo '<span class="badge badge-warning">Pendiente</span>';
-                  break;
-                case 3:
-                  echo '<span class="badge badge-primary">Facturado</span>';
-                  break;
-                case 4:
-                  echo '<span class="badge badge-info">Agrupado</span>';
-                  break;
-                default:
-                  echo '<span class="badge">' . $status . '</span>';
+              if ($is_invoice_cancelled) {
+                ?>
+                <span class="badge badge-cancelled" style="background-color: #1a1a1a; color: #e74c3c; border: 1px solid #e74c3c; padding: 4px 8px; font-weight: bold; border-radius: 4px;" title="Factura Cancelada <?php echo htmlspecialchars(($fac['serie'] ?? '') . ' ' . ($fac['folio'] ?? '')); ?>">
+                  <i class="glyphicon glyphicon-ban-circle"></i> Factura Cancelada
+                </span>
+                <?php if (!empty($fac['folio'])): ?>
+                  <br><small style="color: #b22222; font-weight: bold; font-size: 11px;"><?php echo htmlspecialchars(($fac['serie'] ?? '') . '-' . $fac['folio']); ?> (Cancelada)</small>
+                <?php endif; ?>
+                <?php
+              } elseif ($status == 3 || $is_invoice_active) {
+                $folio_tag = ($has_invoice && (!empty($fac['serie']) || !empty($fac['folio']))) ? ' (' . htmlspecialchars(($fac['serie'] ?? '') . '-' . ($fac['folio'] ?? '')) . ')' : '';
+                ?>
+                <span class="badge badge-primary" style="padding: 4px 8px; font-weight: bold; border-radius: 4px;" title="<?php echo htmlspecialchars($fac['uuid'] ?? 'Facturado'); ?>">
+                  <i class="glyphicon glyphicon-file"></i> Facturado<?php echo $folio_tag; ?>
+                </span>
+                <?php
+              } else {
+                switch ($status) {
+                  case 1:
+                    echo '<span class="badge badge-success" style="padding: 4px 8px; font-weight: bold; border-radius: 4px;">Activo</span>';
+                    break;
+                  case 0:
+                    echo '<span class="badge" style="background-color: #6c757d; color: #ffffff; padding: 4px 8px; font-weight: bold; border-radius: 4px;" title="Ticket Inactivo en Punto de Venta"><i class="glyphicon glyphicon-minus-sign"></i> Inactivo</span>';
+                    break;
+                  case 2:
+                    echo '<span class="badge badge-warning" style="padding: 4px 8px; font-weight: bold; border-radius: 4px;">Pendiente</span>';
+                    break;
+                  case 4:
+                    echo '<span class="badge badge-info" style="padding: 4px 8px; font-weight: bold; border-radius: 4px;">Agrupado</span>';
+                    break;
+                  default:
+                    echo '<span class="badge">' . $status . '</span>';
+                }
               }
               ?>
             </td>
             <td class="text-right">
               <?php if ($status_filter === ''): ?>
-                <?php if ($status == 1): ?>
+                <?php if ($status == 1 && !$is_invoice_cancelled): ?>
                   <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Agrupar Ticket'
                     onclick="agruparTicket('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo number_format($r['sumimp'], 2, '.', ''); ?>', '<?php echo $r['cust_id']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>')">
                     <i class="glyphicon glyphicon-link"></i>
@@ -207,7 +260,7 @@ if ($action == 'ajax') {
                 <?php endif; ?>
               <?php endif; ?>
 
-              <?php if ($status == 1): ?>
+              <?php if ($status == 1 && !$is_invoice_cancelled): ?>
                 <?php if ($user_kind != 0 && $fecha_f == $hoy): ?>
                   <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cancelar Venta'
                     onclick="eliminar('<?php echo $r['id']; ?>')">
@@ -219,18 +272,9 @@ if ($action == 'ajax') {
                   onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2, '.', ''); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
                   <i class="glyphicon glyphicon-retweet"></i>
                 </button>
-
-                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
-                  onclick="printTicket('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
-                  <i class="glyphicon glyphicon-print"></i>
-                </button>
-                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
-                  onclick="viewTicketHTML('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
-                  <i class="glyphicon glyphicon-list-alt"></i>
-                </button>
               <?php endif; ?>
 
-              <?php if (($status == 2 || $status == 4) && $status_filter == '2'): ?>
+              <?php if (($status == 2 || $status == 4) && $status_filter == '2' && !$is_invoice_cancelled): ?>
                 <?php if ($status == 2): ?>
                   <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Cambiar Estatus a Activo'
                     onclick="changeStatusPrompt('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>', '<?php echo htmlspecialchars($r['cliente'], ENT_QUOTES); ?>', '<?php echo number_format($r['sumimp'], 2, '.', ''); ?>', '<?php echo htmlspecialchars($r['fname'], ENT_QUOTES); ?>', '<?php echo $status; ?>')">
@@ -241,11 +285,29 @@ if ($action == 'ajax') {
                   onclick="window.location.href='vtapendente.php?mov_id=<?php echo $r['mov_id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
                   <i class="glyphicon glyphicon-cog"></i>
                 </button>
-                <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
-                  onclick="viewTicketHTML('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
-                  <i class="glyphicon glyphicon-list-alt"></i>
-                </button>
               <?php endif; ?>
+
+              <?php if ($has_invoice && !empty($fac['xml_url'])): ?>
+                <a href="<?php echo htmlspecialchars($fac['xml_url']); ?>" target="_blank" download class="btn btn-default btn-xs action-btn-victoria" title="Descargar XML Factura">
+                  <i class="fa fa-file-code-o"></i>
+                </a>
+              <?php endif; ?>
+
+              <?php if ($has_invoice && !empty($fac['pdf_url'])): ?>
+                <a href="<?php echo htmlspecialchars($fac['pdf_url']); ?>" target="_blank" download class="btn btn-default btn-xs action-btn-victoria" title="Descargar PDF Factura">
+                  <i class="fa fa-file-pdf-o"></i>
+                </a>
+              <?php endif; ?>
+
+              <!-- Visualización e Impresión de Ticket -->
+              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Imprimir Venta'
+                onclick="printTicket('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
+                <i class="glyphicon glyphicon-print"></i>
+              </button>
+              <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Ver Ticket (HTML)'
+                onclick="viewTicketHTML('<?php echo $r['id']; ?>', '<?php echo $r['branch_label']; ?>')">
+                <i class="glyphicon glyphicon-list-alt"></i>
+              </button>
             </td>
           </tr>
         <?php endforeach; ?>

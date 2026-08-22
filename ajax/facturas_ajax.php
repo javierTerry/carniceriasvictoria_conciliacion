@@ -385,8 +385,10 @@ if ($action == 'ajax') {
         error_log("[" . date('Y-m-d H:i:s') . "] Error al consultar estatus CFDI SAT (tipo 2000): " . $e->getMessage() . "\n", 3, $log_file);
     }
 
+    $cancelacion_motivo = isset($_POST['cancelacionMotivo']) && !empty($_POST['cancelacionMotivo']) ? trim($_POST['cancelacionMotivo']) : (isset($_POST['motivo']) && !empty($_POST['motivo']) ? trim($_POST['motivo']) : '02');
+
     // Paso 2: Construir XML Payload para la petición formal de cancelación incorporando estatusCfdiXml
-    $xml_payload = '<Factura sistema="' . $api_sistema . '" serie="' . $serie . '" folio="' . $folio . '" zonaHoraria="' . $api_zona_horaria . '" estatusCfdiXml="' . htmlspecialchars($estatus_cfdi_xml, ENT_QUOTES | ENT_XML1, 'UTF-8') . '"/>';
+    $xml_payload = '<Factura sistema="' . $api_sistema . '" serie="' . $serie . '" folio="' . $folio . '" zonaHoraria="' . $api_zona_horaria . '" cancelacionMotivo="02" estatusCfdiXml="' . htmlspecialchars($estatus_cfdi_xml, ENT_QUOTES | ENT_XML1, 'UTF-8') . '"/>';
 
     error_log("[" . date('Y-m-d H:i:s') . "] Solicitud de cancelación enviada a Sinube. XML: " . $xml_payload . "\n", 3, $log_file);
 
