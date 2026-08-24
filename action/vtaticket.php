@@ -185,7 +185,7 @@ if (isset($conexion_gen) && !empty($sale_data['mov_id'])) {
       if (mysqli_stmt_execute($stmt_fac)) {
          $res_fac = mysqli_stmt_get_result($stmt_fac);
          if ($fac_row = mysqli_fetch_assoc($res_fac)) {
-            if (($fac_row['estado'] ?? '') === 'Cancelada' || (isset($fac_row['estatus']) && $fac_row['estatus'] == 0)) {
+            if ((($fac_row['estado'] ?? '') === 'Cancelada' || (isset($fac_row['estatus']) && $fac_row['estatus'] == 0)) && $sale_data['is_ticket_inactive']) {
                $sale_data['is_fac_cancelled'] = true;
                $sale_data['fac_serie'] = $fac_row['serie'] ?? '';
                $sale_data['fac_folio'] = $fac_row['folio'] ?? '';

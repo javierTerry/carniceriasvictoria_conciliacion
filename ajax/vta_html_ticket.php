@@ -61,7 +61,7 @@ if (isset($conexion_gen) && !empty($sale['mov_id'])) {
     }
 }
 
-$is_fac_cancelled = $fac_data && (($fac_data['estado'] ?? '') === 'Cancelada' || (isset($fac_data['estatus']) && $fac_data['estatus'] == 0));
+$is_fac_cancelled = $fac_data && (($fac_data['estado'] ?? '') === 'Cancelada' || (isset($fac_data['estatus']) && $fac_data['estatus'] == 0)) && $is_ticket_cancelled;
 $is_cancelled = $is_ticket_cancelled || $is_fac_cancelled;
 
 // 3. Items

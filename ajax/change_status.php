@@ -37,7 +37,7 @@ if (!$branchConn) {
     exit;
 }
 
-// Validar que la factura no esté cancelada o inactiva
+// Validar que no exista una factura VIGENTE/ACTIVA asociada al ticket
 if (isset($conexion_gen) && !empty($mov_id)) {
     $stmt_fac = mysqli_prepare($conexion_gen, "SELECT id, estado, estatus FROM `" . $db_name_gen . "`.`facturas` WHERE mov_id = ? ORDER BY id DESC LIMIT 1");
     if ($stmt_fac) {
@@ -45,10 +45,10 @@ if (isset($conexion_gen) && !empty($mov_id)) {
         if (mysqli_stmt_execute($stmt_fac)) {
             $res_fac = mysqli_stmt_get_result($stmt_fac);
             if ($fac_check = mysqli_fetch_assoc($res_fac)) {
-                if (($fac_check['estado'] ?? '') === 'Cancelada' || (isset($fac_check['estatus']) && $fac_check['estatus'] == 0)) {
+                if (($fac_check['estado'] ?? '') === 'Activa' && (isset($fac_check['estatus']) && $fac_check['estatus'] == 1)) {
                     mysqli_stmt_close($stmt_fac);
                     mysqli_close($branchConn);
-                    echo json_encode(['success' => false, 'message' => 'No se puede cambiar el estatus de un ticket cuya factura está cancelada o inactiva.']);
+                    echo json_encode(['success' => false, 'message' => 'No se puede cambiar el estatus de un ticket que tiene una factura vigente.']);
                     exit;
                 }
             }
