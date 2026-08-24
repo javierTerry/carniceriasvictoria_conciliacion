@@ -34,6 +34,26 @@ if (!empty($branch)) {
 function renderTicketSection($pdf, $data, $items_array, $type_label)
 {
    $pdf->AddPage();
+
+   // Leyenda de Factura Cancelada o Ticket Inactivo
+   if (!empty($data['is_fac_cancelled'])) {
+      $pdf->SetTextColor(178, 34, 34);
+      $pdf->SetFont('Arial', 'B', 11);
+      $pdf->Cell(100, 6, utf8_decode('*** FACTURA CANCELADA ***'), 0, 1, 'C');
+      if (!empty($data['fac_folio'])) {
+         $pdf->SetFont('Arial', 'B', 8);
+         $pdf->Cell(100, 5, utf8_decode('Serie: ' . $data['fac_serie'] . '  Folio: ' . $data['fac_folio'] . ' (SAT)'), 0, 1, 'C');
+      }
+      $pdf->SetTextColor(0, 0, 0);
+      $pdf->Ln(2);
+   } elseif (!empty($data['is_ticket_inactive'])) {
+      $pdf->SetTextColor(108, 117, 125);
+      $pdf->SetFont('Arial', 'B', 11);
+      $pdf->Cell(100, 6, utf8_decode('*** TICKET INACTIVO ***'), 0, 1, 'C');
+      $pdf->SetTextColor(0, 0, 0);
+      $pdf->Ln(2);
+   }
+
    $pdf->SetFont('Arial', 'B', 9);
 
    // Encabezado del ticket
@@ -132,7 +152,7 @@ $res_empresa = mysqli_query($targetConn, $sql_empresa) or die("Error Empresa: " 
 $GLOBALS["empresa"] = mysqli_fetch_array($res_empresa);
 
 // 2. Traer datos de la venta (Prepared Statement)
-$sql_venta = "SELECT A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.sumimp, A.items, 
+$sql_venta = "SELECT A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.sumimp, A.items, A.is_active,
                      B.name as cliente, A.recibo, A.acuenta, A.fpago, 
                      CONCAT(U.name, ' ', U.lastname) as uname,
                      F.code as fcode, F.name as fname
@@ -150,6 +170,30 @@ $sale_data = mysqli_fetch_array($res_venta, MYSQLI_ASSOC);
 
 if (!$sale_data) {
    die("Venta no encontrada en la sucursal $branch (ID: $id).");
+}
+
+// Validar si la factura está cancelada o si el ticket está inactivo
+$sale_data['is_ticket_inactive'] = (isset($sale_data['is_active']) && intval($sale_data['is_active']) === 0);
+$sale_data['is_fac_cancelled'] = false;
+$sale_data['fac_serie'] = '';
+$sale_data['fac_folio'] = '';
+
+if (isset($conexion_gen) && !empty($sale_data['mov_id'])) {
+   $stmt_fac = mysqli_prepare($conexion_gen, "SELECT id, serie, folio, uuid, estatus, estado FROM `" . $db_name_gen . "`.`facturas` WHERE mov_id = ? ORDER BY id DESC LIMIT 1");
+   if ($stmt_fac) {
+      mysqli_stmt_bind_param($stmt_fac, "s", $sale_data['mov_id']);
+      if (mysqli_stmt_execute($stmt_fac)) {
+         $res_fac = mysqli_stmt_get_result($stmt_fac);
+         if ($fac_row = mysqli_fetch_assoc($res_fac)) {
+            if ((($fac_row['estado'] ?? '') === 'Cancelada' || (isset($fac_row['estatus']) && $fac_row['estatus'] == 0)) && $sale_data['is_ticket_inactive']) {
+               $sale_data['is_fac_cancelled'] = true;
+               $sale_data['fac_serie'] = $fac_row['serie'] ?? '';
+               $sale_data['fac_folio'] = $fac_row['folio'] ?? '';
+            }
+         }
+      }
+      mysqli_stmt_close($stmt_fac);
+   }
 }
 
 // 3. Traer items de la venta (Prepared Statement)
@@ -173,8 +217,17 @@ $pdf = new PDF('P', 'mm', array(230, 120));
 $pdf->AliasNbPages();
 $pdf->SetTitle('Venta ' . $sale_data['mov_id'] . ' | Obrador Victoria');
 
+// Etiqueta de pie
+if ($sale_data['is_fac_cancelled']) {
+   $type_label_final = '*** FACTURA CANCELADA ***';
+} elseif ($sale_data['is_ticket_inactive']) {
+   $type_label_final = '*** TICKET INACTIVO ***';
+} else {
+   $type_label_final = "ORIGINAL";
+}
+
 // Renderizar Original
-renderTicketSection($pdf, $sale_data, $items_array, "ORIGINAL");
+renderTicketSection($pdf, $sale_data, $items_array, $type_label_final);
 
 // Renderizar Copia si no es público en general (cust_id != 1)
 if ($sale_data['cust_id'] != 1) {

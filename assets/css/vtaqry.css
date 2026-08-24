@@ -70,6 +70,13 @@
     color: white !important;
 }
 
+.badge-cancelled {
+    background-color: #1a1a1a !important;
+    color: #e74c3c !important;
+    border: 1px solid #e74c3c !important;
+    box-shadow: 0 1px 3px rgba(231, 76, 60, 0.2);
+}
+
 /* Centered table cells */
 .table td,
 .table th {

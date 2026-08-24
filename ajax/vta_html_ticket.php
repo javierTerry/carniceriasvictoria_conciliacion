@@ -30,7 +30,7 @@ $res_empresa = mysqli_query($targetConn, $sql_empresa);
 $empresa = mysqli_fetch_array($res_empresa, MYSQLI_ASSOC);
 
 // 2. Venta
-$sql_venta = "SELECT A.id, A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.sumimp, A.items, 
+$sql_venta = "SELECT A.id, A.mov_id, A.cust_id, A.created_at, A.hour_at, A.sumqty, A.sumimp, A.items, A.is_active,
                      B.name as cliente, A.recibo, A.acuenta, A.fpago, 
                      CONCAT(U.name, ' ', U.lastname) as uname,
                      F.code as fcode, F.name as fname
@@ -45,6 +45,24 @@ $sale = mysqli_fetch_array($res_venta, MYSQLI_ASSOC);
 if (!$sale) {
     die("<div class='alert alert-danger'>Venta no encontrada en la sucursal $branch (ID: $id).</div>");
 }
+
+// Check if ticket or invoice is cancelled
+$is_ticket_cancelled = (isset($sale['is_active']) && intval($sale['is_active']) === 0);
+$fac_data = null;
+if (isset($conexion_gen) && !empty($sale['mov_id'])) {
+    $stmt_fac = mysqli_prepare($conexion_gen, "SELECT id, serie, folio, uuid, estatus, estado FROM `" . $db_name_gen . "`.`facturas` WHERE mov_id = ? ORDER BY id DESC LIMIT 1");
+    if ($stmt_fac) {
+        mysqli_stmt_bind_param($stmt_fac, "s", $sale['mov_id']);
+        if (mysqli_stmt_execute($stmt_fac)) {
+            $res_fac = mysqli_stmt_get_result($stmt_fac);
+            $fac_data = mysqli_fetch_assoc($res_fac);
+        }
+        mysqli_stmt_close($stmt_fac);
+    }
+}
+
+$is_fac_cancelled = $fac_data && (($fac_data['estado'] ?? '') === 'Cancelada' || (isset($fac_data['estatus']) && $fac_data['estatus'] == 0)) && $is_ticket_cancelled;
+$is_cancelled = $is_ticket_cancelled || $is_fac_cancelled;
 
 // 3. Items
 mysqli_set_charset($targetConn, "utf8mb4");
@@ -61,6 +79,28 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
 <link rel="stylesheet" href="assets/css/vta_html_ticket.css">
 
 <div class="ticket-html">
+    <?php if ($is_fac_cancelled): ?>
+        <div class="ticket-cancellation-banner" style="background-color: #fce4e4; border: 2px dashed #b22222; color: #b22222; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px;">
+            <div style="font-size: 15px; font-weight: 900; letter-spacing: 1px;">
+                <i class="glyphicon glyphicon-ban-circle"></i> *** FACTURA CANCELADA ***
+            </div>
+            <?php if ($fac_data && (!empty($fac_data['serie']) || !empty($fac_data['folio']))): ?>
+                <div style="font-size: 11px; margin-top: 4px; font-weight: 600;">
+                    Comprobante Fiscal: <?php echo htmlspecialchars(($fac_data['serie'] ?? '') . '-' . ($fac_data['folio'] ?? '')); ?> (Cancelada en SAT)
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php elseif ($is_ticket_cancelled): ?>
+        <div class="ticket-cancellation-banner" style="background-color: #f8f9fa; border: 2px dashed #6c757d; color: #6c757d; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px;">
+            <div style="font-size: 15px; font-weight: 900; letter-spacing: 1px;">
+                <i class="glyphicon glyphicon-minus-sign"></i> *** TICKET INACTIVO ***
+            </div>
+            <div style="font-size: 11px; margin-top: 4px; font-weight: 600;">
+                Este ticket fue marcado como inactivo en el punto de venta
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="ticket-header">
         <img src="images/profiles/logo.jpg" style="width: 80px; display: block; margin: 0 auto 10px;">
         <h4>
@@ -174,7 +214,13 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
             fecha de su compra.</p>
         <p class="ticket-bold">NO SE REALIZARÁN FACTURAS DE MESES ANTERIORES</p>
         <p>***AGRADECEMOS SU PREFERENCIA***</p>
-        <p class="ticket-bold">ORIGINAL</p>
+        <?php if ($is_fac_cancelled): ?>
+            <p class="ticket-bold" style="color: #b22222; font-size: 13px; letter-spacing: 1px;">*** FACTURA CANCELADA ***</p>
+        <?php elseif ($is_ticket_cancelled): ?>
+            <p class="ticket-bold" style="color: #6c757d; font-size: 13px; letter-spacing: 1px;">*** TICKET INACTIVO ***</p>
+        <?php else: ?>
+            <p class="ticket-bold">ORIGINAL</p>
+        <?php endif; ?>
     </div>
 
     <?php if (isset($_GET['manage'])): ?>

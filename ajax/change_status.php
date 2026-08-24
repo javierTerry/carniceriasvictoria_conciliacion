@@ -37,7 +37,25 @@ if (!$branchConn) {
     exit;
 }
 
-mysqli_set_charset($branchConn, "utf8");
+// Validar que no exista una factura VIGENTE/ACTIVA asociada al ticket
+if (isset($conexion_gen) && !empty($mov_id)) {
+    $stmt_fac = mysqli_prepare($conexion_gen, "SELECT id, estado, estatus FROM `" . $db_name_gen . "`.`facturas` WHERE mov_id = ? ORDER BY id DESC LIMIT 1");
+    if ($stmt_fac) {
+        mysqli_stmt_bind_param($stmt_fac, "s", $mov_id);
+        if (mysqli_stmt_execute($stmt_fac)) {
+            $res_fac = mysqli_stmt_get_result($stmt_fac);
+            if ($fac_check = mysqli_fetch_assoc($res_fac)) {
+                if (($fac_check['estado'] ?? '') === 'Activa' && (isset($fac_check['estatus']) && $fac_check['estatus'] == 1)) {
+                    mysqli_stmt_close($stmt_fac);
+                    mysqli_close($branchConn);
+                    echo json_encode(['success' => false, 'message' => 'No se puede cambiar el estatus de un ticket que tiene una factura vigente.']);
+                    exit;
+                }
+            }
+        }
+        mysqli_stmt_close($stmt_fac);
+    }
+}
 
 // Usamos prepared statement para mayor seguridad
 $sql = "UPDATE vtahead SET is_active = ? WHERE mov_id = ?";

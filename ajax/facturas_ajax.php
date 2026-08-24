@@ -124,14 +124,17 @@ if ($action == 'ajax') {
                                 </div>
                             <?php endif; ?>
                         </td>
-                        <td align="right" style="font-weight: bold; color: #26B99A;">$<?php echo number_format($r['monto'], 2); ?></td>
-                        
+                        <td align="right" style="font-weight: bold; color: #26B99A;">$<?php echo number_format($r['monto'], 2); ?>
+                        </td>
+
                         <!-- Estatus Column using red and black colors -->
                         <td class="text-center">
                             <?php if ($is_cancelled) { ?>
-                                <span class="badge" style="background-color: #1a1a1a; color: #b22222; border: 1px solid #b22222; padding: 5px 10px; font-weight: bold; border-radius: 4px;">Cancelada</span>
+                                <span class="badge"
+                                    style="background-color: #1a1a1a; color: #b22222; border: 1px solid #b22222; padding: 5px 10px; font-weight: bold; border-radius: 4px;">Cancelada</span>
                             <?php } else { ?>
-                                <span class="badge badge-success" style="padding: 5px 10px; font-weight: bold; border-radius: 4px;">Activa</span>
+                                <span class="badge badge-success"
+                                    style="padding: 5px 10px; font-weight: bold; border-radius: 4px;">Activa</span>
                             <?php } ?>
                         </td>
 
@@ -153,10 +156,12 @@ if ($action == 'ajax') {
                                 echo "-";
                             } ?>
                         </td>
-                         
+
                         <td class="text-center">
                             <?php if (!empty($r['xml_url']) || !empty($r['pdf_url'])) { ?>
-                                <a href="javascript:void(0);" onclick="enviarCorreoFactura(<?php echo $r['id']; ?>, '<?php echo htmlspecialchars($r['cliente_email'] ? $r['cliente_email'] : ''); ?>')" title="Enviar Factura por Correo" style="cursor: pointer;">
+                                <a href="javascript:void(0);"
+                                    onclick="enviarCorreoFactura(<?php echo $r['id']; ?>, '<?php echo htmlspecialchars($r['cliente_email'] ? $r['cliente_email'] : ''); ?>')"
+                                    title="Enviar Factura por Correo" style="cursor: pointer;">
                                     <i class="fa fa-envelope" style="font-size: 20px; color: #3498db;"></i>
                                 </a>
                             <?php } else {
@@ -167,11 +172,14 @@ if ($action == 'ajax') {
                         <!-- Acciones Column -->
                         <td class="text-center">
                             <?php if (!$is_cancelled) { ?>
-                                <a href="javascript:void(0);" onclick="confirmarCancelacion(<?php echo $r['id']; ?>, '<?php echo htmlspecialchars($r['serie'] ?? ''); ?>', '<?php echo htmlspecialchars($r['folio'] ?? ''); ?>', '<?php echo htmlspecialchars($r['cliente_email'] ? $r['cliente_email'] : ''); ?>')" title="Cancelar Factura" style="cursor: pointer;">
+                                <a href="javascript:void(0);"
+                                    onclick="confirmarCancelacion(<?php echo $r['id']; ?>, '<?php echo htmlspecialchars($r['serie'] ?? ''); ?>', '<?php echo htmlspecialchars($r['folio'] ?? ''); ?>', '<?php echo htmlspecialchars($r['cliente_email'] ? $r['cliente_email'] : ''); ?>')"
+                                    title="Cancelar Factura" style="cursor: pointer;">
                                     <i class="fa fa-times-circle" style="font-size: 20px; color: #e74c3c;"></i>
                                 </a>
                             <?php } else { ?>
-                                <i class="fa fa-times-circle" style="font-size: 20px; color: #ccc; cursor: not-allowed;" title="Ya cancelada"></i>
+                                <i class="fa fa-times-circle" style="font-size: 20px; color: #ccc; cursor: not-allowed;"
+                                    title="Ya cancelada"></i>
                             <?php } ?>
                         </td>
                     </tr>
@@ -195,7 +203,7 @@ if ($action == 'ajax') {
         echo json_encode(['status' => 'error', 'message' => 'ID de factura inválido.']);
         exit;
     }
-    
+
     // Buscar datos de la factura y del cliente
     $sql = "SELECT A.*, C.email, C.razon_social FROM facturas A LEFT JOIN cust C ON A.cust_id = C.id WHERE A.id = $invoice_id";
     $query = mysqli_query($conexion_gen, $sql);
@@ -203,17 +211,17 @@ if ($action == 'ajax') {
         echo json_encode(['status' => 'error', 'message' => 'Factura no encontrada.']);
         exit;
     }
-    
+
     $r = mysqli_fetch_assoc($query);
     $email = trim($r['email'] ?? '');
     $nombre_cliente = trim($r['razon_social'] ?? '');
     $cust_id = intval($r['cust_id'] ?? 0);
-    
+
     $para_emails = [];
     if (!empty($email)) {
         $para_emails[] = $email;
     }
-    
+
     if ($cust_id > 0) {
         $sql_add_emails = "SELECT email FROM cust_emails WHERE cust_id = $cust_id AND is_active = 1";
         $res_add_emails = mysqli_query($conexion_gen, $sql_add_emails);
@@ -225,20 +233,20 @@ if ($action == 'ajax') {
             }
         }
     }
-    
+
     if (empty($para_emails)) {
         echo json_encode(['status' => 'error', 'message' => 'El cliente no tiene un correo electrónico registrado en el catálogo.']);
         exit;
     }
-    
+
     // Enviar correo
     try {
         require_once "../classes/Mailer.php";
         $mailer = new Mailer();
-        
+
         $para = implode(', ', array_unique($para_emails));
         $asunto = 'Reenvío de Factura Electrónica Victoria - Folio: ' . ($r['serie'] ?? '') . ' ' . ($r['folio'] ?? '');
-        
+
         $link_xml = $r['xml_url'] ?? '';
         $link_pdf = $r['pdf_url'] ?? '';
         $mov_id = $r['mov_id'] ?? '';
@@ -319,7 +327,7 @@ if ($action == 'ajax') {
             </body>
             </html>
         ";
-        
+
         if ($mailer->send($para, $asunto, $mensajeHtml)) {
             echo json_encode(['status' => 'success', 'message' => "Correo enviado exitosamente a $para."]);
             error_log("[" . date('Y-m-d H:i:s') . "] " . __LINE__, 3, $log_file);
@@ -355,7 +363,7 @@ if ($action == 'ajax') {
     $serie = $r['serie'] ?? '';
     $folio = $r['folio'] ?? '';
     $uuid = $r['uuid'] ?? '';
-    $monto = isset($r['monto']) ? number_format((float)$r['monto'], 2, '.', '') : '0.00';
+    $monto = isset($r['monto']) ? number_format((float) $r['monto'], 2, '.', '') : '0.00';
     $cust_id = $r['cust_id'] ?? 0;
     $email = trim($r['email'] ?? '');
     $nombre_cliente = trim($r['razon_social'] ?? '');
@@ -385,8 +393,11 @@ if ($action == 'ajax') {
         error_log("[" . date('Y-m-d H:i:s') . "] Error al consultar estatus CFDI SAT (tipo 2000): " . $e->getMessage() . "\n", 3, $log_file);
     }
 
+    $cancelacion_motivo = isset($_POST['cancelacionMotivo']) && !empty($_POST['cancelacionMotivo']) ? trim($_POST['cancelacionMotivo']) : (isset($_POST['motivo']) && !empty($_POST['motivo']) ? trim($_POST['motivo']) : '02');
+
     // Paso 2: Construir XML Payload para la petición formal de cancelación incorporando estatusCfdiXml
-    $xml_payload = '<Factura sistema="' . $api_sistema . '" serie="' . $serie . '" folio="' . $folio . '" zonaHoraria="' . $api_zona_horaria . '" estatusCfdiXml="' . htmlspecialchars($estatus_cfdi_xml, ENT_QUOTES | ENT_XML1, 'UTF-8') . '"/>';
+    $xml_payload = '<Factura sistema="' . $api_sistema . '" serie="' . $serie . '" folio="' . $folio . '" zonaHoraria="' . $api_zona_horaria . '" cancelacionMotivo="02" estatusCfdiXml="' . htmlspecialchars($estatus_cfdi_xml, ENT_QUOTES | ENT_XML1, 'UTF-8') . '"/>';
+    #$xml_payload = '<Factura sistema="' . $api_sistema . '" serie="' . $serie . '" folio="' . $folio . '" zonaHoraria="' . $api_zona_horaria . '" cancelacionMotivo="02"/>';
 
     error_log("[" . date('Y-m-d H:i:s') . "] Solicitud de cancelación enviada a Sinube. XML: " . $xml_payload . "\n", 3, $log_file);
 
@@ -418,19 +429,19 @@ if ($action == 'ajax') {
     // Procesar la respuesta
     libxml_use_internal_errors(true);
     $xml_obj = simplexml_load_string($response);
-    
+
     $cancellation_message = 'Cancelación exitosa en Sinube';
     if ($xml_obj) {
         $error_matches = $xml_obj->xpath("/Respuesta/error");
-        if (!empty($error_matches) && trim((string)$error_matches[0]) !== '') {
-            $error_msg = trim((string)$error_matches[0]);
+        if (!empty($error_matches) && trim((string) $error_matches[0]) !== '') {
+            $error_msg = trim((string) $error_matches[0]);
             echo json_encode(['status' => 'error', 'message' => 'Error de cancelación devuelto por Sinube: ' . $error_msg]);
             exit;
         }
 
         $msg_matches = $xml_obj->xpath("/Respuesta/mensaje");
         if (!empty($msg_matches)) {
-            $cancellation_message = trim((string)$msg_matches[0]);
+            $cancellation_message = trim((string) $msg_matches[0]);
         }
     } else {
         // En caso de que no venga en formato XML correcto pero tenga la palabra "error"
@@ -448,13 +459,79 @@ if ($action == 'ajax') {
         exit;
     }
 
+    // Revertir el estatus de los tickets asociados en la sucursal a is_active = 1 (Activo)
+    $mov_id_fac = $r['mov_id'] ?? '';
+    $sucursal_fac = $r['sucursal'] ?? '';
+    $branchesConfigs = getBranchesConfig();
+
+    if (!empty($mov_id_fac)) {
+        // Determinar qué sucursales consultar (la de la factura o todas si no está especificada)
+        $target_branches = [];
+        if (!empty($sucursal_fac) && isset($branchesConfigs[$sucursal_fac])) {
+            $target_branches[$sucursal_fac] = $branchesConfigs[$sucursal_fac];
+        } else {
+            $target_branches = $branchesConfigs;
+        }
+
+        // Si es un ticket de grupo (ej: GRP-15)
+        if (strpos($mov_id_fac, 'GRP-') === 0) {
+            $group_id = intval(substr($mov_id_fac, 4));
+            foreach ($target_branches as $bName => $bConfig) {
+                $bConn = @mysqli_connect($bConfig['host'], $bConfig['user'], $bConfig['pass'], $bConfig['db']);
+                if ($bConn) {
+                    mysqli_set_charset($bConn, "utf8mb4");
+
+                    // Actualizar estado del grupo
+                    $stmt_grp = mysqli_prepare($bConn, "UPDATE groups_tickets SET status = 1 WHERE id = ?");
+                    if ($stmt_grp) {
+                        mysqli_stmt_bind_param($stmt_grp, "i", $group_id);
+                        mysqli_stmt_execute($stmt_grp);
+                        mysqli_stmt_close($stmt_grp);
+                    }
+
+                    // Revertir tickets pertenecientes al grupo a is_active = 1
+                    $sql_grp_tickets = "UPDATE vtahead SET is_active = 1 WHERE mov_id IN (SELECT mov_id FROM groups_tickets_details WHERE group_id = ?)";
+                    $stmt_grp_tck = mysqli_prepare($bConn, $sql_grp_tickets);
+                    if ($stmt_grp_tck) {
+                        mysqli_stmt_bind_param($stmt_grp_tck, "i", $group_id);
+                        mysqli_stmt_execute($stmt_grp_tck);
+                        mysqli_stmt_close($stmt_grp_tck);
+                    }
+                    mysqli_close($bConn);
+                }
+            }
+            error_log("[" . date('Y-m-d H:i:s') . "] [INFO] [CANCELACION] Grupo $group_id revertido a estatus activo (is_active = 1) tras cancelación de factura $invoice_id.\n", 3, $log_file);
+        } else {
+            // Ticket individual o lista de mov_id
+            $clean_mov_ids = array_map('trim', explode(',', $mov_id_fac));
+            foreach ($target_branches as $bName => $bConfig) {
+                $bConn = @mysqli_connect($bConfig['host'], $bConfig['user'], $bConfig['pass'], $bConfig['db']);
+                if ($bConn) {
+                    mysqli_set_charset($bConn, "utf8mb4");
+                    foreach ($clean_mov_ids as $single_mov) {
+                        if (empty($single_mov))
+                            continue;
+                        $stmt_tck = mysqli_prepare($bConn, "UPDATE vtahead SET is_active = 1 WHERE mov_id = ?");
+                        if ($stmt_tck) {
+                            mysqli_stmt_bind_param($stmt_tck, "s", $single_mov);
+                            mysqli_stmt_execute($stmt_tck);
+                            mysqli_stmt_close($stmt_tck);
+                        }
+                    }
+                    mysqli_close($bConn);
+                }
+            }
+            error_log("[" . date('Y-m-d H:i:s') . "] [INFO] [CANCELACION] Ticket(s) '$mov_id_fac' revertido(s) a estatus activo (is_active = 1) tras cancelación de factura $invoice_id.\n", 3, $log_file);
+        }
+    }
+
     $email_message = "No se envió correo (sin correo registrado)";
-    
+
     $para_emails = [];
     if (!empty($email)) {
         $para_emails[] = $email;
     }
-    
+
     if ($cust_id > 0) {
         $sql_add_emails = "SELECT email FROM cust_emails WHERE cust_id = " . intval($cust_id) . " AND is_active = 1";
         $res_add_emails = mysqli_query($conexion_gen, $sql_add_emails);
@@ -466,15 +543,15 @@ if ($action == 'ajax') {
             }
         }
     }
-    
+
     if (!empty($para_emails)) {
         try {
             require_once "../classes/Mailer.php";
             $mailer = new Mailer();
-            
+
             $para = implode(', ', array_unique($para_emails));
             $asunto = 'Notificación de Cancelación de Factura Electrónica Victoria - Folio: ' . $serie . ' ' . $folio;
-            
+
             $mensajeHtml = "
                 <html>
                 <head>
