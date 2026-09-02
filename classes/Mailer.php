@@ -12,11 +12,11 @@ require_once __DIR__ . '/../config/smtp.php';
 // Asegúrate de apuntar correctamente al autoloader de Composer o a tus includes manuales
 require_once __DIR__ . '/../vendor/autoload.php';
 
-class Mailer 
+class Mailer
 {
     private array $config;
 
-    public function __construct() 
+    public function __construct()
     {
         // Cargamos la configuración de forma aislada
         $this->config = getSmtpConfig();
@@ -32,7 +32,7 @@ class Mailer
      * @param array $attachments Rutas de archivos opcionales ['ruta/al/archivo.pdf']
      * @return bool True si se envió, lanza una excepción en caso de fallo.
      */
-    public function send(string $to, string $subject, string $body, array $attachments = []): bool 
+    public function send(string $to, string $subject, string $body, array $attachments = []): bool
     {
         $method = $this->config['mailer_method'] ?? 'smtp';
 
@@ -46,24 +46,24 @@ class Mailer
     /**
      * Envía correo utilizando el método SMTP tradicional (PHPMailer).
      */
-    private function sendViaSmtp(string $to, string $subject, string $body, array $attachments): bool 
+    private function sendViaSmtp(string $to, string $subject, string $body, array $attachments): bool
     {
         $mail = new PHPMailer(true);
 
         try {
             // Configuración del Servidor SMTP
             $mail->isSMTP();
-            $mail->Host       = $this->config['smtp']['host'];
-            $mail->SMTPAuth   = $this->config['smtp']['auth'];
-            $mail->Username   = $this->config['smtp']['username'];
-            $mail->Password   = $this->config['smtp']['password'];
+            $mail->Host = $this->config['smtp']['host'];
+            $mail->SMTPAuth = $this->config['smtp']['auth'];
+            $mail->Username = $this->config['smtp']['username'];
+            $mail->Password = $this->config['smtp']['password'];
             $mail->SMTPSecure = $this->config['smtp']['encryption'] === 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = $this->config['smtp']['port'];
-            $mail->CharSet    = 'UTF-8'; // Evita problemas con eñes y acentos
+            $mail->Port = $this->config['smtp']['port'];
+            $mail->CharSet = 'UTF-8'; // Evita problemas con eñes y acentos
 
             // Destinatarios y Remitente
             $mail->setFrom($this->config['smtp']['from_email'], $this->config['smtp']['from_name']);
-            
+
             $emails = array_filter(array_map('trim', explode(',', $to)));
             foreach ($emails as $email) {
                 if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -79,11 +79,11 @@ class Mailer
             }
 
             // Contenido del correo
-            $mail->isHTML(true); 
+            $mail->isHTML(true);
             $mail->Subject = $subject;
-            $mail->Body    = $body;
+            $mail->Body = $body;
             // Versión en texto plano automática despojando etiquetas HTML
-            $mail->AltBody = strip_tags($body); 
+            $mail->AltBody = strip_tags($body);
 
             $mail->send();
             return true;
@@ -97,7 +97,7 @@ class Mailer
     /**
      * Envía correo utilizando la API oficial de Gmail mediante el SDK de Google.
      */
-    private function sendViaGmailApi(string $to, string $subject, string $body, array $attachments): bool 
+    private function sendViaGmailApi(string $to, string $subject, string $body, array $attachments): bool
     {
         if (!class_exists('Google\Client')) {
             throw new \RuntimeException("La librería oficial de Google API Client no está instalada. Ejecute 'composer require google/apiclient:^2.15'");
@@ -160,14 +160,14 @@ class Mailer
         $mail = new PHPMailer(true);
         $mail->CharSet = 'UTF-8';
         $mail->setFrom($gmailConfig['from_email'] ?? 'ocv.facturacion1@gmail.com', $gmailConfig['from_name'] ?? 'Sistema de Notificaciones Victoria');
-        
+
         $emails = array_filter(array_map('trim', explode(',', $to)));
         foreach ($emails as $email) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $mail->addAddress($email);
             }
         }
-        $mail->addCC('cyovictoriafacturacion22@gmail.com', 'Sistema de Notificaciones Victoria');
+        //$mail->addCC('cyovictoriafacturacion22@gmail.com', 'Sistema de Notificaciones Victoria');
         // Archivos adjuntos
         foreach ($attachments as $filePath) {
             if (file_exists($filePath)) {
@@ -178,7 +178,7 @@ class Mailer
         // Contenido del correo
         $mail->isHTML(true);
         $mail->Subject = $subject;
-        $mail->Body    = $body;
+        $mail->Body = $body;
         $mail->AltBody = strip_tags($body);
 
         try {

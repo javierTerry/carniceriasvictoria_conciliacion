@@ -49,15 +49,53 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 7. **[`laravel-blade-ui`](file://.agents/skills/laravel-blade-ui/SKILL.md):** Estándares para diseño de componentes Blade y Tailwind CSS.
 8. **[`laravel-pest-testing`](file://.agents/skills/laravel-pest-testing/SKILL.md):** Generación de suites de pruebas con Pest PHP.
 9. **[`laravel-scaffold`](file://.agents/skills/laravel-scaffold/SKILL.md):** Guía y scaffolding de servicios tipados y arquitectura limpia en PHP 8+ / Laravel.
+10. **[`playwright-testing`](file://.agents/skills/playwright-testing/SKILL.md):** Automatización de pruebas end-to-end (E2E), verificación de flujos UI, interacción con Select2/SweetAlert2 y captura de evidencias con Playwright.
+11. **[`ui-design-system`](file://.agents/skills/ui-design-system/SKILL.md):** Estandarización de arquitectura de vistas UI (Gentelella / Bootstrap 3), paleta de colores CSS `:root`, distintivos de sucursal, tarjetas de filtro, tablas, modales y adaptabilidad visual.
 
 ---
 
 ## 📝 Bitácora de Cambios
 
+- **2026-09-01:**
+  - **Limpieza de Errores en SweetAlert y Corrección de Cliente Receptor (`facturas_ppd.php`, `ajax/facturas_ajax.php`):**
+    - Se eliminó el volcado técnico de XML crudo (`res.raw`) en el diálogo de error de SweetAlert2 al timbrar pagos, mostrando exclusivamente el mensaje de error legible y comprensible.
+    - Se configuró dinámicamente el identificador del cliente receptor (`$inv['cust_id']`) en la construcción del payload DTO para SiNube en lugar de un ID fijo.
+  - **Desacoplamiento de URLs Base a Archivo de Configuración (`config/config.php`, `ajax/facturas_ajax.php`, `ajax/facturar_grupo_api.php`):**
+    - Definición de `$api_base_url = "https://ep-dot-facturanube.appspot.com"` en `config/config.php` y derivación limpia de endpoints (`$api_url_blob`, `$api_url_cancel`).
+    - Eliminación de URLs hardcodeadas e inyección directa de `$api_base_url` en la instanciación de `SiNubePagoService` y `$api_url_envio` en `facturar_grupo_api.php`.
+- **2026-08-31:**
+  - **Seguimiento de Pagos y Exclusión de Saldo Cero en Vista Facturas PPD (`ajax/facturas_ajax.php`, `tests/e2e/facturas_ppd.spec.js`):**
+    - Adición de columnas de seguimiento financiero en el listado de facturas PPD: **Monto Total**, **Pagos Realizados** (`total_pagos`), **Total Pagado** (`total_pagado`) y **Saldo Pendiente** (`saldo_pendiente`).
+    - Exclusión automática en la consulta SQL (`$sWhere`) de aquellas facturas PPD con saldo liquidado (`saldo <= 0.01`), manteniéndose en la vista únicamente comprobantes pendientes de pago.
+    - Sincronización y actualización de la suite de pruebas E2E en Playwright (`facturas_ppd.spec.js`).
+  - **Identidad Corporativa en Popups, SweetAlert2 y Modales (`assets/css/layout.css`, `.agents/skills/ui-design-system/`):**
+    - Centralización global de variables `:root` en [layout.css](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/assets/css/layout.css) disponible en todas las vistas del sistema.
+    - Estilización completa de diálogos, confirmaciones, toasts e iconos de **SweetAlert2** con borde dorado (`--victoria-gold`), títulos oscuros (`--victoria-black`), botones de confirmación rojos (`--victoria-red`) con efecto hover dorado, e iconos con acentos institucionales.
+    - Homogeneización visual de modales Bootstrap (`.modal-content`, `.modal-header`, `.modal-title`, `.modal-footer`).
+  - **Creación de Skill `ui-design-system` (`.agents/skills/ui-design-system/`):**
+    - Estandarización de la estructura de vistas PHP (`head.php`, `sidebar.php`, `x_panel`, `x_title`, `card-stat`, `jambo_table`, `footer.php`).
+    - Definición de tokens de diseño y paleta de colores corporativos (`--victoria-red`, `--victoria-gold`, `--victoria-black`, badges por sucursal) mediante variables CSS `:root` para personalización rápida y sin fricción.
+    - Guías de implementación de componentes interactivos (Select2, SweetAlert2, modales, alineación numérica y responsive).
+  - **Módulo de Timbrado REP 2.0 / CFDI 4.0 con SiNube (`classes/SiNube/`):**
+    - Implementación de la arquitectura basada en DTOs tipados (`SiNubePagoDTO`, `SiNubeReceptorDTO`, `SiNubeDocumentoRelacionadoDTO`, `SiNubePagoResponseDTO`) bajo PHP 8.2+ con propiedades `readonly`.
+    - Creación de [SiNubeXmlBuilder](/syspv/conciliacion/classes/SiNube/SiNubeXmlBuilder.php) ajustado al esquema exacto de Postman para el servicio `tipo=47` de SiNube (desglose de impuestos REP 2.0, datos bancarios SPEI opcionales y lista `UuidsRelacionados`).
+    - Implementación de [SiNubePagoFactory](/syspv/conciliacion/classes/SiNube/SiNubePagoFactory.php) para mapeo rápido desde payloads o BD, y [SiNubePagoService](/syspv/conciliacion/classes/SiNube/SiNubePagoService.php) con soporte de sandbox/dev (`http://ep-dot-facturanube.appspot.com`), manejo de errores cURL/XML y trazabilidad en `logs/depositos.log`.
+  - **Acción de Pago (REP 2.0) en Vista Facturas PPD (`facturas_ppd.php`, `ajax/facturas_ajax.php`):**
+    - Habilitación de columnas de estatus, XML, PDF, envío por correo y acción **"Pago"** en el listado de facturas PPD.
+    - Modal popup `#modalPagoPPD` con visualización de datos fiscales de la factura origen (Serie, Folio, Monto original, Saldo pendiente, UUID y número de Parcialidad) y campos de captura (Forma de pago, Fecha/hora, Monto a abonar, Serie de pago y Referencia).
+    - Endpoints AJAX `get_invoice_ppd_details` y `timbrar_pago_ppd` para consultar saldos en tiempo real, validar importes, timbrar vía `tipo=47` con SiNube, persistir en `facturas` y registrar en `deposito_factura`.
+- **2026-08-30:**
+  - **Módulo de Facturas PPD (`facturas_ppd.php`, `ajax/facturas_ajax.php`, `sidebar.php`):**
+    - Creación de la vista dedicada `facturas_ppd.php` y adición del submenú "Facturas PPD" en cada una de las sucursales (Obrador, Victoria 1, Victoria 2, Producción y Cerdo en Pie).
+    - Filtrado dinámico en `ajax/facturas_ajax.php` para consultar exclusivamente comprobantes fiscales con método de pago _Por Definir_ (`metodo_pago = 'ppd'` / `99` / `Por Definir`) y en **estatus activo** (`(estatus = 1 OR estatus IS NULL) AND estado != 'Cancelada'`) desde `carvic_sysvic_general.facturas`.
+    - Soporte completo para búsqueda por UUID/Folio, filtro por cliente, selector de registros por página, descarga de XML/PDF, reenvío por correo y cancelación.
+  - **Suite de Pruebas Playwright & Auto-Adaptación del Skill (`tests/e2e/facturas_ppd.spec.js`, `playwright.config.js`, `.agents/skills/playwright-testing/`):**
+    - Implementación de la suite de pruebas automatizadas E2E que valida la navegación multi-sucursal, petición AJAX con `metodo_pago=ppd`, consistencia de columnas y selectores de búsqueda.
+    - Actualización del skill `playwright-testing` con el protocolo de detección de impacto y auto-adaptación continua de tests ante modificaciones en interfaces.
 - **2026-08-22:**
   - Análisis exhaustivo de la arquitectura multi-base de datos, controladores AJAX, PAC Sinube, clases auxiliares y vistas.
   - Creación de la base de conocimiento para agentes en `.agents/rules/` y `.agents/skills/`.
-  - **Módulo de Ventas Globales (`vtaqry.php` / `ajax/vtaqry.php`):** Diferenciación estricta entre el estatus **Inactivo** (`is_active = 0` en punto de venta) y **Factura Cancelada** (`estado = 'Cancelada'` / `estatus = 0` en base de datos general). Deshabilitación de la acción *Cambiar Estatus* para tickets inactivos o con facturas canceladas/activas. Actualización visual en listado, previsualización HTML (`vta_html_ticket.php`) y generación PDF (`action/vtaticket.php`).
+  - **Módulo de Ventas Globales (`vtaqry.php` / `ajax/vtaqry.php`):** Diferenciación estricta entre el estatus **Inactivo** (`is_active = 0` en punto de venta) y **Factura Cancelada** (`estado = 'Cancelada'` / `estatus = 0` en base de datos general). Deshabilitación de la acción _Cambiar Estatus_ para tickets inactivos o con facturas canceladas/activas. Actualización visual en listado, previsualización HTML (`vta_html_ticket.php`) y generación PDF (`action/vtaticket.php`).
 - **2026-08-23:**
   - **Reversión de Estatus de Ticket al Cancelar Factura (`ajax/facturas_ajax.php`):** Al cancelar un CFDI en Sinube, la factura se mantiene registrada como cancelada (`estatus = 0`, `estado = 'Cancelada'`) en la base de datos general, pero el ticket (o grupo de tickets) asociado en la sucursal origen se revierte automáticamente a estatus activo (`is_active = 1` en `vtahead` y `status = 1` en `groups_tickets`).
   - **Validación de Cambio de Estatus (`ajax/change_status.php`):** Ajuste para permitir la edición y refacturación de tickets cuyas facturas previas fueron canceladas, manteniendo la restricción de bloqueo únicamente para facturas en estado vigente/activo (`estatus = 1`).

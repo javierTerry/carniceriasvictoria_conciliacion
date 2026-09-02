@@ -1,13 +1,51 @@
-/* Global Layout Fixes - Carnicerias Victoria - Definitive Fix */
+/* Global Layout Fixes & Corporate Design System - Carnicerias Victoria */
 
-/* 1. Normalize Scrollbars - Eliminate double scrollbars */
+/* ==========================================================================
+   1. Corporate Tokens & Color Palette (:root)
+   ========================================================================== */
+:root {
+    /* Identidad Corporativa Carnicerías Victoria */
+    --victoria-red: #b22222;        /* Rojo institucional / primario */
+    --victoria-red-hover: #8b0000;  /* Rojo oscuro para hover */
+    --victoria-gold: #d4af37;       /* Dorado / acento elegante */
+    --victoria-gold-light: #f7e7b4; /* Dorado claro para fondos/bordes */
+    --victoria-gold-hover: #c49f27; /* Dorado hover */
+    --victoria-black: #1a1a1a;      /* Negro / cabeceras y contrastes */
+    --victoria-white: #ffffff;      /* Blanco base */
+    --victoria-bg: #f7f7f7;         /* Gris de fondo principal */
+    --victoria-border: #e1e8ed;     /* Borde neutro para tarjetas */
+
+    /* Distintivos de Sucursales (Badges) */
+    --branch-obrador: #d4af37;      /* Obrador: Dorado */
+    --branch-obrador-text: #1a1a1a;
+    --branch-victoria1: #b22222;    /* Victoria 1 (Matriz): Rojo */
+    --branch-victoria1-text: #ffffff;
+    --branch-victoria2: #4b0082;    /* Victoria 2: Índigo */
+    --branch-victoria2-text: #ffffff;
+    --branch-cep: #26b99a;          /* Cerdo en Pie: Verde esmeralda */
+    --branch-cep-text: #ffffff;
+    --branch-produccion: #34495e;   /* Producción: Acero / Carbón */
+    --branch-produccion-text: #ffffff;
+
+    /* Estatus Operativos y Fiscales */
+    --status-active: #28a745;       /* Activo / Facturado (Verde) */
+    --status-pending: #ff9800;      /* Pendiente (Naranja) */
+    --status-ppd: #004085;          /* PPD / Por Definir (Azul Profundo) */
+    --status-info: #17a2b8;         /* Info / Proceso (Cyan) */
+    --status-inactive: #6c757d;     /* Inactivo (Gris) */
+    --status-cancelled: #e74c3c;    /* Cancelado (Rojo SAT) */
+}
+
+/* ==========================================================================
+   2. Layout Normalization & Scrollbars
+   ========================================================================== */
 html {
     overflow: hidden !important; /* Hide browser level scroll to use body scroll */
     height: 100% !important;
 }
 
 body {
-    background-color: #f7f7f7 !important;
+    background-color: var(--victoria-bg) !important;
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -16,28 +54,28 @@ body {
     height: 100% !important;
 }
 
-/* 2. Layout Width - Eliminate black bars at the sides */
+/* Layout Width - Eliminate black bars at the sides */
 .container.body, 
 .main_container {
     width: 100% !important;
     max-width: none !important;
     padding: 0 !important;
     margin: 0 !important;
-    background-color: #f7f7f7 !important;
+    background-color: var(--victoria-bg) !important;
     overflow: visible !important; /* Prevents nested scrollbars */
 }
 
-/* 3. Content Area */
+/* Content Area */
 .right_col {
     width: auto !important;
     float: none !important;
     margin-right: 0 !important;
-    background: #f7f7f7 !important;
+    background: var(--victoria-bg) !important;
     min-height: 100vh !important;
     overflow: visible !important;
 }
 
-/* 4. Footer Alignment */
+/* Footer Alignment */
 footer {
     margin-left: 230px !important;
     margin-right: 0 !important;
@@ -47,7 +85,6 @@ footer {
     display: block !important;
 }
 
-/* 5. Responsive Adjustments */
 @media (max-width: 991px) {
     footer {
         margin-left: 0 !important;
@@ -62,3 +99,207 @@ footer {
 .mCSB_container, .mCustomScrollBox {
     overflow: visible !important;
 }
+
+/* ==========================================================================
+   3. SweetAlert2 Corporate Theme (Carnicerías Victoria)
+   ========================================================================== */
+.swal2-popup {
+    border: 2px solid var(--victoria-gold) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+    font-family: inherit !important;
+    padding: 25px !important;
+}
+
+.swal2-title {
+    color: var(--victoria-black) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    font-size: 22px !important;
+    margin-bottom: 15px !important;
+}
+
+.swal2-html-container {
+    color: #333333 !important;
+    font-size: 14.5px !important;
+    line-height: 1.6 !important;
+}
+
+/* Botones de acción SweetAlert2 */
+.swal2-actions {
+    margin-top: 25px !important;
+    gap: 12px;
+}
+
+.swal2-confirm {
+    background-color: var(--victoria-red) !important;
+    color: var(--victoria-white) !important;
+    border: 1px solid var(--victoria-gold) !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    padding: 10px 24px !important;
+    font-size: 14px !important;
+    box-shadow: 0 3px 8px rgba(178, 34, 34, 0.35) !important;
+    transition: all 0.25s ease-in-out !important;
+}
+
+.swal2-confirm:hover {
+    background-color: var(--victoria-gold) !important;
+    color: var(--victoria-black) !important;
+    border-color: var(--victoria-gold-hover) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 5px 12px rgba(212, 175, 55, 0.4) !important;
+}
+
+.swal2-cancel {
+    background-color: var(--status-inactive) !important;
+    color: #ffffff !important;
+    border: 1px solid #5a6268 !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+}
+
+.swal2-cancel:hover {
+    background-color: #5a6268 !important;
+    color: #ffffff !important;
+}
+
+.swal2-deny {
+    background-color: var(--branch-produccion) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+}
+
+/* Iconos de SweetAlert2 con acentos corporativos */
+.swal2-icon.swal2-success {
+    border-color: var(--status-active) !important;
+    color: var(--status-active) !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: var(--status-active) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+    border: 4px solid rgba(40, 167, 69, 0.3) !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: var(--victoria-red) !important;
+    color: var(--victoria-red) !important;
+}
+
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: var(--victoria-red) !important;
+}
+
+.swal2-icon.swal2-warning {
+    border-color: var(--victoria-gold) !important;
+    color: var(--victoria-gold) !important;
+}
+
+.swal2-icon.swal2-info {
+    border-color: var(--status-info) !important;
+    color: var(--status-info) !important;
+}
+
+.swal2-timer-progress-bar {
+    background-color: var(--victoria-gold) !important;
+    height: 4px !important;
+}
+
+/* SweetAlert2 Toast Styles */
+.swal2-toast {
+    border: 1px solid var(--victoria-gold) !important;
+    border-left: 5px solid var(--victoria-gold) !important;
+    border-radius: 6px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+}
+
+.swal2-toast .swal2-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin-bottom: 0 !important;
+    color: var(--victoria-black) !important;
+}
+
+/* Custom Modal / Popup Helper: premium-swal-popup */
+.premium-swal-popup {
+    border: 2px solid var(--victoria-gold) !important;
+    background: #ffffff !important;
+    border-radius: 12px !important;
+}
+
+.premium-swal-popup .swal2-input,
+.premium-swal-popup .swal2-select,
+.premium-swal-popup .swal2-textarea {
+    border: 1px solid var(--victoria-gold) !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+}
+
+.premium-swal-popup .swal2-input:focus,
+.premium-swal-popup .swal2-select:focus,
+.premium-swal-popup .swal2-textarea:focus {
+    border-color: var(--victoria-red) !important;
+    box-shadow: 0 0 0 3px rgba(178, 34, 34, 0.25) !important;
+}
+
+/* ==========================================================================
+   4. Bootstrap Modals Corporate Theme
+   ========================================================================== */
+.modal-content {
+    border: 2px solid var(--victoria-gold) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: var(--victoria-black) !important;
+    color: var(--victoria-white) !important;
+    border-bottom: 2px solid var(--victoria-gold) !important;
+    padding: 14px 20px !important;
+}
+
+.modal-header .modal-title {
+    color: var(--victoria-white) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 16px;
+    margin: 0;
+}
+
+.modal-header .close {
+    color: var(--victoria-white) !important;
+    text-shadow: none !important;
+    opacity: 0.8 !important;
+    font-size: 24px;
+    margin-top: -2px;
+    transition: opacity 0.2s ease;
+}
+
+.modal-header .close:hover {
+    opacity: 1 !important;
+    color: var(--victoria-gold) !important;
+}
+
+.modal-body {
+    background-color: #ffffff;
+    padding: 20px 24px;
+}
+
+.modal-footer {
+    background-color: #f9f9f9 !important;
+    border-top: 1px solid var(--victoria-border) !important;
+    padding: 12px 20px !important;
+}
+

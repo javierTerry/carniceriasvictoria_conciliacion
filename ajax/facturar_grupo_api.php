@@ -129,7 +129,7 @@ $xml_payload = <<<XML
 </Comprobante>
 XML;
 
-$url_envio = "http://ep-dot-facturanube.appspot.com/blob?par=dGlwbz00CmVtcD1VUkUxODA0MjlUTTYtMzkKc3VjPU1hdHJpegp1c3U9YXRlbmNpb25zb2x1Y2lvbmVzcnlqQGdtYWlsLmNvbQpwd2Q9cHJvdmVlZG9yZXM=";
+$url_envio = $api_url_envio;
 
 $ch2 = curl_init();
 curl_setopt($ch2, CURLOPT_URL, $url_envio);
