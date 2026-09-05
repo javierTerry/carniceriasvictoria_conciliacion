@@ -5,7 +5,8 @@ logs/*
 sql/*
 composer.json
 composer.lock
-
+config/gmail/client.json
+config/gmail/token.json
 .agents/
 node_modules/
 package-lock.json
