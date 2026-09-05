@@ -5,3 +5,10 @@ logs/*
 sql/*
 composer.json
 composer.lock
+
+.agents/
+node_modules/
+package-lock.json
+playwright-report/
+test-results/
+tests/e2e/

@@ -56,6 +56,19 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 
 ## 📝 Bitácora de Cambios
 
+- **2026-09-04:**
+  - **Identificador de Ticket y Parcialidad en Comprobante de Pago REP (`ajax/facturas_ajax.php`, `ajax/depositos_ajax.php`):**
+    - Se actualizó la generación del identificador de movimiento (`mov_id`) para los Complementos de Pago timbrados (REP). En lugar de utilizar una marca de tiempo genérica (`REP-{timestamp}`), ahora se compone dinámicamente con el prefijo `REP-`, el ID del ticket de venta original (`$mov_id`) y el número de pago/parcialidad aplicado (`$parcialidad`), por ejemplo `REP-{mov_id}-{parcialidad}`.
+    - Soporte para pagos agrupados multi-documento concatenando las tuplas correspondientes (`REP-{mov_id1}-{p1},{mov_id2}-{p2}`).
+    - Actualización del atributo `nomArchivoDescarga` en el payload de SiNube para mantener consistencia en la descarga de archivos XML y PDF.
+    - Incorporación de trazabilidad estructurada en `logs/depositos.log` registrando el `mov_id`, UUID y serie/folio del REP timbrado.
+- **2026-09-02:**
+  - **Selección Múltiple por Cliente, Resumen de Facturas y Pago Agrupado REP 2.0 (`facturas_ppd.php`, `ajax/facturas_ajax.php`, `tests/e2e/facturas_ppd.spec.js`):**
+    - **Regla de Negocio de Cliente Único:** Implementación de checkboxes con restricción interactiva para permitir seleccionar únicamente facturas pertenecientes al **mismo cliente** (`cust_id`), mostrando una advertencia de bloqueo clara y amigable en caso de intentar seleccionar facturas de clientes distintos.
+    - **Barra Flotante de Selección y Resumen:** Visualización dinámica de la barra de resumen con el conteo de facturas seleccionadas, nombre del cliente activo, total acumulado de saldo pendiente, botón de limpieza rápida y botón de acción directa "Pagar Facturas Seleccionadas".
+    - **Modal de Resumen y Desglose de Facturas:** Rediseño del modal `#modalPagoPPD` para mostrar una ficha del cliente receptor, tabla de facturas seleccionadas (Serie/Folio, UUID, Monto Original, Saldo Pendiente, Monto a Aplicar editable en tiempo real y Parcialidad), cálculo dinámico de totales y campos del comprobante REP 2.0.
+    - **Backend Transaccional Multi-Documento:** Actualización de `get_invoice_ppd_details` y `timbrar_pago_ppd` en `ajax/facturas_ajax.php` para admitir pagos multi-factura, armar el DTO con múltiples `documentos` (`pago20:DoctoRelacionado`) para SiNube, persistir el comprobante REP en `facturas` y crear las entradas en `deposito_factura` dentro de una transacción atómica.
+    - **Suite de Pruebas E2E:** Actualización de las aserciones en Playwright (`facturas_ppd.spec.js`).
 - **2026-09-01:**
   - **Limpieza de Errores en SweetAlert y Corrección de Cliente Receptor (`facturas_ppd.php`, `ajax/facturas_ajax.php`):**
     - Se eliminó el volcado técnico de XML crudo (`res.raw`) en el diálogo de error de SweetAlert2 al timbrar pagos, mostrando exclusivamente el mensaje de error legible y comprensible.

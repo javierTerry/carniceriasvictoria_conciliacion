@@ -126,6 +126,12 @@ if ($action == 'ajax') {
         <table class="table table-striped jambo_table bulk_action">
             <thead>
                 <tr class="headings">
+                    <?php if ($is_ppd): ?>
+                        <th style="width: 40px;" class="text-center">
+                            <input type="checkbox" id="check_all_ppd" title="Seleccionar todas las facturas visibles del cliente"
+                                onchange="toggleSelectAllPPD(this)">
+                        </th>
+                    <?php endif; ?>
                     <th>Sucursal</th>
                     <th>Ticket</th>
                     <th>Cliente</th>
@@ -158,6 +164,23 @@ if ($action == 'ajax') {
                     $saldo_pendiente = floatval($r['saldo_pendiente'] ?? (floatval($r['monto']) - $total_pagado));
                     ?>
                     <tr>
+                        <?php if ($is_ppd): ?>
+                            <td class="text-center" style="vertical-align: middle;">
+                                <?php if (!$is_cancelled && $saldo_pendiente > 0.01): ?>
+                                    <input type="checkbox" class="check_ppd_item" value="<?php echo $r['id']; ?>"
+                                        data-id="<?php echo $r['id']; ?>" data-cust-id="<?php echo intval($r['cust_id'] ?? 0); ?>"
+                                        data-cliente="<?php echo htmlspecialchars($r['cliente'] ?? 'Cliente General'); ?>"
+                                        data-serie="<?php echo htmlspecialchars($r['serie'] ?? ''); ?>"
+                                        data-folio="<?php echo htmlspecialchars($r['folio'] ?? ''); ?>"
+                                        data-uuid="<?php echo htmlspecialchars($r['uuid'] ?? ''); ?>"
+                                        data-monto="<?php echo floatval($r['monto'] ?? 0); ?>"
+                                        data-saldo="<?php echo floatval($saldo_pendiente); ?>"
+                                        data-pagos="<?php echo intval($total_pagos); ?>" onchange="onPpdCheckboxChange(this)">
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
                         <td><span class="label <?php echo $r['branch_class']; ?>"><?php echo $r['branch_label']; ?></span></td>
                         <td><?php echo $r['mov_id']; ?></td>
                         <td><?php echo isset($r['cliente']) ? $r['cliente'] : '---'; ?></td>
@@ -714,54 +737,111 @@ if ($action == 'ajax') {
     exit;
 } else if ($action == 'get_invoice_ppd_details') {
     header('Content-Type: application/json');
-    $invoice_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-    if ($invoice_id <= 0) {
-        echo json_encode(['status' => 'error', 'message' => 'ID de factura inválido.']);
+    $ids_raw = isset($_REQUEST['ids']) ? $_REQUEST['ids'] : (isset($_REQUEST['id']) ? [$_REQUEST['id']] : []);
+    if (!is_array($ids_raw)) {
+        // Podría venir como string separado por comas o JSON
+        $decoded = json_decode((string) $ids_raw, true);
+        if (is_array($decoded)) {
+            $ids_raw = $decoded;
+        } else {
+            $ids_raw = explode(',', (string) $ids_raw);
+        }
+    }
+    $ids = array_values(array_filter(array_map('intval', $ids_raw), function ($val) {
+        return $val > 0;
+    }));
+
+    if (empty($ids)) {
+        echo json_encode(['status' => 'error', 'message' => 'ID(s) de factura inválido(s).']);
         exit;
     }
 
-    $stmt = $conexion_gen->prepare("
-        SELECT F.*, C.razon_social as cust_name, C.rfc as cust_rfc, C.regimen_fiscal as cust_regimen, C.cp as cust_zip, C.es_persona_fisica
+    $ids_in = implode(',', $ids);
+    $sql = "
+        SELECT F.*, C.razon_social as cust_name, C.rfc as cust_rfc, C.regimen_fiscal as cust_regimen, 
+               C.cp as cust_zip, C.es_persona_fisica, C.nombre as cust_nombre, 
+               C.ap_paterno as cust_ap_paterno, C.ap_materno as cust_ap_materno
         FROM facturas F
         LEFT JOIN cust C ON F.cust_id = C.id
-        WHERE F.id = ?
-    ");
-    $stmt->bind_param("i", $invoice_id);
-    $stmt->execute();
-    $res = $stmt->get_result();
-    if (!$res || $res->num_rows == 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Factura no encontrada.']);
+        WHERE F.id IN ($ids_in)
+    ";
+    $query = mysqli_query($conexion_gen, $sql);
+    if (!$query || mysqli_num_rows($query) == 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Factura(s) no encontrada(s).']);
         exit;
     }
-    $inv = $res->fetch_assoc();
-    $stmt->close();
 
-    // Obtener parcialidades previas y total pagado
-    $stmt_prev = $conexion_gen->prepare("
-        SELECT 
-            IFNULL(SUM(monto_pagado), 0) AS total_pagado,
-            COUNT(*) AS total_parcialidades
-        FROM deposito_factura 
-        WHERE factura_id = ? AND is_active = 1
-    ");
-    $stmt_prev->bind_param("i", $invoice_id);
-    $stmt_prev->execute();
-    $res_prev = $stmt_prev->get_result();
-    $row_prev = $res_prev->fetch_assoc();
-    $stmt_prev->close();
+    $items = [];
+    $cust_id_check = null;
+    $cliente_info = null;
+    $total_monto = 0.0;
+    $total_saldo = 0.0;
+    $first_branch = 'Obrador';
+    $first_serie = 'O';
 
-    $monto_factura = floatval($inv['monto']);
-    $total_pagado = floatval($row_prev['total_pagado'] ?? 0);
-    $saldo_pendiente = max(0, $monto_factura - $total_pagado);
-    $parcialidad = intval($row_prev['total_parcialidades'] ?? 0) + 1;
+    while ($inv = mysqli_fetch_assoc($query)) {
+        if ($cust_id_check === null) {
+            $cust_id_check = $inv['cust_id'];
+            $cliente_info = [
+                'cust_id' => "213",//$inv['cust_id'],
+                'cliente' => $inv['cust_name'] ?? 'Cliente General',
+                'rfc' => $inv['cust_rfc'] ?? 'XAXX010101000',
+                'regimen_fiscal' => $inv['cust_regimen'] ?? '601',
+                'domicilio_fiscal' => $inv['cust_zip'] ?? '87000',
+                'es_persona_fisica' => $inv['es_persona_fisica'] ?? '0',
+                'nombre' => $inv['cust_nombre'] ?? '',
+                'ap_paterno' => $inv['cust_ap_paterno'] ?? '',
+                'ap_materno' => $inv['cust_ap_materno'] ?? ''
+            ];
+            $first_branch = $inv['sucursal'] ?? 'Obrador';
+            $first_serie = !empty($inv['serie']) ? trim($inv['serie']) : (isset($branchSeriesMap[$inv['sucursal']]) ? $branchSeriesMap[$inv['sucursal']] : 'O');
+        } else if ($cust_id_check != $inv['cust_id']) {
+            echo json_encode(['status' => 'error', 'message' => 'Todas las facturas seleccionadas deben pertenecer al mismo cliente.']);
+            exit;
+        }
 
-    // Obtener la misma serie de la factura origen
-    $target_serie = !empty($inv['serie']) ? trim($inv['serie']) : (isset($branchSeriesMap[$inv['sucursal']]) ? $branchSeriesMap[$inv['sucursal']] : 'O');
+        // Obtener parcialidades previas y total pagado
+        $inv_id = intval($inv['id']);
+        $stmt_prev = $conexion_gen->prepare("
+            SELECT 
+                IFNULL(SUM(monto_pagado), 0) AS total_pagado,
+                COUNT(*) AS total_parcialidades
+            FROM deposito_factura 
+            WHERE factura_id = ? AND is_active = 1
+        ");
+        $stmt_prev->bind_param("i", $inv_id);
+        $stmt_prev->execute();
+        $res_prev = $stmt_prev->get_result();
+        $row_prev = $res_prev->fetch_assoc();
+        $stmt_prev->close();
 
-    // Obtener siguiente folio consecutivo desde Sinube
+        $monto_factura = floatval($inv['monto']);
+        $total_pagado = floatval($row_prev['total_pagado'] ?? 0);
+        $saldo_pendiente = max(0, $monto_factura - $total_pagado);
+        $parcialidad = intval($row_prev['total_parcialidades'] ?? 0) + 1;
+
+        $total_monto += $monto_factura;
+        $total_saldo += $saldo_pendiente;
+
+        $items[] = [
+            'id' => $inv['id'],
+            'uuid' => $inv['uuid'],
+            'serie' => $inv['serie'] ?? '',
+            'folio' => $inv['folio'] ?? '',
+            'monto' => $monto_factura,
+            'total_pagado' => $total_pagado,
+            'saldo_pendiente' => $saldo_pendiente,
+            'parcialidad' => $parcialidad,
+            'mov_id' => $inv['mov_id'] ?? '',
+            'sucursal' => $inv['sucursal'] ?? 'Obrador',
+            'xml_url' => $inv['xml_url'] ?? ''
+        ];
+    }
+
+    // Obtener serie y folio consecutivo desde Sinube
+    $target_serie = $first_serie;
     $next_folio = 1;
     $sinube = new SinubeHelper(__DIR__ . '/../logs/sinube_api.log');
-
     $sinube->log(__LINE__);
 
     try {
@@ -778,26 +858,30 @@ if ($action == 'ajax') {
         $stmt_fol->close();
     }
 
+    $first_item = $items[0] ?? [];
+
     echo json_encode([
         'status' => 'success',
         'data' => [
-            'id' => $inv['id'],
-            'uuid' => $inv['uuid'],
-            'serie' => $inv['serie'] ?? '',
-            'folio' => $inv['folio'] ?? '',
+            'id' => $first_item['id'] ?? 0,
+            'uuid' => $first_item['uuid'] ?? '',
+            'serie' => $first_item['serie'] ?? '',
+            'folio' => $first_item['folio'] ?? '',
             'serie_pago' => $target_serie,
             'folio_pago' => (string) $next_folio,
-            'monto' => $monto_factura,
-            'total_pagado' => $total_pagado,
-            'saldo_pendiente' => $saldo_pendiente,
-            'parcialidad' => $parcialidad,
-            'cliente' => $inv['cust_name'] ?? 'Cliente General',
-            'rfc' => $inv['cust_rfc'] ?? 'XAXX010101000',
-            'regimen_fiscal' => $inv['cust_regimen'] ?? '601',
-            'domicilio_fiscal' => $inv['cust_zip'] ?? '87000',
-            'es_persona_fisica' => $inv['es_persona_fisica'] ?? '0',
-            'xml_url' => $inv['xml_url'] ?? '',
-            'sucursal' => $inv['sucursal'] ?? 'Obrador'
+            'monto' => (count($items) === 1) ? ($first_item['monto'] ?? 0) : $total_monto,
+            'total_pagado' => (count($items) === 1) ? ($first_item['total_pagado'] ?? 0) : 0,
+            'saldo_pendiente' => (count($items) === 1) ? ($first_item['saldo_pendiente'] ?? 0) : $total_saldo,
+            'parcialidad' => $first_item['parcialidad'] ?? 1,
+            'cliente' => $cliente_info['cliente'] ?? 'Cliente General',
+            'rfc' => $cliente_info['rfc'] ?? 'XAXX010101000',
+            'regimen_fiscal' => $cliente_info['regimen_fiscal'] ?? '601',
+            'domicilio_fiscal' => $cliente_info['domicilio_fiscal'] ?? '87000',
+            'es_persona_fisica' => $cliente_info['es_persona_fisica'] ?? '0',
+            'items' => $items,
+            'total_monto' => $total_monto,
+            'total_saldo' => $total_saldo,
+            'count' => count($items)
         ]
     ]);
     exit;
@@ -805,127 +889,201 @@ if ($action == 'ajax') {
 } else if ($action == 'timbrar_pago_ppd') {
     $sinube = new SinubeHelper(__DIR__ . '/../logs/sinube_api.log');
     header('Content-Type: application/json');
-    $invoice_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     $forma_pago = isset($_POST['forma_pago']) ? trim($_POST['forma_pago']) : '03';
     $fecha_pago_input = isset($_POST['fecha_pago']) ? trim($_POST['fecha_pago']) : '';
-    $monto_pago = isset($_POST['monto_pago']) ? floatval($_POST['monto_pago']) : 0.0;
     $num_operacion = isset($_POST['num_operacion']) ? trim($_POST['num_operacion']) : '';
 
-    $sinube->log(__LINE__);
-    if ($invoice_id <= 0) {
-        echo json_encode(['status' => 'error', 'message' => 'ID de factura inválido.']);
-        exit;
+    // Soporte para array de facturas (múltiple o simple)
+    $invoices_input = [];
+    if (isset($_POST['invoices'])) {
+        if (is_array($_POST['invoices'])) {
+            $invoices_input = $_POST['invoices'];
+        } else {
+            $invoices_input = json_decode($_POST['invoices'], true) ?? [];
+        }
+    } else if (isset($_POST['id'])) {
+        $invoices_input[] = [
+            'id' => intval($_POST['id']),
+            'monto_pago' => floatval($_POST['monto_pago'] ?? 0)
+        ];
     }
-    if ($monto_pago <= 0) {
-        echo json_encode(['status' => 'error', 'message' => 'El monto del pago debe ser mayor a cero.']);
+
+    if (empty($invoices_input)) {
+        echo json_encode(['status' => 'error', 'message' => 'No se especificaron facturas para procesar el pago.']);
         exit;
     }
 
     require_once __DIR__ . '/../classes/SiNube/autoload.php';
 
-    // Consultar factura y cliente
-    $stmt = $conexion_gen->prepare("
-        SELECT F.*, C.razon_social as cust_name, C.rfc as cust_rfc, C.regimen_fiscal as cust_regimen, C.cp as cust_zip, C.es_persona_fisica, C.nombre as cust_nombre, C.ap_paterno as cust_ap_paterno, C.ap_materno as cust_ap_materno
+    $ids = [];
+    $montos_map = [];
+    foreach ($invoices_input as $inv_in) {
+        $iid = intval($inv_in['id'] ?? 0);
+        $imp = floatval($inv_in['monto_pago'] ?? ($inv_in['monto'] ?? 0));
+        if ($iid > 0 && $imp > 0) {
+            $ids[] = $iid;
+            $montos_map[$iid] = $imp;
+        }
+    }
+
+    if (empty($ids)) {
+        echo json_encode(['status' => 'error', 'message' => 'El monto a pagar debe ser mayor a cero en al menos una factura.']);
+        exit;
+    }
+
+    $ids_in = implode(',', $ids);
+    $sql = "
+        SELECT F.*, C.razon_social as cust_name, C.rfc as cust_rfc, C.regimen_fiscal as cust_regimen, 
+               C.cp as cust_zip, C.es_persona_fisica, C.nombre as cust_nombre, 
+               C.ap_paterno as cust_ap_paterno, C.ap_materno as cust_ap_materno
         FROM facturas F
         LEFT JOIN cust C ON F.cust_id = C.id
-        WHERE F.id = ?
-    ");
-
-
-    $stmt->bind_param("i", $invoice_id);
-    $stmt->execute();
-    $res = $stmt->get_result();
-    if (!$res || $res->num_rows == 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Factura no encontrada.']);
-        exit;
-    }
-    $inv = $res->fetch_assoc();
-    $stmt->close();
-
-    $sinube->log(__LINE__);
-    $sinube->log(print_r($inv, true));
-
-    if ($inv['estado'] === 'Cancelada' || (isset($inv['estatus']) && $inv['estatus'] == 0)) {
-        echo json_encode(['status' => 'error', 'message' => 'No se puede aplicar pago a una factura cancelada.']);
+        WHERE F.id IN ($ids_in)
+    ";
+    $query = mysqli_query($conexion_gen, $sql);
+    if (!$query || mysqli_num_rows($query) == 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Facturas no encontradas en la base de datos.']);
         exit;
     }
 
-    // Parcialidad y saldo previo
-    $stmt_prev = $conexion_gen->prepare("
-        SELECT 
-            IFNULL(SUM(monto_pagado), 0) AS total_pagado,
-            COUNT(*) AS total_parcialidades
-        FROM deposito_factura 
-        WHERE factura_id = ? AND is_active = 1
-    ");
-    $stmt_prev->bind_param("i", $invoice_id);
-    $stmt_prev->execute();
-    $res_prev = $stmt_prev->get_result();
-    $row_prev = $res_prev->fetch_assoc();
-    $stmt_prev->close();
+    $invoices_db = [];
+    $cust_id_check = null;
+    $cliente_data = null;
+    $first_serie = 'O';
+    $first_branch = 'Obrador';
 
-    $monto_factura = floatval($inv['monto']);
-    $total_pagado = floatval($row_prev['total_pagado'] ?? 0);
-    $saldo_anterior = max(0, $monto_factura - $total_pagado);
+    while ($row = mysqli_fetch_assoc($query)) {
+        if ($cust_id_check === null) {
+            $cust_id_check = $row['cust_id'];
+            $cliente_data = $row;
+            $first_branch = $row['sucursal'] ?? 'Obrador';
+            $first_serie = !empty($row['serie']) ? trim($row['serie']) : (isset($branchSeriesMap[$row['sucursal']]) ? $branchSeriesMap[$row['sucursal']] : 'O');
+        } else if ($cust_id_check != $row['cust_id']) {
+            echo json_encode(['status' => 'error', 'message' => 'Todas las facturas a pagar deben pertenecer al mismo cliente.']);
+            exit;
+        }
 
-    if ($monto_pago > ($saldo_anterior + 0.01)) {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'El monto a pagar ($' . number_format($monto_pago, 2) . ') no puede superar el saldo pendiente ($' . number_format($saldo_anterior, 2) . ').'
-        ]);
-        exit;
+        if ($row['estado'] === 'Cancelada' || (isset($row['estatus']) && $row['estatus'] == 0)) {
+            echo json_encode(['status' => 'error', 'message' => 'No se puede aplicar pago a una factura cancelada (Folio: ' . ($row['folio'] ?? $row['id']) . ').']);
+            exit;
+        }
+
+        $invoices_db[intval($row['id'])] = $row;
     }
-
-    $saldo_insoluto = max(0, $saldo_anterior - $monto_pago);
-    $parcialidad = intval($row_prev['total_parcialidades'] ?? 0) + 1;
 
     // Formateo de fecha de pago (ISO 8601)
     $fecha_pago_iso = !empty($fecha_pago_input) ? date('Y-m-d\TH:i:s', strtotime($fecha_pago_input)) : date('Y-m-d\TH:i:s');
 
-    // Desglose de IVA (REP 2.0)
-    $tasa_iva = 0.16;
-    if (!empty($inv['xml_url'])) {
-        $ctx = stream_context_create(['http' => ['timeout' => 3]]);
-        $xml_content = @file_get_contents($inv['xml_url'], false, $ctx);
-        if ($xml_content) {
-            try {
-                libxml_use_internal_errors(true);
-                $xml_doc = simplexml_load_string($xml_content);
-                if ($xml_doc) {
-                    $ns = $xml_doc->getNamespaces(true);
-                    if (isset($ns['cfdi'])) {
-                        $xml_doc->registerXPathNamespace('cfdi', $ns['cfdi']);
-                        $traslados = $xml_doc->xpath('//cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado | //cfdi:Concepto/cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado');
-                        if (!empty($traslados)) {
-                            foreach ($traslados as $tr) {
-                                if (isset($tr['Impuesto']) && (string) $tr['Impuesto'] === '002' && isset($tr['TasaOCuota'])) {
-                                    $tasa_iva = floatval($tr['TasaOCuota']);
-                                    break;
+    // Construir lista de documentos relacionados para SiNube
+    $documentos_sinube = [];
+    $monto_total_rep = 0.0;
+    $invoice_payments_to_save = [];
+
+    foreach ($ids as $inv_id) {
+        if (!isset($invoices_db[$inv_id])) {
+            continue;
+        }
+        $inv = $invoices_db[$inv_id];
+        $monto_pago = $montos_map[$inv_id];
+
+        // Consultar pagos previos
+        $stmt_prev = $conexion_gen->prepare("
+            SELECT 
+                IFNULL(SUM(monto_pagado), 0) AS total_pagado,
+                COUNT(*) AS total_parcialidades
+            FROM deposito_factura 
+            WHERE factura_id = ? AND is_active = 1
+        ");
+        $stmt_prev->bind_param("i", $inv_id);
+        $stmt_prev->execute();
+        $res_prev = $stmt_prev->get_result();
+        $row_prev = $res_prev->fetch_assoc();
+        $stmt_prev->close();
+
+        $monto_factura = floatval($inv['monto']);
+        $total_pagado_previo = floatval($row_prev['total_pagado'] ?? 0);
+        $saldo_anterior = max(0, $monto_factura - $total_pagado_previo);
+
+        if ($monto_pago > ($saldo_anterior + 0.01)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'El monto a pagar ($' . number_format($monto_pago, 2) . ') supera el saldo pendiente ($' . number_format($saldo_anterior, 2) . ') de la factura ' . ($inv['serie'] ?? '') . '-' . ($inv['folio'] ?? $inv['id']) . '.'
+            ]);
+            exit;
+        }
+
+        $saldo_insoluto = max(0, $saldo_anterior - $monto_pago);
+        $parcialidad = intval($row_prev['total_parcialidades'] ?? 0) + 1;
+
+        // Desglose de IVA (REP 2.0)
+        $tasa_iva = 0.16;
+        if (!empty($inv['xml_url'])) {
+            $ctx = stream_context_create(['http' => ['timeout' => 3]]);
+            $xml_content = @file_get_contents($inv['xml_url'], false, $ctx);
+            if ($xml_content) {
+                try {
+                    libxml_use_internal_errors(true);
+                    $xml_doc = simplexml_load_string($xml_content);
+                    if ($xml_doc) {
+                        $ns = $xml_doc->getNamespaces(true);
+                        if (isset($ns['cfdi'])) {
+                            $xml_doc->registerXPathNamespace('cfdi', $ns['cfdi']);
+                            $traslados = $xml_doc->xpath('//cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado | //cfdi:Concepto/cfdi:Impuestos/cfdi:Traslados/cfdi:Traslado');
+                            if (!empty($traslados)) {
+                                foreach ($traslados as $tr) {
+                                    if (isset($tr['Impuesto']) && (string) $tr['Impuesto'] === '002' && isset($tr['TasaOCuota'])) {
+                                        $tasa_iva = floatval($tr['TasaOCuota']);
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
+                } catch (\Exception $e) {
                 }
-            } catch (\Exception $e) {
             }
         }
+
+        $base_iva = ($tasa_iva > 0) ? ($monto_pago / (1 + $tasa_iva)) : $monto_pago;
+        $monto_iva = ($tasa_iva > 0) ? ($monto_pago - $base_iva) : 0.0;
+        $porcentaje_iva_str = ($tasa_iva > 0) ? (string) round($tasa_iva * 100) : '0';
+        $tipo_iva_str = ($tasa_iva > 0) ? '1' : '0';
+
+        $documentos_sinube[] = [
+            'serie' => $inv['serie'] ?? '',
+            'folio' => $inv['folio'] ?? '',
+            'idDocumento' => $inv['uuid'],
+            'monedaDR' => 'MXN',
+            'metodoDePagoDR' => 'PPD',
+            'impPagado' => $monto_pago,
+            'numParcialidad' => $parcialidad,
+            'impSaldoAnt' => $saldo_anterior,
+            'impSaldoInsoluto' => $saldo_insoluto,
+            'montoIVA' => round($monto_iva, 2),
+            'montoBaseIVA' => round($base_iva, 2),
+            'tipoIVA' => $tipo_iva_str,
+            'porcentajeIVA' => $porcentaje_iva_str
+        ];
+
+        $monto_total_rep += $monto_pago;
+        $invoice_payments_to_save[] = [
+            'factura_id' => $inv_id,
+            'monto_pagado' => $monto_pago,
+            'parcialidad' => $parcialidad,
+            'saldo_insoluto' => $saldo_insoluto,
+            'mov_id' => $inv['mov_id'] ?? ''
+        ];
     }
 
-    $base_iva = ($tasa_iva > 0) ? ($monto_pago / (1 + $tasa_iva)) : $monto_pago;
-    $monto_iva = ($tasa_iva > 0) ? ($monto_pago - $base_iva) : 0.0;
-    $porcentaje_iva_str = ($tasa_iva > 0) ? (string) round($tasa_iva * 100) : '0';
-    $tipo_iva_str = ($tasa_iva > 0) ? '1' : '0';
-
-    // Usar la MISMA SERIE que la factura origen y consultar el siguiente folio consecutivo en SiNube
-    $target_serie = !empty($inv['serie']) ? trim($inv['serie']) : (isset($branchSeriesMap[$inv['sucursal']]) ? $branchSeriesMap[$inv['sucursal']] : 'O');
+    // Obtener Serie y Folio consecutivo de SiNube
+    $target_serie = $first_serie;
     $serie_pago = $target_serie;
     $folio_pago = 1;
 
-    $sinube = new SinubeHelper(__DIR__ . '/../logs/sinube_api.log');
     try {
         $folioData = $sinube->getFolioActual($api_url_cert, $api_no_certificado, $target_serie);
         $serie_pago = $folioData['serie'];
-        $folio_pago = $folioData['folioActual'] + 1;
+        $folio_pago = intval($folioData['folioActual']) + 1;
     } catch (\Exception $e) {
         $stmt_fol = $conexion_gen->prepare("SELECT IFNULL(MAX(CAST(folio AS UNSIGNED)), 0) + 1 AS next_fol FROM facturas WHERE serie = ?");
         $stmt_fol->bind_param("s", $target_serie);
@@ -936,52 +1094,45 @@ if ($action == 'ajax') {
         $stmt_fol->close();
     }
 
-    // Condicional para Persona Física: cargar apellidoPaterno (ap_paterno) de la tabla cust
-    $es_fisica = (!empty($inv['es_persona_fisica']) && in_array((string) $inv['es_persona_fisica'], ['1', 'true', 'TRUE'], true)) ? '1' : '0';
-    $apellido_paterno = ($es_fisica === '1') ? trim($inv['cust_ap_paterno'] ?? '') : '';
-    $nombre_receptor = ($es_fisica === '1') ? trim($inv['cust_nombre'] ?? '') : '';
-    $apellido_materno = ($es_fisica === '1') ? trim($inv['cust_ap_materno'] ?? '') : '';
+    // Identificador REP compuesto por el id de ticket ($mov_id) y número de pago/parcialidad
+    $rep_parts = [];
+    foreach ($invoice_payments_to_save as $pay_item) {
+        $t_mov = !empty($pay_item['mov_id']) ? trim($pay_item['mov_id']) : $pay_item['factura_id'];
+        $p_num = $pay_item['parcialidad'];
+        $rep_parts[] = "{$t_mov}-{$p_num}";
+    }
+    $mov_id_rep = !empty($rep_parts) ? 'REP-' . implode(',', $rep_parts) : 'REP-' . time();
 
-    // Armar estructura para SiNubePagoFactory
+    // Datos del Receptor
+    $es_fisica = (!empty($cliente_data['es_persona_fisica']) && in_array((string) $cliente_data['es_persona_fisica'], ['1', 'true', 'TRUE'], true)) ? '1' : '0';
+    $apellido_paterno = ($es_fisica === '1') ? trim($cliente_data['cust_ap_paterno'] ?? '') : '';
+    $nombre_receptor = ($es_fisica === '1') ? trim($cliente_data['cust_nombre'] ?? '') : '';
+    $apellido_materno = ($es_fisica === '1') ? trim($cliente_data['cust_ap_materno'] ?? '') : '';
+
     $pagoData = [
         'sistema' => $api_sistema ?? 'SegunRFC',
         'noCertificado' => $api_no_certificado ?? '',
         'serie' => $serie_pago,
         'folio' => (string) $folio_pago,
-        'monto' => $monto_pago,
+        'monto' => $monto_total_rep,
         'formaDePagoP' => $forma_pago,
         'fechaPago' => $fecha_pago_iso,
         'numOperacion' => $num_operacion,
         'rfcEmisor' => $api_rfc_emisor ?? 'URE180429TM6-39',
+        'nomArchivoDescarga' => "{$mov_id_rep}-{$serie_pago}-{$folio_pago}",
         'receptor' => [
-            'cliente' => "213",//(string) ($inv['cust_id'] ?? '1'),
-            'rfc' => $inv['cust_rfc'] ?? 'XAXX010101000',
-            'razonSocial' => $inv['cust_name'] ?? 'PUBLICO EN GENERAL',
+            'cliente' => "213",//(string) ($cliente_data['cust_id'] ?? '1'),
+            'rfc' => $cliente_data['cust_rfc'] ?? 'XAXX010101000',
+            'razonSocial' => $cliente_data['cust_name'] ?? 'PUBLICO EN GENERAL',
             'esPersonaFisica' => $es_fisica,
             'nombre' => $nombre_receptor,
             'apellidoPaterno' => $apellido_paterno,
             'apellidoMaterno' => $apellido_materno,
-            'domicilioFiscal' => $inv['cust_zip'] ?? '87000',
-            'regimenFiscal' => $inv['cust_regimen'] ?? '601',
+            'domicilioFiscal' => $cliente_data['cust_zip'] ?? '87000',
+            'regimenFiscal' => $cliente_data['cust_regimen'] ?? '601',
             'usoCFDI' => 'CP01'
         ],
-        'documentos' => [
-            [
-                'serie' => $inv['serie'] ?? '',
-                'folio' => $inv['folio'] ?? '',
-                'idDocumento' => $inv['uuid'],
-                'monedaDR' => 'MXN',
-                'metodoDePagoDR' => 'PPD',
-                'impPagado' => $monto_pago,
-                'numParcialidad' => $parcialidad,
-                'impSaldoAnt' => $saldo_anterior,
-                'impSaldoInsoluto' => $saldo_insoluto,
-                'montoIVA' => round($monto_iva, 2),
-                'montoBaseIVA' => round($base_iva, 2),
-                'tipoIVA' => $tipo_iva_str,
-                'porcentajeIVA' => $porcentaje_iva_str
-            ]
-        ]
+        'documentos' => $documentos_sinube
     ];
 
     // Instanciar servicio y timbrar
@@ -1009,10 +1160,9 @@ if ($action == 'ajax') {
     // Persistir el comprobante de pago en la base de datos
     mysqli_begin_transaction($conexion_gen);
     try {
-        $mov_id_rep = 'REP-' . time();
         $user_id = intval($_SESSION['user_id'] ?? 1);
-        $cust_id = intval($inv['cust_id'] ?? 0);
-        $branch = $inv['sucursal'] ?? 'Obrador';
+        $cust_id = intval($cliente_data['cust_id'] ?? 0);
+        $branch = $first_branch;
         $uuid_rep = $response->uuid;
         $xml_rep = $response->xmlUrl ?? '';
         $pdf_rep = $response->pdfUrl ?? '';
@@ -1025,36 +1175,47 @@ if ($action == 'ajax') {
             throw new \Exception("Error al preparar guardado de REP: " . mysqli_error($conexion_gen));
         }
 
-        $stmt_rep->bind_param("ssdsssssis", $mov_id_rep, $uuid_rep, $monto_pago, $user_id, $serie_pago, $folio_pago, $xml_rep, $pdf_rep, $cust_id, $branch);
+        $stmt_rep->bind_param("ssdsssssis", $mov_id_rep, $uuid_rep, $monto_total_rep, $user_id, $serie_pago, $folio_pago, $xml_rep, $pdf_rep, $cust_id, $branch);
         if (!$stmt_rep->execute()) {
             throw new \Exception("Error al guardar REP en base de datos: " . $stmt_rep->error);
         }
         $stmt_rep->close();
 
-        // Registrar relación en deposito_factura
+        // Registrar relaciones en deposito_factura para cada factura
         $deposito_id_dummy = 0;
         $stmt_df = $conexion_gen->prepare("
             INSERT INTO deposito_factura (deposito_id, factura_id, monto_pagado, is_active)
             VALUES (?, ?, ?, 1)
         ");
         if ($stmt_df) {
-            $stmt_df->bind_param("iid", $deposito_id_dummy, $invoice_id, $monto_pago);
-            $stmt_df->execute();
+            foreach ($invoice_payments_to_save as $pay_item) {
+                $f_id = $pay_item['factura_id'];
+                $m_pag = $pay_item['monto_pagado'];
+                $stmt_df->bind_param("iid", $deposito_id_dummy, $f_id, $m_pag);
+                $stmt_df->execute();
+            }
             $stmt_df->close();
         }
 
         mysqli_commit($conexion_gen);
 
+        @file_put_contents(
+            __DIR__ . '/../logs/depositos.log',
+            "[" . date('Y-m-d H:i:s') . "] [INFO] [REP] Complemento de pago timbrado y registrado con mov_id '{$mov_id_rep}', UUID '{$uuid_rep}', serie/folio '{$serie_pago}-{$folio_pago}', monto {$monto_total_rep}\n",
+            FILE_APPEND
+        );
+
         echo json_encode([
             'status' => 'success',
-            'message' => 'Complemento de Pago (REP 2.0) timbrado exitosamente en SiNube.',
+            'message' => 'Complemento de Pago (REP 2.0) timbrado exitosamente en SiNube por $' . number_format($monto_total_rep, 2) . ' para ' . count($invoice_payments_to_save) . ' factura(s).',
+            'mov_id' => $mov_id_rep,
             'uuid' => $uuid_rep,
             'xml' => $xml_rep,
             'pdf' => $pdf_rep,
             'serie' => $serie_pago,
             'folio' => $folio_pago,
-            'parcialidad' => $parcialidad,
-            'saldo_insoluto' => $saldo_insoluto
+            'total_facturas' => count($invoice_payments_to_save),
+            'monto_total' => $monto_total_rep
         ]);
         exit;
 
