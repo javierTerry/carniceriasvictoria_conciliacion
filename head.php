@@ -124,6 +124,9 @@ $sat_catalogs = getSATCatalogs();
      <!-- MICSS button[type="file"] -->
      <link rel="stylesheet" href="css/micss.css">
 
+     <!-- Select2 CSS -->
+     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
      <!-- Global Layout Fixes -->
      <link rel="stylesheet" href="assets/css/layout.css?v=<?php echo time(); ?>">
 

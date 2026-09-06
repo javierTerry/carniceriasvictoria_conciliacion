@@ -195,6 +195,15 @@ if ($http_code == 200) {
             $sql_invoice = "INSERT INTO facturas (mov_id, uuid, monto, metodo_pago, usuario_id, serie, folio, xml_url, pdf_url, estatus, estado) 
                             VALUES ('GRP-$group_id', '$uuid', $monto_total, 'Agrupado', $user_id, '$serie', '$folio', '$link_xml', '$link_pdf', 1, 'Activa')";
             mysqli_query($targetConn, $sql_invoice);
+            $new_grp_inv_id = mysqli_insert_id($targetConn);
+            if (!empty($observacion_raw) && $new_grp_inv_id > 0) {
+                $stmt_obs = mysqli_prepare($targetConn, "UPDATE facturas SET observacion = ? WHERE id = ?");
+                if ($stmt_obs) {
+                    mysqli_stmt_bind_param($stmt_obs, "si", $observacion_raw, $new_grp_inv_id);
+                    mysqli_stmt_execute($stmt_obs);
+                    mysqli_stmt_close($stmt_obs);
+                }
+            }
 
             mysqli_commit($targetConn);
             echo json_encode(['success' => true, 'uuid' => $uuid]);
