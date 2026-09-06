@@ -143,6 +143,7 @@ if ($action == 'ajax') {
                         <th class="text-right">Total Pagado</th>
                         <th class="text-right">Saldo Pendiente</th>
                     <?php endif; ?>
+                    <th>Observación</th>
                     <th class="text-center">Estatus</th>
                     <?php if (!$is_ppd): ?>
                         <th class="text-center">XML</th>
@@ -214,6 +215,23 @@ if ($action == 'ajax') {
                                 $<?php echo number_format($saldo_pendiente, 2); ?>
                             </td>
                         <?php endif; ?>
+
+                        <!-- Columna de Observación agregada al facturar (Solo lectura) -->
+                        <?php
+                        $observacion_row = !empty($r['observacion']) ? $r['observacion'] : (!empty($r['comentarios']) ? $r['comentarios'] : (!empty($r['comentario']) ? $r['comentario'] : ''));
+                        ?>
+                        <td>
+                            <?php if (!empty($observacion_row)): ?>
+                                <span class="badge badge-observacion" 
+                                    style="background-color: #f8f9fa; color: #2c3e50; border: 1px solid #dcdfe6; padding: 5px 8px; border-radius: 4px; display: inline-block; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; cursor: pointer;"
+                                    title="<?php echo htmlspecialchars($observacion_row); ?>"
+                                    onclick="verObservacion(<?php echo htmlspecialchars(json_encode($observacion_row), ENT_QUOTES, 'UTF-8'); ?>)">
+                                    <i class="fa fa-commenting-o text-primary"></i> <?php echo htmlspecialchars($observacion_row); ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="text-muted" style="font-size: 11px;">-</span>
+                            <?php endif; ?>
+                        </td>
 
                         <!-- Estatus Column -->
                         <td class="text-center">

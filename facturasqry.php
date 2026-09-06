@@ -35,7 +35,7 @@ include "sidebar.php";
 
                             <label for="per_page" class="col-md-1 control-label">Ver</label>
                             <div class="col-md-2">
-                                <select class="form-control select-victoria" id="per_page" onchange="load(1);">
+                                <select class="form-control select-victoria select2-victoria" id="per_page">
                                     <option value="10" >10</option>    
                                     <option value="25" selected>25</option>
                                     <option value="50">50</option>
@@ -232,7 +232,31 @@ include "sidebar.php";
         });
     }
 
+    function verObservacion(observacion) {
+        Swal.fire({
+            title: '<i class="fa fa-commenting-o text-primary"></i> Observación de la Factura',
+            html: '<div style="text-align: left; padding: 15px; background: #fdfefe; border: 1px solid #e1e8ed; border-radius: 6px; font-size: 14px; max-height: 250px; overflow-y: auto; color: #2c3e50; line-height: 1.5;">' +
+                  $('<div>').text(observacion).html() +
+                  '</div>',
+            confirmButtonColor: '#34495e',
+            confirmButtonText: 'Cerrar'
+        });
+    }
+
+    function verComentario(comentario) {
+        verObservacion(comentario);
+    }
+
     $(document).ready(function () {
+        $('#per_page').select2({
+            width: '100%',
+            minimumResultsForSearch: 10
+        });
+
+        $('#per_page').on('change', function () {
+            load(1);
+        });
+
         load(1);
     });
 </script>

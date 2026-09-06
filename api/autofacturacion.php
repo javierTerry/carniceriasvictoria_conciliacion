@@ -442,6 +442,15 @@ XML;
                     mysqli_stmt_bind_param($stmt_ins, "ssssssssis", $mov_id, $uuid, $totalGlobal, $metodo_pago_txt, $serie, $folio, $link_xml, $link_pdf, $cust_id, $branch);
                     if (mysqli_stmt_execute($stmt_ins)) {
                         $db_message = 'Factura guardada correctamente.';
+                        $new_auto_id = mysqli_insert_id($conexion_gen);
+                        if ($new_auto_id > 0 && !empty($observacion)) {
+                            $stmt_obs = mysqli_prepare($conexion_gen, "UPDATE `{$db_name_gen}`.`facturas` SET observacion = ? WHERE id = ?");
+                            if ($stmt_obs) {
+                                mysqli_stmt_bind_param($stmt_obs, "si", $observacion, $new_auto_id);
+                                mysqli_stmt_execute($stmt_obs);
+                                mysqli_stmt_close($stmt_obs);
+                            }
+                        }
                     }
                     mysqli_stmt_close($stmt_ins);
                 }

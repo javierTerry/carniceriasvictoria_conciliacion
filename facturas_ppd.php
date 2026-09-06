@@ -756,6 +756,21 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
         });
     }
 
+    function verObservacion(observacion) {
+        Swal.fire({
+            title: '<i class="fa fa-commenting-o text-primary"></i> Observación de la Factura',
+            html: '<div style="text-align: left; padding: 15px; background: #fdfefe; border: 1px solid #e1e8ed; border-radius: 6px; font-size: 14px; max-height: 250px; overflow-y: auto; color: #2c3e50; line-height: 1.5;">' +
+                  $('<div>').text(observacion).html() +
+                  '</div>',
+            confirmButtonColor: '#34495e',
+            confirmButtonText: 'Cerrar'
+        });
+    }
+
+    function verComentario(comentario) {
+        verObservacion(comentario);
+    }
+
     $(document).ready(function () {
         load(1);
     });

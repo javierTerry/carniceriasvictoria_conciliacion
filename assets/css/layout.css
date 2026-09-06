@@ -303,3 +303,106 @@ footer {
     padding: 12px 20px !important;
 }
 
+/* ==========================================================================
+   5. Select2 Corporate Theme - Carnicerías Victoria
+   ========================================================================== */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 34px !important;
+    border: 1px solid var(--victoria-border, #ccc) !important;
+    border-radius: 4px !important;
+    background-color: #ffffff !important;
+    padding: 2px 8px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: var(--victoria-gold, #d4af37) !important;
+    box-shadow: 0 0 6px rgba(212, 175, 55, 0.35) !important;
+    outline: none !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--victoria-black, #1a1a1a) !important;
+    line-height: 28px !important;
+    font-size: 13px !important;
+    padding-left: 2px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #7f8c8d !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 32px !important;
+    right: 6px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: var(--victoria-black, #333) transparent transparent transparent !important;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent var(--victoria-black, #333) transparent !important;
+}
+
+/* Dropdown styling */
+.select2-dropdown {
+    border: 1px solid var(--victoria-gold, #d4af37) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15) !important;
+    z-index: 1060 !important;
+    overflow: hidden !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border: 1px solid var(--victoria-border, #ccc) !important;
+    border-radius: 4px !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--victoria-gold, #d4af37) !important;
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3) !important;
+    outline: none !important;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--victoria-gold, #d4af37) !important;
+    color: var(--victoria-black, #1a1a1a) !important;
+    font-weight: 600 !important;
+}
+
+.select2-container--default .select2-results__option[aria-selected="true"] {
+    background-color: #f5f5f5 !important;
+    color: var(--victoria-red, #b22222) !important;
+    font-weight: 700 !important;
+}
+
+/* Modals / Larger Inputs */
+.modal-body .select2-container--default .select2-selection--single,
+.select2-large.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    padding: 4px 10px !important;
+}
+
+.modal-body .select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-large.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px !important;
+}
+
+.modal-body .select2-container--default .select2-selection--single .select2-selection__arrow,
+.select2-large.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+}
+
