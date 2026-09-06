@@ -5,17 +5,19 @@
  * Versión compatible con PHP 5.6+.
  */
 
-class SinubeHelper {
+class SinubeHelper
+{
     private $logPath;
 
-    public function __construct($logPath = "") {
+    public function __construct($logPath = "")
+    {
         if (empty($logPath)) {
             $this->logPath = __DIR__ . '/../logs/sinube_api.log';
         } else {
             $this->logPath = $logPath;
         }
-        
-        $log_dir = dirname((string)$this->logPath);
+
+        $log_dir = dirname((string) $this->logPath);
         if (!is_dir($log_dir)) {
             @mkdir($log_dir, 0755, true);
         }
@@ -24,7 +26,8 @@ class SinubeHelper {
     /**
      * Obtiene el folio actual desde Sinube validando certificado y serie.
      */
-    public function getFolioActual($url, $targetCert, $targetSerie) {
+    public function getFolioActual($url, $targetCert, $targetSerie)
+    {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -49,8 +52,8 @@ class SinubeHelper {
             if ($xml === false) {
                 throw new Exception("XML de respuesta de Sinube malformado.");
             }
-             $this->log( $targetSerie, 'INFO');
-            $this->log((string)$xml, 'INFO');
+            $this->log($targetSerie, 'INFO');
+            $this->log((string) $xml, 'INFO');
 
             $certNodes = $xml->xpath("//certificado[@noCertificado='" . $targetCert . "']");
             if (!$certNodes || count($certNodes) === 0) {
@@ -67,9 +70,10 @@ class SinubeHelper {
             }
 
             $foliador = $foliadorNodes[0];
-            $serie = (string)(isset($foliador['serie']) ? $foliador['serie'] : '');
-            $folioActual = (int)(isset($foliador['folioActual']) ? $foliador['folioActual'] : 0);
+            $serie = (string) (isset($foliador['serie']) ? $foliador['serie'] : '');
+            $folioActual = (int) (isset($foliador['folioActual']) ? $foliador['folioActual'] : 0);
 
+            error_log("FOLIOOOOOOOOOOOOOOOOOOOOOO");
             $this->log("Folio obtenido exitosamente: Serie=" . $serie . ", FolioActual=" . $folioActual, 'INFO');
 
             return array(
@@ -95,9 +99,10 @@ class SinubeHelper {
      * @param string $urlBlob URL base del servicio POST (ej. https://ep-dot-facturanube.appspot.com/blob)
      * @return string XML de respuesta del servicio
      */
-    public function consultarEstatusCFDI($emp, $pruebas, $rfcEmi, $rfcRec, $total, $uuid, $urlBlob = 'https://ep-dot-facturanube.appspot.com/blob') {
-        $totalFormatted = is_numeric($total) ? number_format((float)$total, 2, '.', '') : (string)$total;
-        $paramString = "tipo=2000\nemp=" . trim((string)$emp) . "\npruebas=" . trim((string)$pruebas) . "\nrfcEmi=" . trim((string)$rfcEmi) . "\nrfcRec=" . trim((string)$rfcRec) . "\ntotal=" . $totalFormatted . "\nuuid=" . trim((string)$uuid);
+    public function consultarEstatusCFDI($emp, $pruebas, $rfcEmi, $rfcRec, $total, $uuid, $urlBlob = 'https://ep-dot-facturanube.appspot.com/blob')
+    {
+        $totalFormatted = is_numeric($total) ? number_format((float) $total, 2, '.', '') : (string) $total;
+        $paramString = "tipo=2000\nemp=" . trim((string) $emp) . "\npruebas=" . trim((string) $pruebas) . "\nrfcEmi=" . trim((string) $rfcEmi) . "\nrfcRec=" . trim((string) $rfcRec) . "\ntotal=" . $totalFormatted . "\nuuid=" . trim((string) $uuid);
         $parEncoded = base64_encode($paramString);
         $url = $urlBlob . "?par=" . $parEncoded;
 
@@ -129,7 +134,8 @@ class SinubeHelper {
     /**
      * Registra eventos en el archivo de log.
      */
-    public function log($message, $level = 'INFO') {
+    public function log($message, $level = 'INFO')
+    {
         $date = date('Y-m-d H:i:s');
         $formatted = "[" . $date . "] [" . $level . "] " . $message . PHP_EOL;
         @file_put_contents($this->logPath, $formatted, FILE_APPEND);

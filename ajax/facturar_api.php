@@ -272,6 +272,15 @@ if ($http_code_envio == 200) {
                     $branch
                 );
                 if (mysqli_stmt_execute($stmt)) {
+                    $new_invoice_id = mysqli_insert_id($conexion_gen);
+                    if (!empty($observacion_raw) && $new_invoice_id > 0) {
+                        $stmt_obs = mysqli_prepare($conexion_gen, "UPDATE `" . $db_name_gen . "`.`facturas` SET observacion = ? WHERE id = ?");
+                        if ($stmt_obs) {
+                            mysqli_stmt_bind_param($stmt_obs, "si", $observacion_raw, $new_invoice_id);
+                            mysqli_stmt_execute($stmt_obs);
+                            mysqli_stmt_close($stmt_obs);
+                        }
+                    }
                     $db_message = 'Factura guardada en la base de datos GENERAL correctamente';
                     error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
 

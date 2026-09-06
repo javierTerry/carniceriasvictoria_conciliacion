@@ -47,6 +47,9 @@ $q_status = $_GET['status'] ?? '';
                         class="<?php echo ($q_branch == 'Obrador' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>">
                         <a href="facturasqry.php?branch=Obrador">Facturados</a></li>
                     <li
+                        class="<?php echo ($q_branch == 'Obrador' && $current_page == 'facturas_ppd.php') ? 'active' : ''; ?>">
+                        <a href="facturas_ppd.php?branch=Obrador">Facturas PPD</a></li>
+                    <li
                         class="<?php echo ($q_branch == 'Obrador' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
                         <a href="vtaagrupados.php?branch=Obrador">Agrupados</a></li>
                     <li
@@ -68,6 +71,9 @@ $q_status = $_GET['status'] ?? '';
                     <li
                         class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>">
                         <a href="facturasqry.php?branch=Victoria1">Facturados</a></li>
+                    <li
+                        class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'facturas_ppd.php') ? 'active' : ''; ?>">
+                        <a href="facturas_ppd.php?branch=Victoria1">Facturas PPD</a></li>
                     <li
                         class="<?php echo ($q_branch == 'Victoria1' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
                         <a href="vtaagrupados.php?branch=Victoria1">Agrupados</a></li>
@@ -91,6 +97,9 @@ $q_status = $_GET['status'] ?? '';
                         class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>">
                         <a href="facturasqry.php?branch=Victoria2">Facturados</a></li>
                     <li
+                        class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'facturas_ppd.php') ? 'active' : ''; ?>">
+                        <a href="facturas_ppd.php?branch=Victoria2">Facturas PPD</a></li>
+                    <li
                         class="<?php echo ($q_branch == 'Victoria2' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
                         <a href="vtaagrupados.php?branch=Victoria2">Agrupados</a></li>
                     <li
@@ -113,6 +122,9 @@ $q_status = $_GET['status'] ?? '';
                         class="<?php echo ($q_branch == 'Produccion' && $current_page == 'facturasqry.php') ? 'active' : ''; ?>">
                         <a href="facturasqry.php?branch=Produccion">Facturados</a></li>
                     <li
+                        class="<?php echo ($q_branch == 'Produccion' && $current_page == 'facturas_ppd.php') ? 'active' : ''; ?>">
+                        <a href="facturas_ppd.php?branch=Produccion">Facturas PPD</a></li>
+                    <li
                         class="<?php echo ($q_branch == 'Produccion' && $current_page == 'vtaagrupados.php') ? 'active' : ''; ?>">
                         <a href="vtaagrupados.php?branch=Produccion">Agrupados</a></li>
                     <li
@@ -123,14 +135,17 @@ $q_status = $_GET['status'] ?? '';
                         <a href="depositos.php?branch=Produccion">Depósitos</a></li>
                 </ul>
             </li>
-             <li class="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'active' : ''; ?>">
+             <li class="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP') || ($current_page == 'facturas_ppd.php' && $q_branch == 'CEP')) ? 'active' : ''; ?>">
                 <a><i class="fa fa-paw"></i> CERDO EN PIE (CEP) <span class="fa fa-chevron-down"></span></a>
-                <ul class="nav child_menu" style="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP')) ? 'display: block;' : ''; ?>">
+                <ul class="nav child_menu" style="<?php echo ($current_page == 'cep_creacion.php' || ($current_page == 'facturasqry.php' && $q_branch == 'CEP') || ($current_page == 'facturas_ppd.php' && $q_branch == 'CEP')) ? 'display: block;' : ''; ?>">
                     <li class="<?php echo ($current_page == 'cep_creacion.php') ? 'active' : ''; ?>">
                         <a href="cep_creacion.php">Creación</a>
                     </li>
                     <li class="<?php echo ($current_page == 'facturasqry.php' && $q_branch == 'CEP') ? 'active' : ''; ?>">
                         <a href="facturasqry.php?branch=CEP">Facturados</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'facturas_ppd.php' && $q_branch == 'CEP') ? 'active' : ''; ?>">
+                        <a href="facturas_ppd.php?branch=CEP">Facturas PPD</a>
                     </li>
                 </ul>
             </li>

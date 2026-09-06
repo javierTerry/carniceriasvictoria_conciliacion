@@ -61,12 +61,20 @@ $date_end = date('Y-m-d');
                                 <div class="row">
                                     <div class="col-md-2 col-sm-6 col-xs-12">
                                         <label for="branch_filter" class="filter-label">Sucursal</label>
-                                        <select class="form-control input-victoria" id="branch_filter">
+                                        <select class="form-control input-victoria select2-victoria" id="branch_filter">
                                             <option value="all">Ver Todas</option>
-                                            <option value="Obrador">Obrador</option>
-                                            <option value="Victoria1">Victoria 1</option>
-                                            <option value="Victoria2">Victoria 2</option>
-                                            <option value="Produccion">Producción</option>
+                                            <?php
+                                            $branchesList = function_exists('getBranchesList') ? getBranchesList() : [
+                                                'Obrador' => 'Obrador',
+                                                'Victoria1' => 'Victoria 1',
+                                                'Victoria2' => 'Victoria 2',
+                                                'Produccion' => 'Producción',
+                                                'CEP' => 'Cerdo en Pie (CEP)'
+                                            ];
+                                            foreach ($branchesList as $key => $label) {
+                                                echo '<option value="' . htmlspecialchars($key) . '">' . htmlspecialchars($label) . '</option>' . PHP_EOL;
+                                            }
+                                            ?>
                                         </select>
                                     </div>
 
@@ -82,7 +90,7 @@ $date_end = date('Y-m-d');
 
                                     <div class="col-md-2 col-sm-6 col-xs-12">
                                         <label for="per_page" class="filter-label">Mostrar</label>
-                                        <select class="form-control input-victoria" id="per_page">
+                                        <select class="form-control input-victoria select2-victoria" id="per_page">
                                             <option value="10">10 registros</option>
                                             <option value="25" selected>25 registros</option>
                                             <option value="50">50 registros</option>
@@ -171,6 +179,17 @@ $date_end = date('Y-m-d');
     }
 
     $(document).ready(function () {
+        // Inicializar Select2 corporativo en los combos
+        $('#branch_filter, #per_page').select2({
+            width: '100%',
+            minimumResultsForSearch: 10
+        });
+
+        // Recargar datos inmediatamente al cambiar sucursal o registros por página
+        $('#branch_filter, #per_page').on('change', function () {
+            load(1);
+        });
+
         load(1);
     });
 </script>
