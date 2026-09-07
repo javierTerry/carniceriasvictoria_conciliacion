@@ -8,6 +8,19 @@ $user_kind = $_SESSION['user_kind'] ?? 0;
 $user_id = $_SESSION['user_id'] ?? 0;
 $hoy = date('d-m-Y');
 
+if (!function_exists('log_vtaqry')) {
+  function log_vtaqry(string $message, string $level = 'INFO', array $context = []): void {
+    $dir = __DIR__ . '/../logs';
+    if (!is_dir($dir)) {
+      @mkdir($dir, 0755, true);
+    }
+    $date = date('Y-m-d H:i:s');
+    $contextStr = !empty($context) ? ' | ' . json_encode($context, JSON_UNESCAPED_UNICODE) : '';
+    $line = "[{$date}] [{$level}] [VTAQRY] {$message}{$contextStr}" . PHP_EOL;
+    @file_put_contents("{$dir}/facturacion_individual.log", $line, FILE_APPEND);
+  }
+}
+
 $action = $_REQUEST['action'] ?? '';
 
 // 1. Handle Deletion (Cancel Sale)
@@ -51,13 +64,27 @@ if ($action == 'ajax') {
   $branch_filter = $_REQUEST['branch'] ?? '';
   $status_filter = $_REQUEST['status'] ?? '';
   $fpay_filter = $_REQUEST['fpay'] ?? '';
+  $fecha_filter = trim($_REQUEST['fecha'] ?? '');
+  $monto_filter = trim($_REQUEST['monto'] ?? '');
   $adjacents = 4;
   $offset = ($page - 1) * $per_page;
 
-  $sWhere = " WHERE (YEAR(A.created_at) = YEAR(CURDATE()) OR A.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) ";
-
   $params = [];
   $types = "";
+
+  if ($fecha_filter !== '') {
+    $sWhere = " WHERE DATE(A.created_at) = ? ";
+    $params[] = $fecha_filter;
+    $types .= "s";
+  } else {
+    $sWhere = " WHERE (YEAR(A.created_at) = YEAR(CURDATE()) OR A.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) ";
+  }
+
+  if ($monto_filter !== '' && is_numeric($monto_filter)) {
+    $sWhere .= " AND ROUND(A.sumimp, 2) = ROUND(?, 2) ";
+    $params[] = floatval($monto_filter);
+    $types .= "d";
+  }
 
   if ($status_filter !== '') {
     $sWhere .= " AND A.is_active = ? ";
@@ -92,7 +119,7 @@ if ($action == 'ajax') {
     $branchConn = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
 
     if (!$branchConn) {
-      error_log("Could not connect to branch: $branchLabel");
+      log_vtaqry("No se pudo conectar a la BD de la sucursal: {$branchLabel}", 'ERROR');
       continue;
     }
 

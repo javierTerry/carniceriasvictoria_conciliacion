@@ -197,3 +197,71 @@
     border: none;
 }
 
+/* Panel de Filtros Estilo Victoria */
+.filter-card {
+    background: #ffffff;
+    border: 1px solid #eef2f5;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.filter-label {
+    font-weight: 700;
+    color: #34495e;
+    margin-bottom: 6px;
+    display: block;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-victoria {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    height: 36px;
+    font-size: 13px;
+    transition: all 0.2s ease-in-out;
+}
+
+.input-victoria:focus {
+    border-color: var(--victoria-red);
+    box-shadow: 0 0 6px rgba(178, 34, 34, 0.35);
+}
+
+.btn-filter-action {
+    height: 36px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+/* Select2 overrides para armonizar con Victoria */
+.select2-container--default .select2-selection--single {
+    height: 36px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 34px !important;
+    font-size: 13px !important;
+    color: #333 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 34px !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: var(--victoria-red) !important;
+    box-shadow: 0 0 6px rgba(178, 34, 34, 0.35) !important;
+}
+
+
