@@ -146,3 +146,12 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
   - **Separación de Entidades Ticket vs Factura (`ajax/vtaqry.php`, `ajax/facturas_ajax.php`):**
     - En el **Menú de Facturas (`facturasqry.php`)**: La **Factura** se conserva y muestra con estatus **Cancelada** (`estatus = 0`), conservando su historial, UUID, XML y PDF.
     - En el **Menú de Ventas / Tickets (`vtaqry.php`)**: El estatus visual y operativo del **Ticket** se rige estrictamente por su valor en `vtahead.is_active` (Pendiente = 2, Activo = 1, Facturado = 3, Agrupado = 4, Inactivo = 0). En la sección de **Pendientes** (`status=2`) se muestran exclusivamente los tickets en estatus pendiente (`is_active = 2`).
+- **2026-09-06:**
+  - **Modernización de Filtros y Búsqueda en Ventas Globales (`vtaqry.php`, `ajax/vtaqry.php`, `js/vtaqry.js`, `assets/css/vtaqry.css`):**
+    - **Control Manual de Búsqueda:** Eliminación de la búsqueda automática por tecla (`onkeyup`) en favor de un botón explícito **Buscar** (`#btn_search`) y soporte para tecla Enter en el formulario, previniendo sobrecarga de peticiones al teclear.
+    - **Filtro de Fecha:** Inclusión de campo de fecha (`#fecha_filter`, tipo `date`) que filtra con exactitud (`DATE(A.created_at) = ?`) y exime la restricción fija de 30 días permitiendo localizar tickets en cualquier fecha histórica.
+    - **Filtro de Monto:** Inclusión de campo numérico de importe (`#monto_filter`, tipo `number step="0.01"`) que permite encontrar ventas por su importe exacto (`ROUND(A.sumimp, 2) = ROUND(?, 2)`).
+    - **Botón de Limpiar:** Incorporación de botón para reiniciar filtros (`limpiarFiltros()`) y recargar el listado por defecto.
+    - **Estandarización UI:** Rediseño del formulario en una tarjeta de filtros (`filter-card`) con labels e íconos temáticos, selectores adaptados con **Select2** (`#branch_filter`, `#fpay_filter`, `#per_page`), y logging estructurado en `logs/facturacion_individual.log`.
+    - **Multi-Sucursal:** Selector de sucursales que contempla el catálogo oficial (Todas, Obrador, Victoria 1, Victoria 2, Producción) exclusivamente en la vista global (`branch=all`). En las vistas dedicadas de cada sucursal (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`), el filtro se oculta y se fija automáticamente para prevenir cruce accidental de información entre unidades de venta.
+

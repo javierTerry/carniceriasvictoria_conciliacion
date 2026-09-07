@@ -15,57 +15,135 @@ include "sidebar.php";
                 //    include("modal/upd_cust.php");  // rutina editar registro
                 //   do_alert("esto es 1");
                 ?>
+                <?php
+                $branch_selected = $_GET['branch'] ?? 'all';
+                $status_selected = $_GET['status'] ?? '';
+                $is_pending_view = ($status_selected === '2');
+                $is_global_branch = ($branch_selected === 'all' || empty($branch_selected));
+                $title_view = $is_pending_view ? "Ventas Pendientes de Facturación" : "Ventas";
+
+                $branch_badges = [
+                    'Obrador' => 'label-obrador',
+                    'Victoria1' => 'label-victoria1',
+                    'Victoria2' => 'label-victoria2',
+                    'Produccion' => 'label-produccion',
+                    'CEP' => 'label-cep'
+                ];
+                $branch_names = [
+                    'Obrador' => 'Obrador',
+                    'Victoria1' => 'Victoria 1',
+                    'Victoria2' => 'Victoria 2',
+                    'Produccion' => 'Producción',
+                    'CEP' => 'Cerdo en Pie (CEP)'
+                ];
+                ?>
                 <div class="x_panel">
                     <div class="x_title">
-                        <h2>Ventas (Global)</h2> <!-- titulo de los registros -->
-                        <div class="clearfix"></div> <!-- ajusta imagen al cuadro -->
-                    </div> <!-- titulo Proveedor -->
+                        <h2>
+                            <i class="fa fa-shopping-cart"></i> <?php echo $title_view; ?>
+                            <?php if (!$is_global_branch && isset($branch_names[$branch_selected])): ?>
+                                - <span class="label <?php echo $branch_badges[$branch_selected] ?? 'label-default'; ?>"><?php echo $branch_names[$branch_selected]; ?></span>
+                            <?php elseif ($is_global_branch): ?>
+                                <small>(Global - Todas las sucursales)</small>
+                            <?php endif; ?>
+                        </h2>
+                        <div class="clearfix"></div>
+                    </div>
 
+                    <!-- Panel de Filtros -->
+                    <div class="filter-card">
+                        <form class="form-horizontal" role="form" id="datos_cotizacion" onsubmit="event.preventDefault(); load(1);">
+                            <input type="hidden" id="status_filter" value="<?php echo htmlspecialchars($status_selected); ?>">
+                            
+                            <div class="row" style="margin-bottom: 12px;">
+                                <!-- Buscar por texto (Ticket / Cliente) -->
+                                <div class="<?php echo $is_global_branch ? 'col-md-3' : 'col-md-4'; ?> col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                                    <label for="q" class="filter-label"><i class="fa fa-search"></i> Buscar</label>
+                                    <input type="text" class="form-control input-victoria" id="q" placeholder="Ticket # o cliente...">
+                                </div>
 
-                    <!-- form search -->
-                    <form class="form-horizontal" role="form" id="datos_cotizacion" onsubmit="event.preventDefault();">
-                        <div class="form-group row">
-                            <label for="q" class="col-md-1 control-label">Venta</label>
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" id="q" placeholder="Buscar..."
-                                    onkeyup='load(1);'>
+                                <!-- Filtro de Fecha -->
+                                <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                                    <label for="fecha_filter" class="filter-label"><i class="fa fa-calendar"></i> Fecha</label>
+                                    <input type="date" class="form-control input-victoria" id="fecha_filter">
+                                </div>
+
+                                <!-- Filtro de Monto -->
+                                <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                                    <label for="monto_filter" class="filter-label"><i class="fa fa-dollar"></i> Monto</label>
+                                    <input type="number" step="0.01" min="0" class="form-control input-victoria" id="monto_filter" placeholder="0.00">
+                                </div>
+
+                                <?php if ($is_global_branch): ?>
+                                    <!-- Filtro de Sucursal: Solo visible en la vista global de Todas las Sucursales -->
+                                    <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                                        <label for="branch_filter" class="filter-label"><i class="fa fa-map-marker"></i> Sucursal</label>
+                                        <select class="form-control input-victoria select2-victoria" id="branch_filter" data-default="all">
+                                            <option value="all" selected>Todas las sucursales</option>
+                                            <option value="Obrador">Obrador</option>
+                                            <option value="Victoria1">Victoria 1 (Matriz)</option>
+                                            <option value="Victoria2">Victoria 2 (Sucursal)</option>
+                                            <option value="Produccion">Producción</option>
+                                        </select>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- En menús dedicados de cada sucursal, la sucursal es fija e invisible para evitar cruces de datos -->
+                                    <input type="hidden" id="branch_filter" value="<?php echo htmlspecialchars($branch_selected); ?>">
+                                <?php endif; ?>
+
+                                <!-- Filtro de Forma de Pago -->
+                                <div class="<?php echo $is_global_branch ? 'col-md-3' : 'col-md-4'; ?> col-sm-6 col-xs-12" style="margin-bottom: 10px;">
+                                    <label for="fpay_filter" class="filter-label"><i class="fa fa-credit-card"></i> Forma de Pago</label>
+                                    <select class="form-control input-victoria select2-victoria" id="fpay_filter">
+                                        <option value="">Todas las formas</option>
+                                        <?php
+                                        $sql_fpay = "SELECT id, name FROM fpago WHERE is_active = 1 ORDER BY name";
+                                        $res_fpay = mysqli_query($conexion, $sql_fpay);
+                                        while ($fpay = mysqli_fetch_array($res_fpay, MYSQLI_ASSOC)) {
+                                            echo "<option value='{$fpay['id']}'>" . htmlspecialchars($fpay['name']) . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
 
-                            <input type="hidden" id="branch_filter" value="<?php echo $_GET['branch'] ?? ''; ?>">
-                            <input type="hidden" id="status_filter" value="<?php echo $_GET['status'] ?? ''; ?>">
+                            <div class="row">
+                                <!-- Paginación -->
+                                <div class="col-md-2 col-sm-4 col-xs-6" style="margin-bottom: 5px;">
+                                    <label for="per_page" class="filter-label"><i class="fa fa-list-ol"></i> Mostrar</label>
+                                    <select class="form-control input-victoria select2-victoria" id="per_page">
+                                        <option value="10">10 registros</option>
+                                        <option value="25" selected>25 registros</option>
+                                        <option value="50">50 registros</option>
+                                        <option value="75">75 registros</option>
+                                        <option value="100">100 registros</option>
+                                    </select>
+                                </div>
 
-                            <label for="fpay_filter" class="col-md-1 control-label">Pago</label>
-                            <div class="col-md-2">
-                                <select class="form-control select-victoria" id="fpay_filter" onchange="load(1);">
-                                    <option value="">Todos</option>
-                                    <?php
-                                    $sql_fpay = "SELECT id, name FROM fpago WHERE is_active = 1 ORDER BY name";
-                                    $res_fpay = mysqli_query($conexion, $sql_fpay);
-                                    while ($fpay = mysqli_fetch_array($res_fpay, MYSQLI_ASSOC)) {
-                                        echo "<option value='{$fpay['id']}'>{$fpay['name']}</option>";
-                                    }
-                                    ?>
-                                </select>
+                                <!-- Botón Buscar -->
+                                <div class="col-md-2 col-sm-4 col-xs-6" style="margin-bottom: 5px;">
+                                    <label class="filter-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary btn-block action-btn-victoria btn-filter-action" id="btn_search">
+                                        <i class="fa fa-search"></i> Buscar
+                                    </button>
+                                </div>
+
+                                <!-- Botón Limpiar -->
+                                <div class="col-md-2 col-sm-4 col-xs-12" style="margin-bottom: 5px;">
+                                    <label class="filter-label">&nbsp;</label>
+                                    <button type="button" class="btn btn-default btn-block btn-filter-action" id="btn_clear" onclick="limpiarFiltros();">
+                                        <i class="fa fa-eraser"></i> Limpiar
+                                    </button>
+                                </div>
                             </div>
-
-                            <label for="per_page" class="col-md-1 control-label">Ver</label>
-                            <div class="col-md-2">
-                                <select class="form-control select-victoria" id="per_page" onchange="load(1);">
-                                    <option value="10" selected>10</option>    
-                                    <option value="25" >25</option>
-                                    <option value="50">50</option>
-                                    <option value="75">75</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
-
-                        </div>
-                    </form>
-                    <!-- end form search -->
+                        </form>
+                    </div>
+                    <!-- Fin Panel de Filtros -->
 
                     <div class="x_content">
                         <div class="table-responsive">
                             <!-- ajax -->
+                            <div id="loader" class="text-center" style="margin: 10px 0;"></div>
                             <div id="resultados"></div><!-- Carga los datos ajax -->
                             <div class='outer_div'></div><!-- Carga los datos ajax -->
                             <!-- /ajax -->
@@ -122,5 +200,5 @@ include "sidebar.php";
 </div>
 
 <script src="assets/js/vtaqry_logic.js" defer></script>
+<?php include "footer.php"; ?>
 <script type="text/javascript" src="js/vtaqry.js?v=<?php echo time(); ?>"></script>
-<?php include "footer.php" ?>
