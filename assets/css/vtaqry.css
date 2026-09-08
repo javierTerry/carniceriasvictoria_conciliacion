@@ -264,4 +264,31 @@
     box-shadow: 0 0 6px rgba(178, 34, 34, 0.35) !important;
 }
 
+/* Columna Ticket fija para evitar redimensionamiento y permitir ajuste vertical */
+.col-ticket {
+    width: 135px !important;
+    min-width: 135px !important;
+    max-width: 135px !important;
+    box-sizing: border-box !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.col-ticket-container {
+    display: block;
+    width: 100%;
+    max-width: 135px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 1.35;
+    font-size: 13px;
+}
+
+
 
