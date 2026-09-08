@@ -17,31 +17,43 @@ include "sidebar.php";
                     </div>
 
                     <!-- form search -->
-                    <form class="form-horizontal" role="form" id="datos_cotizacion" onsubmit="event.preventDefault();">
-                        <div class="form-group row">
-                            <label for="q" class="col-md-1 control-label">Buscar / UUID</label>
-                            <div class="col-md-3">
-                                <input type="text" class="form-control" id="q" placeholder="Folio, UUID o Mov ID..."
-                                    onkeyup='load(1);'>
+                    <form role="form" id="datos_cotizacion" onsubmit="event.preventDefault();" style="margin-bottom: 20px;">
+                        <input type="hidden" id="branch_filter" value="<?php echo isset($_GET['branch']) ? $_GET['branch'] : ''; ?>">
+                        <div class="filter-row-container" style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap; background: #fafafa; padding: 12px 16px; border: 1px solid #e8e8e8; border-radius: 6px;">
+                            
+                            <!-- Buscar -->
+                            <div style="display: flex; align-items: center; gap: 8px; flex: 1 1 220px;">
+                                <label for="q" style="margin-bottom: 0; font-weight: 700; color: #34495e; white-space: nowrap;">Buscar</label>
+                                <input type="text" class="form-control input-victoria" id="q" placeholder="Folio, UUID o Mov ID..."
+                                    onkeyup='handleFilterInput();' oninput='handleFilterInput();' style="height: 36px; width: 100%;">
                             </div>
 
-                            <input type="hidden" id="branch_filter" value="<?php echo isset($_GET['branch']) ? $_GET['branch'] : ''; ?>">
-
-                            <label for="client_filter" class="col-md-1 control-label">Cliente</label>
-                            <div class="col-md-3">
-                                <input type="text" class="form-control" id="client_filter" placeholder="Nombre del cliente..."
-                                    onkeyup='load(1);'>
+                            <!-- Cliente -->
+                            <div style="display: flex; align-items: center; gap: 8px; flex: 1 1 200px;">
+                                <label for="client_filter" style="margin-bottom: 0; font-weight: 700; color: #34495e; white-space: nowrap;">Cliente</label>
+                                <input type="text" class="form-control input-victoria" id="client_filter" placeholder="Nombre del cliente..."
+                                    onkeyup='handleFilterInput();' oninput='handleFilterInput();' style="height: 36px; width: 100%;">
                             </div>
 
-                            <label for="per_page" class="col-md-1 control-label">Ver</label>
-                            <div class="col-md-2">
-                                <select class="form-control select-victoria select2-victoria" id="per_page">
-                                    <option value="10" >10</option>    
-                                    <option value="25" selected>25</option>
-                                    <option value="50">50</option>
-                                    <option value="75">75</option>
-                                    <option value="100">100</option>
-                                </select>
+                            <!-- Observación -->
+                            <div style="display: flex; align-items: center; gap: 8px; flex: 1.2 1 240px;">
+                                <label for="observacion_filter" style="margin-bottom: 0; font-weight: 700; color: #34495e; white-space: nowrap;" title="Buscar en Observaciones">Obs.</label>
+                                <input type="text" class="form-control input-victoria" id="observacion_filter" placeholder="Buscar en observaciones..."
+                                    onkeyup='handleFilterInput();' oninput='handleFilterInput();' style="height: 36px; width: 100%;">
+                            </div>
+
+                            <!-- Ver -->
+                            <div style="display: flex; align-items: center; gap: 8px; flex: 0 0 auto;">
+                                <label for="per_page" style="margin-bottom: 0; font-weight: 700; color: #34495e; white-space: nowrap;">Ver</label>
+                                <div style="width: 85px;">
+                                    <select class="form-control select-victoria select2-victoria" id="per_page" onchange="load(1);">
+                                        <option value="10">10</option>    
+                                        <option value="25" selected>25</option>
+                                        <option value="50">50</option>
+                                        <option value="75">75</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
@@ -65,19 +77,44 @@ include "sidebar.php";
 <?php include "footer.php" ?>
 
 <script>
-    function load(page) {
+    var searchTimer = null;
+    function handleFilterInput() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () {
+            load(1);
+        }, 300);
+    }
+
+    var lastQuerySignature = "";
+    function load(page, force) {
+        var page = parseInt(page) || 1;
         window.current_page = page;
-        var q = $("#q").val();
-        var per_page = $("#per_page").val();
-        var branch = $("#branch_filter").val();
-        var client = $("#client_filter").val();
+
+        var q_raw = ($("#q").val() || "").trim();
+        var client_raw = ($("#client_filter").val() || "").trim();
+        var obs_raw = ($("#observacion_filter").val() || "").trim();
+        var per_page = $("#per_page").val() || 25;
+        var branch = $("#branch_filter").val() || "";
+
+        // Solo buscar a partir de 3 caracteres (o vacío si se limpió)
+        var q = (q_raw.length >= 3) ? q_raw : '';
+        var client = (client_raw.length >= 3) ? client_raw : '';
+        var observacion = (obs_raw.length >= 3) ? obs_raw : '';
+
+        var currentSignature = page + '|' + per_page + '|' + branch + '|' + q + '|' + client + '|' + observacion;
+        if (!force && currentSignature === lastQuerySignature) {
+            return;
+        }
+        lastQuerySignature = currentSignature;
+
         var parametros = {
             "action": "ajax",
             "page": page,
             "q": q,
             "per_page": per_page,
             "branch": branch,
-            "client": client
+            "client": client,
+            "observacion": observacion
         };
         $("#resultados").fadeIn('slow');
         $.ajax({
@@ -208,7 +245,7 @@ include "sidebar.php";
                                 icon: 'success',
                                 confirmButtonColor: '#26B99A'
                             }).then(() => {
-                                load(window.current_page || 1);
+                                load(window.current_page || 1, true);
                             });
                         } else {
                             Swal.fire({
@@ -253,10 +290,10 @@ include "sidebar.php";
             minimumResultsForSearch: 10
         });
 
-        $('#per_page').on('change', function () {
+        $('#per_page').on('change select2:select', function () {
             load(1);
         });
 
-        load(1);
+        load(1, true);
     });
 </script>
