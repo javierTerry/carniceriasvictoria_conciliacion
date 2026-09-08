@@ -14,10 +14,11 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
 if ($action == 'ajax') {
     // Escapar para evitar inyección (Compatibilidad PHP 5.6+)
     $q = isset($_REQUEST['q']) ? mysqli_real_escape_string($conexion_gen, $_REQUEST['q']) : '';
-    $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
-    $per_page = isset($_REQUEST['per_page']) ? intval($_REQUEST['per_page']) : 25;
+    $page = (isset($_REQUEST['page']) && intval($_REQUEST['page']) > 0) ? intval($_REQUEST['page']) : 1;
+    $per_page = (isset($_REQUEST['per_page']) && intval($_REQUEST['per_page']) > 0) ? intval($_REQUEST['per_page']) : 25;
     $branch_filter = isset($_REQUEST['branch']) ? mysqli_real_escape_string($conexion_gen, $_REQUEST['branch']) : '';
     $client_filter = isset($_REQUEST['client']) ? mysqli_real_escape_string($conexion_gen, $_REQUEST['client']) : '';
+    $observacion_filter = isset($_REQUEST['observacion']) ? mysqli_real_escape_string($conexion_gen, trim($_REQUEST['observacion'])) : '';
     $metodo_pago_filter = isset($_REQUEST['metodo_pago']) ? mysqli_real_escape_string($conexion_gen, $_REQUEST['metodo_pago']) : '';
     $from_page = isset($_REQUEST['from_page']) ? $_REQUEST['from_page'] : '';
     $is_ppd = ($metodo_pago_filter === 'ppd' || $metodo_pago_filter === 'Por Definir' || $metodo_pago_filter === '99' || (!empty($from_page) && strpos($from_page, 'facturas_ppd.php') !== false));
@@ -30,8 +31,12 @@ if ($action == 'ajax') {
         $sWhere .= " AND A.sucursal = '$branch_filter' ";
     }
 
-    if ($client_filter !== '') {
+    if (mb_strlen($client_filter, 'UTF-8') >= 3) {
         $sWhere .= " AND (C.razon_social LIKE '%$client_filter%' OR C.nombre LIKE '%$client_filter%') ";
+    }
+
+    if (mb_strlen($observacion_filter, 'UTF-8') >= 3) {
+        $sWhere .= " AND A.observacion LIKE '%$observacion_filter%' ";
     }
 
     if ($is_ppd) {
@@ -47,7 +52,7 @@ if ($action == 'ajax') {
         $sWhere .= " AND A.metodo_pago = '$metodo_pago_filter' ";
     }
 
-    if (!empty($q)) {
+    if (mb_strlen($q, 'UTF-8') >= 3) {
         $sWhere .= " AND (A.mov_id LIKE '%$q%' OR A.uuid LIKE '%$q%' OR A.folio LIKE '%$q%')";
     }
 
@@ -117,11 +122,21 @@ if ($action == 'ajax') {
     $total_pages = ceil($total_records / $per_page);
     $reload = !empty($from_page) ? $from_page : ($is_ppd ? './facturas_ppd.php' : './facturasqry.php');
 
+    $inicio_registro = ($total_records > 0) ? ($offset + 1) : 0;
+    $fin_registro = min($offset + count($all_rows), $total_records);
+
     if ($total_records > 0) {
         include 'pagination.php';
         ?>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <?php echo paginate($reload, $page, $total_pages, $adjacents); ?>
+        <div class="row" style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="col-sm-6 col-xs-12" style="margin-bottom: 5px;">
+                <span class="text-muted" style="font-size: 13px;">
+                    Mostrando <strong><?php echo $inicio_registro; ?></strong> a <strong><?php echo $fin_registro; ?></strong> de <strong><?php echo number_format($total_records); ?></strong> facturas
+                </span>
+            </div>
+            <div class="col-sm-6 col-xs-12 text-right">
+                <?php echo paginate($reload, $page, $total_pages, $adjacents); ?>
+            </div>
         </div>
         <table class="table table-striped jambo_table bulk_action">
             <thead>
@@ -133,7 +148,7 @@ if ($action == 'ajax') {
                         </th>
                     <?php endif; ?>
                     <th>Sucursal</th>
-                    <th>Ticket</th>
+                    <th class="col-ticket">Ticket</th>
                     <th>Cliente</th>
                     <th>Fecha Fact.</th>
                     <th>UUID / Folio</th>
@@ -183,7 +198,15 @@ if ($action == 'ajax') {
                             </td>
                         <?php endif; ?>
                         <td><span class="label <?php echo $r['branch_class']; ?>"><?php echo $r['branch_label']; ?></span></td>
-                        <td><?php echo $r['mov_id']; ?></td>
+                        <td class="col-ticket">
+                            <div class="col-ticket-container">
+                                <?php 
+                                $mov_id_raw = $r['mov_id'] ?? '';
+                                $mov_id_formatted = str_replace(',', ', ', $mov_id_raw);
+                                echo htmlspecialchars($mov_id_formatted); 
+                                ?>
+                            </div>
+                        </td>
                         <td><?php echo isset($r['cliente']) ? $r['cliente'] : '---'; ?></td>
                         <td><?php echo $fecha_f; ?></td>
                         <td>
@@ -310,6 +333,16 @@ if ($action == 'ajax') {
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <div class="row" style="margin-top: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="col-sm-6 col-xs-12" style="margin-bottom: 5px;">
+                <span class="text-muted" style="font-size: 13px;">
+                    Mostrando <strong><?php echo $inicio_registro; ?></strong> a <strong><?php echo $fin_registro; ?></strong> de <strong><?php echo number_format($total_records); ?></strong> facturas
+                </span>
+            </div>
+            <div class="col-sm-6 col-xs-12 text-right">
+                <?php echo paginate($reload, $page, $total_pages, $adjacents); ?>
+            </div>
+        </div>
         <?php
     } else {
         ?>

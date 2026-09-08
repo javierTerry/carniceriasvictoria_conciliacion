@@ -56,6 +56,23 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 
 ## 📝 Bitácora de Cambios
 
+- **2026-09-06:**
+  - **Filtro de Búsqueda por Observación en Facturas (`facturasqry.php`, `ajax/facturas_ajax.php`):**
+    - Se incorporó el campo de búsqueda **Observación** (`#observacion_filter`) en la barra de filtros de [facturasqry.php](facturasqry.php) con eventos reactivos `onkeyup` y `oninput` para filtrado en tiempo real.
+    - Se actualizó el endpoint [ajax/facturas_ajax.php](ajax/facturas_ajax.php) para recibir `$observacion_filter`, saneando la entrada y agregando la condición `AND A.observacion LIKE '%$observacion_filter%'` a la cláusula `$sWhere`, impactando tanto los resultados como el conteo de paginación de forma transparente para las 5 sucursales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+    - Se reorganizó la cuadrícula del formulario de filtros utilizando un contenedor Flexbox (`display: flex; align-items: center; gap: 18px;`) con altura uniforme de 36px para los inputs (`input-victoria`) y el desplegable Select2 (`#per_page`), garantizando que los 4 campos (Buscar, Cliente, Obs. y Ver) queden perfectamente nivelados a la misma altura horizontal sin desbordamientos ni saltos de línea.
+  - **Umbral Mínimo de 3 Caracteres y Debounce en Búsquedas (`facturasqry.php`, `ajax/facturas_ajax.php`):**
+    - Se condicionaron los filtros de texto (**Buscar / UUID / Ticket**, **Cliente** y **Observación**) para disparar y aplicar la búsqueda únicamente cuando el usuario introduzca **3 o más caracteres** (o cuando limpie el campo completamente a 0 caracteres).
+    - Se implementó un debounce de 300ms en el frontend (`handleFilterInput()`) y verificación de firma de consulta (`currentSignature`) para evitar peticiones redundantes o prematuras mientras el usuario escribe menos de 3 caracteres.
+    - Se reforzó la validación en el backend ([ajax/facturas_ajax.php](ajax/facturas_ajax.php)) con `mb_strlen(..., 'UTF-8') >= 3` asegurando que las cláusulas `LIKE` solo se anexen a `$sWhere` cuando cumplan con la longitud requerida, protegiendo el rendimiento de la base de datos en las 5 sucursales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+  - **Corrección de Reactividad en Selector de Registros y Paginador (`facturasqry.php`, `ajax/facturas_ajax.php`):**
+    - Se agregó el evento nativo `onchange="load(1);"` e integración dual con Select2 (`$('#per_page').on('change select2:select', ...)`) al selector **Ver** (`#per_page`), corrigiendo el fallo donde la tabla permanecía estática con 25 registros al cambiar el valor del combo a 10, 50, 75 o 100.
+    - Se incorporó en [ajax/facturas_ajax.php](ajax/facturas_ajax.php) la leyenda descriptiva `"Mostrando X a Y de Z facturas"` tanto en la cabecera como al pie de la tabla, además de duplicar la barra de navegación de páginas en la parte inferior para agilizar la navegación en las 5 sucursales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+  - **Dimensionamiento Fijo y Ajuste Vertical de Columna Ticket en Facturas (`facturasqry.php`, `ajax/facturas_ajax.php`, `assets/css/vtaqry.css`):**
+    - Se fijó el ancho de la columna **Ticket** a un tamaño uniforme de `135px` mediante las clases `.col-ticket` y `.col-ticket-container` en [assets/css/vtaqry.css](assets/css/vtaqry.css), calibrado específicamente para alojar identificadores del tipo `"REP-195305-200"` en una sola línea sin desbordar.
+    - Se implementó ajuste vertical multilínea (`word-break: break-word`, `overflow-wrap: anywhere`, `white-space: normal`) y formateo automático de comas pegadas (`str_replace(',', ', ', ...)`) en [ajax/facturas_ajax.php](ajax/facturas_ajax.php) para que cadenas con múltiples tickets o identificadores agrupados crezcan de forma vertical ordenada.
+    - Se preservó intacto el ancho, alineación y comportamiento dinámico del resto de las columnas de la tabla (Sucursal, Cliente, Fecha Fact., UUID/Folio, Montos, Observaciones, Estatus y Acciones) en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+
 - **2026-09-05:**
   - **Columna de Observación en Facturas Generadas (`facturasqry.php`, `ajax/facturas_ajax.php`, `ajax/facturar_api.php`, `sql/`):**
     - Se incorporó la columna **Observación** en la tabla de facturas generadas de [facturasqry.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/facturasqry.php) (y [facturas_ppd.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/facturas_ppd.php)) mediante [ajax/facturas_ajax.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/ajax/facturas_ajax.php).
