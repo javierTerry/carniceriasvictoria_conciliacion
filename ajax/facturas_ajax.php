@@ -1160,6 +1160,19 @@ if ($action == 'ajax') {
     $nombre_receptor = ($es_fisica === '1') ? trim($cliente_data['cust_nombre'] ?? '') : '';
     $apellido_materno = ($es_fisica === '1') ? trim($cliente_data['cust_ap_materno'] ?? '') : '';
 
+    // Consulta dinámica del IdCliente en SiNube por RFC
+    $rfc_receptor = trim($cliente_data['cust_rfc'] ?? '');
+    try {
+        require_once __DIR__ . '/../config/sinube.php';
+        $idClienteSiNube = obtenerIdClienteSiNube($rfc_receptor);
+    } catch (\Throwable $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => "Error al obtener IdCliente en SiNube para el RFC '{$rfc_receptor}': " . $e->getMessage()
+        ]);
+        exit;
+    }
+
     $pagoData = [
         'sistema' => $api_sistema ?? 'SegunRFC',
         'noCertificado' => $api_no_certificado ?? '',
@@ -1172,7 +1185,7 @@ if ($action == 'ajax') {
         'rfcEmisor' => $api_rfc_emisor ?? 'URE180429TM6-39',
         'nomArchivoDescarga' => "{$mov_id_rep}-{$serie_pago}-{$folio_pago}",
         'receptor' => [
-            'cliente' => "213",//(string) ($cliente_data['cust_id'] ?? '1'),
+            'cliente' => (string) $idClienteSiNube,
             'rfc' => $cliente_data['cust_rfc'] ?? 'XAXX010101000',
             'razonSocial' => $cliente_data['cust_name'] ?? 'PUBLICO EN GENERAL',
             'esPersonaFisica' => $es_fisica,
