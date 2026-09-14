@@ -73,6 +73,15 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
     - Se implementó ajuste vertical multilínea (`word-break: break-word`, `overflow-wrap: anywhere`, `white-space: normal`) y formateo automático de comas pegadas (`str_replace(',', ', ', ...)`) en [ajax/facturas_ajax.php](ajax/facturas_ajax.php) para que cadenas con múltiples tickets o identificadores agrupados crezcan de forma vertical ordenada.
     - Se preservó intacto el ancho, alineación y comportamiento dinámico del resto de las columnas de la tabla (Sucursal, Cliente, Fecha Fact., UUID/Folio, Montos, Observaciones, Estatus y Acciones) en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
 
+- **2026-09-13:**
+  - **Consulta Dinámica de IdCliente en SiNube por RFC para Facturas PPD (`config/sinube.php`, `classes/SiNube/SiNubeClienteService.php`, `ajax/facturas_ajax.php`):**
+    - Se implementó la configuración desacoplada multi-entorno (DEV y PRD) en `config/sinube.php` con soporte para variables de entorno (`APP_ENV`) y fallback al ambiente general.
+    - Se creó el servicio `App\Services\SiNube\SiNubeClienteService` y la función global tipada `obtenerIdClienteSiNube(string $rfc): int` (`declare(strict_types=1);`, PHP 8.x).
+    - **Implementación HTTP POST con Guzzle (`GuzzleHttp\Client`):** El endpoint `/getpost` de SiNube en Google App Engine requiere peticiones **HTTP POST** con parámetros en `form_params` (`application/x-www-form-urlencoded`). Al invocarse por GET retornaba la cabecera por defecto `"SiNube getpost"` sin procesar la consulta. Se implementó Guzzle como cliente HTTP primario con timeout de 15 segundos y fallback robusto a cURL POST.
+    - Parser robusto de la respuesta en bruto delimitada por `¬` (metadatos/datos) y `|` (columnas), extrayendo y validando el `IdCliente` numérico.
+    - Trazabilidad y auditoría completa en canal dedicado `logs/sinube_api.log` registrando inicio de consulta con RFC, endpoint, payload enviado, raw response recibida y errores detallados.
+    - Integración en `ajax/facturas_ajax.php` (acción `timbrar_pago_ppd`) antes del armado de `$pagoData`, asignando dinámicamente `$pagoData['receptor']['cliente'] = (string) $idClienteSiNube` con control de excepciones y respuesta JSON amigable ante fallos.
+    - Cobertura y consideración de las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
 - **2026-09-05:**
   - **Columna de Observación en Facturas Generadas (`facturasqry.php`, `ajax/facturas_ajax.php`, `ajax/facturar_api.php`, `sql/`):**
     - Se incorporó la columna **Observación** en la tabla de facturas generadas de [facturasqry.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/facturasqry.php) (y [facturas_ppd.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/facturas_ppd.php)) mediante [ajax/facturas_ajax.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/ajax/facturas_ajax.php).
