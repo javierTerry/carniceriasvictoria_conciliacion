@@ -1,6 +1,7 @@
 conciliacion.code-workspace
 plan_de_accion.md
 config/config.php
+config/smtp.php
 logs/*
 sql/*
 composer.json
@@ -13,3 +14,4 @@ package-lock.json
 playwright-report/
 test-results/
 tests/e2e/
+
