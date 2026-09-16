@@ -26,6 +26,7 @@ class MailerResendTest
 
         $this->testConfigContainsResendSection();
         $this->testResendFromEmailIsNoreply();
+        $this->testResendApiKeyLoadedFromConfigPhp();
         $this->testResendRequiresApiKeyWhenSending();
         $this->testMailerClassCanBeInstantiated();
         $this->testResendRejectsInvalidEmails();
@@ -40,6 +41,17 @@ class MailerResendTest
         } else {
             echo "RESULTADO: ÉXITO - TODAS LAS PRUEBAS PASARON CORRECTAMENTE.\n";
             exit(0);
+        }
+    }
+
+    private function testResendApiKeyLoadedFromConfigPhp(): void
+    {
+        $config = getSmtpConfig();
+        $apiKey = $config['resend']['api_key'] ?? '';
+        if (!empty($apiKey) && str_starts_with((string) $apiKey, 're_')) {
+            $this->assert(true, "getSmtpConfig() carga correctamente la API Key de Resend desde config/config.php.");
+        } else {
+            $this->assert(false, "getSmtpConfig() no devolvió una clave válida que inicie con 're_'.");
         }
     }
 
