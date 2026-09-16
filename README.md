@@ -202,6 +202,7 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
   - **Trazabilidad Forense de Timbrado en Base64 (`ajax/facturar_api.php`, `ajax/facturar_grupo_api.php`, `api/autofacturacion.php`, `ajax/depositos_ajax.php`):**
     - Registro de payload XML codificado en Base64 (`[TIMBRADO_ENVIO]`) junto a metadatos clave: RFC receptor, Razón Social, Serie y Folio para auditoría inmediata y soporte técnico.
     - Operatividad multi-sucursal garantizada en las 5 sucursales oficiales: `Obrador` (Serie O), `Victoria1` (Serie V), `Victoria2` (Serie K), `Produccion` (Serie P) y `CEP` (Serie CEP).
-  - **Robustez en Suite de Pruebas Playwright E2E (`tests/e2e/resend_mailer_y_timbrado.spec.js`):**
+  - **Robustez en Suites de Pruebas Playwright E2E (`tests/e2e/resend_mailer_y_timbrado.spec.js`, `tests/e2e/facturas_ppd.spec.js`):**
     - Adaptación del test interactivo SweetAlert2 para resolver selectores polimórficos de iconos (`.swal2-success` / `.swal2-icon.swal2-success`).
     - Corrección del test de filtrado reactivo por cliente: extracción contextual de clientes reales y aserción dual sobre `.outer_div` (`table.or(alertWarning)`), eliminando falsos positivos por ausencia de coincidencias.
+    - Corrección en prueba de pagos agrupados PPD (`facturas_ppd.spec.js`): sustitución de `locator.check()` por `locator.click()` en el intento de selección de cliente no coincidente, evitando que Playwright espere estado `checked=true` cuando la lógica UI de `onPpdCheckboxChange` desmarca deliberadamente el checkbox y lanza la advertencia de restricción en SweetAlert2. Resolución de conflicto de *strict mode violation* en el cierre de modal `#modalPagoPPD` mediante el calificador `.first()`.
