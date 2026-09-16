@@ -37,7 +37,18 @@ class Mailer
         $method = $this->config['mailer_method'] ?? 'resend';
 
         if ($method === 'resend') {
-            return $this->sendViaResend($to, $subject, $body, $attachments);
+            try {
+                return $this->sendViaResend($to, $subject, $body, $attachments);
+            } catch (\Throwable $e) {
+                // Si Resend falla (ej. API key no válida o error de red), intentar fallback con Gmail API para no detener la operación
+                $this->logEvent("Fallo en método primario 'resend' ({$e->getMessage()}). Intentando fallback automático con Gmail API...", 'WARNING');
+                try {
+                    return $this->sendViaGmailApi($to, $subject, $body, $attachments);
+                } catch (\Throwable $fallbackEx) {
+                    $this->logEvent("Fallback con Gmail API también falló: " . $fallbackEx->getMessage(), 'ERROR');
+                    throw $e; // Re-lanzar el error de Resend con su diagnóstico
+                }
+            }
         }
 
         if ($method === 'gmail_api') {
@@ -328,7 +339,16 @@ class Mailer
         }
 
         $apiError = $responseData['message'] ?? ($responseData['error'] ?? "HTTP Status {$httpCode}");
-        $errorMsg = "Error devuelto por la API de Resend [{$httpCode}]: {$apiError}";
+
+        if ($httpCode === 401) {
+            $maskedKey = strlen($apiKey) > 10 ? substr($apiKey, 0, 7) . '...' . substr($apiKey, -4) : '***';
+            $errorMsg = "Error de autenticación con Resend [401]: La clave API configurada ({$maskedKey}) no es válida o fue revocada en https://resend.com/api-keys. Por favor genera una nueva API Key con permiso 'Full access' y actualízala en config/config.php (\$resend_api_key).";
+        } elseif ($httpCode === 403) {
+            $errorMsg = "Error de permisos en Resend [403]: {$apiError}. Verifica que el dominio remitente 'carniceriasvictoria.com.mx' esté verificado en https://resend.com/domains.";
+        } else {
+            $errorMsg = "Error devuelto por la API de Resend [{$httpCode}]: {$apiError}";
+        }
+
         $this->logEvent($errorMsg, 'ERROR', [
             'http_code' => $httpCode,
             'response' => $responseData,
