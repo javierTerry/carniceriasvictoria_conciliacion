@@ -56,6 +56,21 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 
 ## 📝 Bitácora de Cambios
 
+- **2026-09-15:**
+  - **Integración de Resend API para Envío de Correos (`config/smtp.php`, `classes/Mailer.php`, `.agents/skills/transactional-mailer/SKILL.md`):**
+    - Se incorporó soporte nativo para **Resend** (https://resend.com/) como método transaccional de envío de correos electrónicos en la clase `Mailer`, configurable mediante `'mailer_method' => 'resend'` en [config/smtp.php](config/smtp.php).
+    - Se configuró por defecto la dirección de correo remitente institucional `noreply@carniceriasvictoria.com.mx` con el nombre `Sistema de Notificaciones Victoria`.
+    - Se implementó la comunicación HTTP REST directa contra el endpoint `https://api.resend.com/emails` empleando `cURL` nativo de PHP con timeout de 25 segundos y codificación Base64 de comprobantes fiscales (XML y PDF) adjuntos, eliminando la necesidad obligatoria de dependencias externas en el entorno.
+    - Se incorporó canal de auditoría estructurado en `logs/mailer.log` para trazabilidad de envíos, IDs de entrega devueltos por Resend y diagnóstico de errores en todas las operaciones de facturación de las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+    - **Configuración Centralizada en `config/config.php`:** Se concentraron los parámetros de Resend (`$resend_api_key`, `$resend_from_email`, `$resend_from_name`, `$mailer_method`) directamente en [config/config.php](config/config.php) (archivo ignorado en Git), el cual es consumido por [config/smtp.php](config/smtp.php) y el servicio `Mailer`, eliminando dependencias de archivos `.env`.
+    - **Resiliencia y Fallback Automático:** Ante eventualidades o errores HTTP 401/403 de Resend, `Mailer` activa un fallback automático hacia Gmail API para garantizar que las emisiones fiscales de las 5 sucursales no se interrumpan, registrando alertas en `logs/mailer.log`. Se creó el script de verificación y diagnóstico en [tests/test_resend_api.php](tests/test_resend_api.php).
+  - **Trazabilidad y Debug de Facturación: Log Estructurado con XML en Base64 (`ajax/facturar_api.php`, `ajax/facturar_grupo_api.php`, `api/autofacturacion.php`, `ajax/depositos_ajax.php`, `cfdi-sinube-billing/SKILL.md`):**
+    - Se implementó una línea de registro estructurado `[TIMBRADO_ENVIO]` antes del despacho cURL al PAC Sinube que incluye `RFC`, `Nombre`, `Serie`, `Folio` y el `XML_BASE64` completo del comprobante a timbrar.
+    - Se replica simultáneamente en los logs dedicados de flujo (`logs/facturacion_individual.log`, `logs/facturacion_grupo.log`, `logs/autofacturacion.log`, `logs/depositos.log`) y en el log central de la API del PAC (`logs/sinube_api.log`).
+    - Facilita la auditoría, búsqueda ágil por RFC/Folio/Serie vía comandos de terminal (`grep`) y reproducción exacta de comprobantes mediante decodificación Base64 en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+    - Se creó la prueba unitaria en [tests/Unit/FacturaLogTimbradoTest.php](tests/Unit/FacturaLogTimbradoTest.php).
+    - Se creó y calibró la suite de pruebas End-to-End con Playwright en [tests/e2e/resend_mailer_y_timbrado.spec.js](tests/e2e/resend_mailer_y_timbrado.spec.js) para validar la interacción con SweetAlert2 al reexpedir correos con Resend, sincronizando la transición del estado de carga ('Enviando Correo') al diálogo de resultado con selector `.swal2-success` y asegurando la integridad de columnas fiscales en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+
 - **2026-09-06:**
   - **Filtro de Búsqueda por Observación en Facturas (`facturasqry.php`, `ajax/facturas_ajax.php`):**
     - Se incorporó el campo de búsqueda **Observación** (`#observacion_filter`) en la barra de filtros de [facturasqry.php](facturasqry.php) con eventos reactivos `onkeyup` y `oninput` para filtrado en tiempo real.
@@ -73,6 +88,15 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
     - Se implementó ajuste vertical multilínea (`word-break: break-word`, `overflow-wrap: anywhere`, `white-space: normal`) y formateo automático de comas pegadas (`str_replace(',', ', ', ...)`) en [ajax/facturas_ajax.php](ajax/facturas_ajax.php) para que cadenas con múltiples tickets o identificadores agrupados crezcan de forma vertical ordenada.
     - Se preservó intacto el ancho, alineación y comportamiento dinámico del resto de las columnas de la tabla (Sucursal, Cliente, Fecha Fact., UUID/Folio, Montos, Observaciones, Estatus y Acciones) en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
 
+- **2026-09-13:**
+  - **Consulta Dinámica de IdCliente en SiNube por RFC para Facturas PPD (`config/sinube.php`, `classes/SiNube/SiNubeClienteService.php`, `ajax/facturas_ajax.php`):**
+    - Se implementó la configuración desacoplada multi-entorno (DEV y PRD) en `config/sinube.php` con soporte para variables de entorno (`APP_ENV`) y fallback al ambiente general.
+    - Se creó el servicio `App\Services\SiNube\SiNubeClienteService` y la función global tipada `obtenerIdClienteSiNube(string $rfc): int` (`declare(strict_types=1);`, PHP 8.x).
+    - **Implementación HTTP POST con Guzzle (`GuzzleHttp\Client`):** El endpoint `/getpost` de SiNube en Google App Engine requiere peticiones **HTTP POST** con parámetros en `form_params` (`application/x-www-form-urlencoded`). Al invocarse por GET retornaba la cabecera por defecto `"SiNube getpost"` sin procesar la consulta. Se implementó Guzzle como cliente HTTP primario con timeout de 15 segundos y fallback robusto a cURL POST.
+    - Parser robusto de la respuesta en bruto delimitada por `¬` (metadatos/datos) y `|` (columnas), extrayendo y validando el `IdCliente` numérico.
+    - Trazabilidad y auditoría completa en canal dedicado `logs/sinube_api.log` registrando inicio de consulta con RFC, endpoint, payload enviado, raw response recibida y errores detallados.
+    - Integración en `ajax/facturas_ajax.php` (acción `timbrar_pago_ppd`) antes del armado de `$pagoData`, asignando dinámicamente `$pagoData['receptor']['cliente'] = (string) $idClienteSiNube` con control de excepciones y respuesta JSON amigable ante fallos.
+    - Cobertura y consideración de las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
 - **2026-09-05:**
   - **Columna de Observación en Facturas Generadas (`facturasqry.php`, `ajax/facturas_ajax.php`, `ajax/facturar_api.php`, `sql/`):**
     - Se incorporó la columna **Observación** en la tabla de facturas generadas de [facturasqry.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/facturasqry.php) (y [facturas_ppd.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/facturas_ppd.php)) mediante [ajax/facturas_ajax.php](file:///home/javier/workspace/JYR/carniceriasvictoria/public_html/syspv/conciliacion/ajax/facturas_ajax.php).
@@ -170,5 +194,14 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
     - **Filtro de Monto:** Inclusión de campo numérico de importe (`#monto_filter`, tipo `number step="0.01"`) que permite encontrar ventas por su importe exacto (`ROUND(A.sumimp, 2) = ROUND(?, 2)`).
     - **Botón de Limpiar:** Incorporación de botón para reiniciar filtros (`limpiarFiltros()`) y recargar el listado por defecto.
     - **Estandarización UI:** Rediseño del formulario en una tarjeta de filtros (`filter-card`) con labels e íconos temáticos, selectores adaptados con **Select2** (`#branch_filter`, `#fpay_filter`, `#per_page`), y logging estructurado en `logs/facturacion_individual.log`.
-    - **Multi-Sucursal:** Selector de sucursales que contempla el catálogo oficial (Todas, Obrador, Victoria 1, Victoria 2, Producción) exclusivamente en la vista global (`branch=all`). En las vistas dedicadas de cada sucursal (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`), el filtro se oculta y se fija automáticamente para prevenir cruce accidental de información entre unidades de venta.
-
+- **2026-09-16:**
+  - **Integración de Resend Mailer y Contingencia Gmail API (`classes/Mailer.php`, `config/smtp.php`, `config/config.php`):**
+    - Incorporación de Resend REST API como método de transporte transaccional por correo con el remitente corporativo `noreply@carniceriasvictoria.com.mx`.
+    - Mecanismo de fallback automático: ante cualquier eventualidad o rechazo de Resend (HTTP 401/403/etc.), el flujo conmuta de forma transparente hacia Gmail API OAuth2.
+    - Centralización de credenciales y llaves de API dentro de `config/config.php` sin exposición en el repositorio.
+  - **Trazabilidad Forense de Timbrado en Base64 (`ajax/facturar_api.php`, `ajax/facturar_grupo_api.php`, `api/autofacturacion.php`, `ajax/depositos_ajax.php`):**
+    - Registro de payload XML codificado en Base64 (`[TIMBRADO_ENVIO]`) junto a metadatos clave: RFC receptor, Razón Social, Serie y Folio para auditoría inmediata y soporte técnico.
+    - Operatividad multi-sucursal garantizada en las 5 sucursales oficiales: `Obrador` (Serie O), `Victoria1` (Serie V), `Victoria2` (Serie K), `Produccion` (Serie P) y `CEP` (Serie CEP).
+  - **Robustez en Suite de Pruebas Playwright E2E (`tests/e2e/resend_mailer_y_timbrado.spec.js`):**
+    - Adaptación del test interactivo SweetAlert2 para resolver selectores polimórficos de iconos (`.swal2-success` / `.swal2-icon.swal2-success`).
+    - Corrección del test de filtrado reactivo por cliente: extracción contextual de clientes reales y aserción dual sobre `.outer_div` (`table.or(alertWarning)`), eliminando falsos positivos por ausencia de coincidencias.

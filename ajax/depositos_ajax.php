@@ -703,6 +703,13 @@ XML;
 
     $api_url_pago = "https://ep-dot-facturanube.appspot.com/blob?par=" . base64_encode("tipo=47\nemp=" . $api_rfc_emisor . "\nsuc=" . $api_sucursal . "\nusu=" . $api_usuario . "\npwd=" . $api_password);
     
+    // Log estructurado para debug de timbrado con XML en Base64
+    $nombre_cliente_log = !empty($razonSocial) ? $razonSocial : ($cliente_data['nombre'] ?? '');
+    $xml_base64 = base64_encode($xml_payload);
+    $log_timbrado = "[" . date('Y-m-d H:i:s') . "] [TIMBRADO_ENVIO] RFC: {$rfc_receptor} | Nombre: {$nombre_cliente_log} | Serie: {$serie} | Folio: {$folio} | XML_BASE64: {$xml_base64}\n";
+    error_log($log_timbrado, 3, $log_file);
+    @file_put_contents(__DIR__ . "/../logs/sinube_api.log", $log_timbrado, FILE_APPEND);
+
     $ch2 = curl_init();
     curl_setopt($ch2, CURLOPT_URL, $api_url_pago);
     curl_setopt($ch2, CURLOPT_POST, 1);

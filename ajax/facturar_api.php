@@ -146,7 +146,13 @@ $xml_payload = <<<XML
 XML;
 
 $url_envio = $api_url_envio;
-error_log("[" . date('Y-m-d H:i:s') . "] XML GENERADO:\n" . $xml_payload . "\n", 3, $log_file);
+
+// Log estructurado para debug de timbrado con XML en Base64
+$nombre_cliente_log = !empty($razonSocial) && $razonSocial !== 'SIN RAZON SOCIAL' ? $razonSocial : $nombre;
+$xml_base64 = base64_encode($xml_payload);
+$log_timbrado = "[" . date('Y-m-d H:i:s') . "] [TIMBRADO_ENVIO] RFC: {$rfc_receptor} | Nombre: {$nombre_cliente_log} | Serie: {$serie} | Folio: {$folio} | XML_BASE64: {$xml_base64}\n";
+error_log($log_timbrado, 3, $log_file);
+@file_put_contents(__DIR__ . "/../logs/sinube_api.log", $log_timbrado, FILE_APPEND);
 
 $ch2 = curl_init();
 curl_setopt($ch2, CURLOPT_URL, $url_envio);
