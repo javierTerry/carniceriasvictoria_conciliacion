@@ -56,6 +56,19 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 
 ## 📝 Bitácora de Cambios
 
+- **2026-09-15:**
+  - **Integración de Resend API para Envío de Correos (`config/smtp.php`, `classes/Mailer.php`, `.agents/skills/transactional-mailer/SKILL.md`):**
+    - Se incorporó soporte nativo para **Resend** (https://resend.com/) como método transaccional de envío de correos electrónicos en la clase `Mailer`, configurable mediante `'mailer_method' => 'resend'` en [config/smtp.php](config/smtp.php).
+    - Se configuró por defecto la dirección de correo remitente institucional `noreply@carniceriasvictoria.com.mx` con el nombre `Sistema de Notificaciones Victoria`.
+    - Se implementó la comunicación HTTP REST directa contra el endpoint `https://api.resend.com/emails` empleando `cURL` nativo de PHP con timeout de 25 segundos y codificación Base64 de comprobantes fiscales (XML y PDF) adjuntos, eliminando la necesidad obligatoria de dependencias externas en el entorno.
+    - Se incorporó canal de auditoría estructurado en `logs/mailer.log` para trazabilidad de envíos, IDs de entrega devueltos por Resend y diagnóstico de errores en todas las operaciones de facturación de las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+  - **Trazabilidad y Debug de Facturación: Log Estructurado con XML en Base64 (`ajax/facturar_api.php`, `ajax/facturar_grupo_api.php`, `api/autofacturacion.php`, `ajax/depositos_ajax.php`, `cfdi-sinube-billing/SKILL.md`):**
+    - Se implementó una línea de registro estructurado `[TIMBRADO_ENVIO]` antes del despacho cURL al PAC Sinube que incluye `RFC`, `Nombre`, `Serie`, `Folio` y el `XML_BASE64` completo del comprobante a timbrar.
+    - Se replica simultáneamente en los logs dedicados de flujo (`logs/facturacion_individual.log`, `logs/facturacion_grupo.log`, `logs/autofacturacion.log`, `logs/depositos.log`) y en el log central de la API del PAC (`logs/sinube_api.log`).
+    - Facilita la auditoría, búsqueda ágil por RFC/Folio/Serie vía comandos de terminal (`grep`) y reproducción exacta de comprobantes mediante decodificación Base64 en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+    - Se creó la prueba unitaria en [tests/Unit/FacturaLogTimbradoTest.php](tests/Unit/FacturaLogTimbradoTest.php).
+    - Se creó la suite de pruebas End-to-End con Playwright en [tests/e2e/resend_mailer_y_timbrado.spec.js](tests/e2e/resend_mailer_y_timbrado.spec.js) para validar la interacción con SweetAlert2 al reexpedir correos con Resend y la integridad de columnas fiscales en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+
 - **2026-09-06:**
   - **Filtro de Búsqueda por Observación en Facturas (`facturasqry.php`, `ajax/facturas_ajax.php`):**
     - Se incorporó el campo de búsqueda **Observación** (`#observacion_filter`) en la barra de filtros de [facturasqry.php](facturasqry.php) con eventos reactivos `onkeyup` y `oninput` para filtrado en tiempo real.
