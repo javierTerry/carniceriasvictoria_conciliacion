@@ -89,7 +89,7 @@ class SiNubePagoFactory
         }
 
         $montoFinal = isset($data['monto']) ? (float)$data['monto'] : $totalCalculado;
-        $serie = (string)($data['serie'] ?? 'RP');
+        $serie = !empty($data['serie']) ? (string)$data['serie'] : 'CP';
         $folio = (string)($data['folio'] ?? '1');
         $nomDescarga = (string)($data['nomArchivoDescarga'] ?? ($data['rfcEmisor'] ?? 'CFDI') . "_{$serie}{$folio}");
 

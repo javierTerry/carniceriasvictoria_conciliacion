@@ -27,22 +27,22 @@ if (!function_exists('getSinubeConfig')) {
 
         $config = [
             'DEV' => [
-                'base_url'           => 'https://getpost-dot-facturanube.appspot.com/getpost',
-                'tipo_consulta'      => 3,
-                'empresa_rfc'        => 'URE180429TM6-39',
-                'sucursal'           => 'Matriz',
-                'usuario'            => 'atencionsolucionesryj@gmail.com',
+                'base_url' => 'https://getpost-dot-facturanube.appspot.com/getpost',
+                'tipo_consulta' => 3,
+                'empresa_rfc' => 'URE180429TM6-39',
+                'sucursal' => 'Matriz',
+                'usuario' => 'atencionsolucionesryj@gmail.com',
                 'pwd_comunicaciones' => 'proveedores',
-                'timeout'            => 15,
+                'timeout' => 15,
             ],
             'PRD' => [
-                'base_url'           => 'https://getpost-dot-facturanube.appspot.com/getpost',
-                'tipo_consulta'      => 3,
-                'empresa_rfc'        => 'URE180429TM6-39',
-                'sucursal'           => 'Matriz',
-                'usuario'            => 'atencionsolucionesryj@gmail.com',
+                'base_url' => 'https://getpost-dot-si-nube.appspot.com/getpost',
+                'tipo_consulta' => 3,
+                'empresa_rfc' => 'OCV230619AL6',
+                'sucursal' => 'Matriz',
+                'usuario' => 'ocv.facturacion1@gmail.com',
                 'pwd_comunicaciones' => 'proveedores',
-                'timeout'            => 15,
+                'timeout' => 15,
             ],
         ];
 
