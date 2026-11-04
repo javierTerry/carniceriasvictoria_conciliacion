@@ -56,6 +56,13 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 
 ## 📝 Bitácora de Cambios
 
+- **2026-11-03:**
+  - **Configuración de Serie `CP` para Complemento de Pago REP 2.0 (`config/config.php`, `ajax/facturas_ajax.php`, `ajax/depositos_ajax.php`, `classes/SiNube/SiNubePagoFactory.php`, `facturas_ppd.php`, `tests/`):**
+    - Se definió `$serie_complemento_pago = 'CP'` en `config/config.php` como serie oficial unificada para todos los comprobantes de Recepción de Pagos (REP 2.0 / CFDI 4.0).
+    - Se actualizaron las acciones `get_invoice_ppd_details` y `timbrar_pago_ppd` en `ajax/facturas_ajax.php`, así como `generate_payment_complement` en `ajax/depositos_ajax.php`, para consultar el foliador de la serie `CP` mediante `SinubeHelper::getFolioActual()` y timbrar el complemento con dicha serie en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion`, `CEP`).
+    - Se actualizó el valor por defecto de serie en `classes/SiNube/SiNubePagoFactory.php` y en el formulario modal `#modalPagoPPD` de `facturas_ppd.php` a `CP`.
+    - Se sincronizaron las pruebas unitarias (`tests/Unit/SucursalesCatalogTest.php`) y E2E de Playwright (`tests/e2e/facturas_ppd.spec.js`).
+
 - **2026-09-15:**
   - **Integración de Resend API para Envío de Correos (`config/smtp.php`, `classes/Mailer.php`, `.agents/skills/transactional-mailer/SKILL.md`):**
     - Se incorporó soporte nativo para **Resend** (https://resend.com/) como método transaccional de envío de correos electrónicos en la clase `Mailer`, configurable mediante `'mailer_method' => 'resend'` en [config/smtp.php](config/smtp.php).

@@ -889,8 +889,8 @@ if ($action == 'ajax') {
         ];
     }
 
-    // Obtener serie y folio consecutivo desde Sinube
-    $target_serie = $first_serie;
+    // Obtener serie (CP para Complemento de Pago) y folio consecutivo desde Sinube
+    $target_serie = $serie_complemento_pago ?? 'CP';
     $next_folio = 1;
     $sinube = new SinubeHelper(__DIR__ . '/../logs/sinube_api.log');
     $sinube->log(__LINE__);
@@ -1126,8 +1126,8 @@ if ($action == 'ajax') {
         ];
     }
 
-    // Obtener Serie y Folio consecutivo de SiNube
-    $target_serie = $first_serie;
+    // Obtener Serie (CP para Complemento de Pago) y Folio consecutivo de SiNube
+    $target_serie = $serie_complemento_pago ?? 'CP';
     $serie_pago = $target_serie;
     $folio_pago = 1;
 

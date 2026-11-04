@@ -253,7 +253,7 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                                 <i class="fa fa-tag"></i> Serie / Folio Pago
                             </label>
                             <input type="text" class="form-control" id="pago_serie_display" readonly style="background-color: #eee; font-weight: bold;" value="Consultando...">
-                            <input type="hidden" id="pago_serie" value="">
+                            <input type="hidden" id="pago_serie" value="CP">
                         </div>
 
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
@@ -543,13 +543,14 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                     currentModalInvoices = d.items || [];
 
                     // Encabezado del cliente
+                    var serieRep = d.serie_pago || 'CP';
                     $("#pago_lbl_cliente").text(d.cliente || 'Cliente General');
                     $("#pago_lbl_rfc").text(d.rfc || 'XAXX010101000');
                     $("#pago_lbl_regimen").text(d.regimen_fiscal || '601');
                     $("#pago_lbl_cp").text(d.domicilio_fiscal || '87000');
-                    $("#pago_serie").val(d.serie_pago || '');
-                    $("#pago_serie_display").val((d.serie_pago || '') + ' - ' + (d.folio_pago || '1'));
-                    $("#pago_lbl_serie_folio_rep").text((d.serie_pago || '') + ' - ' + (d.folio_pago || '1'));
+                    $("#pago_serie").val(serieRep);
+                    $("#pago_serie_display").val(serieRep + ' - ' + (d.folio_pago || '1'));
+                    $("#pago_lbl_serie_folio_rep").text(serieRep + ' - ' + (d.folio_pago || '1'));
                     $("#pago_lbl_total_facturas_count").text(currentModalInvoices.length);
 
                     // Renderizar filas de la tabla
