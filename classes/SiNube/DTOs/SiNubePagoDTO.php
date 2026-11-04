@@ -17,7 +17,7 @@ readonly class SiNubePagoDTO
         public SiNubeReceptorDTO $receptor,
         public array $documentos,
         public array $uuidsRelacionados = [],
-        public string $formatoReporte = 'CFDI 4.0 PAGO',
+        public string $formatoReporte = 'CFDI 4.0 PAGO-202611',
         public string $sistema = 'SegunRFC',
         public string $noCertificado = '',
         public string $difZonaHoraria = '-6',
@@ -34,5 +34,6 @@ readonly class SiNubePagoDTO
         public ?string $ctaBeneficiario = '',
         public ?string $rfcEmisorCtaOrd = '',
         public ?string $nomBancoOrdExt = '',
-    ) {}
+    ) {
+    }
 }
