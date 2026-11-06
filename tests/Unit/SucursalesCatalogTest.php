@@ -162,6 +162,13 @@ class SucursalesCatalogTest
                 "Serie recibida: " . ($branchSeriesMap[$branchKey] ?? 'NULL') . " (esperada: {$expectedSerie})."
             );
         }
+
+        global $serie_complemento_pago;
+        $this->assert(
+            "Serie fiscal para Complemento de Pago (REP 2.0) está configurada como 'CP'",
+            isset($serie_complemento_pago) && $serie_complemento_pago === 'CP',
+            "Serie recibida: " . ($serie_complemento_pago ?? 'NULL') . " (esperada: CP)."
+        );
     }
 
     /**

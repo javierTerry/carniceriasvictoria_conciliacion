@@ -566,7 +566,7 @@ if ($action === 'generate_payment_complement') {
         $razonSocial = str_replace('&', '&amp;', $razonSocial);
     }
     
-    $target_serie = $branchSeriesMap[$branch] ?? '';
+    $target_serie = $serie_complemento_pago ?? 'CP';
     $log_file = __DIR__ . "/../logs/depositos_ajax.log";
     
     try {

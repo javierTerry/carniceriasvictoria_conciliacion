@@ -16,20 +16,23 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
         padding: 12px 20px;
         border-radius: 6px;
         margin-bottom: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         border-left: 5px solid #26B99A;
         transition: all 0.3s ease;
     }
+
     .check_ppd_item {
         width: 17px;
         height: 17px;
         cursor: pointer;
     }
+
     #check_all_ppd {
         width: 17px;
         height: 17px;
         cursor: pointer;
     }
+
     .modal-resumen-table th {
         background-color: #f4f6f9;
         color: #333;
@@ -37,6 +40,7 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
+
     .modal-resumen-table td {
         vertical-align: middle !important;
         font-size: 13px;
@@ -53,12 +57,15 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                         <h2>
                             <i class="fa fa-file-text-o"></i> Facturas PPD (Por Definir)
                             <?php if (!empty($branch_param)): ?>
-                                <small style="font-size: 15px; font-weight: bold; color: #26B99A;">— <?php echo $branch_param; ?></small>
+                                <small style="font-size: 15px; font-weight: bold; color: #26B99A;">—
+                                    <?php echo $branch_param; ?></small>
                             <?php endif; ?>
                         </h2>
                         <div class="clearfix"></div>
                         <p class="text-muted" style="margin: 5px 0 0 0; font-size: 13px;">
-                            <i class="fa fa-info-circle"></i> Listado de facturas timbradas con método de pago <strong>Por Definir (PPD / Clave 99)</strong>. Puede seleccionar una o varias facturas del mismo cliente para generar su Complemento de Pago (REP 2.0).
+                            <i class="fa fa-info-circle"></i> Listado de facturas timbradas con método de pago
+                            <strong>Por Definir (PPD / Clave 99)</strong>. Puede seleccionar una o varias facturas del
+                            mismo cliente para generar su Complemento de Pago (REP 2.0).
                         </p>
                     </div>
 
@@ -71,18 +78,19 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                                     onkeyup='load(1);' oninput='load(1);'>
                             </div>
 
-                            <input type="hidden" id="branch_filter" value="<?php echo isset($_GET['branch']) ? $_GET['branch'] : ''; ?>">
+                            <input type="hidden" id="branch_filter"
+                                value="<?php echo isset($_GET['branch']) ? $_GET['branch'] : ''; ?>">
 
                             <label for="client_filter" class="col-md-1 control-label">Cliente</label>
                             <div class="col-md-3">
-                                <input type="text" class="form-control" id="client_filter" placeholder="Nombre del cliente..."
-                                    onkeyup='load(1);' oninput='load(1);'>
+                                <input type="text" class="form-control" id="client_filter"
+                                    placeholder="Nombre del cliente..." onkeyup='load(1);' oninput='load(1);'>
                             </div>
 
                             <label for="per_page" class="col-md-1 control-label">Ver</label>
                             <div class="col-md-2">
                                 <select class="form-control select-victoria" id="per_page" onchange="load(1);">
-                                    <option value="10">10</option>    
+                                    <option value="10">10</option>
                                     <option value="25" selected>25</option>
                                     <option value="50">50</option>
                                     <option value="75">75</option>
@@ -98,22 +106,29 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                         <div class="row" style="display: flex; align-items: center; flex-wrap: wrap;">
                             <div class="col-md-6 col-sm-6 col-xs-12" style="padding-top: 4px; padding-bottom: 4px;">
                                 <span style="font-size: 15px; font-weight: bold;">
-                                    <i class="fa fa-check-square-o" style="color: #26B99A;"></i> 
+                                    <i class="fa fa-check-square-o" style="color: #26B99A;"></i>
                                     <span id="txtSeleccionadasCount">0</span> Factura(s) seleccionada(s)
                                 </span>
-                                <div id="lblClienteSeleccionado" style="font-size: 12.5px; color: #cedece; margin-top: 2px;">
+                                <div id="lblClienteSeleccionado"
+                                    style="font-size: 12.5px; color: #cedece; margin-top: 2px;">
                                     <i class="fa fa-user"></i> Cliente: <span id="txtClienteNombre">---</span>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-sm-6 col-xs-12 text-right" style="padding-top: 4px; padding-bottom: 4px;">
+                            <div class="col-md-6 col-sm-6 col-xs-12 text-right"
+                                style="padding-top: 4px; padding-bottom: 4px;">
                                 <span style="font-size: 14px; margin-right: 15px; vertical-align: middle;">
-                                    Total Saldo: <strong id="txtTotalSaldoSeleccionadas" style="color: #26B99A; font-size: 16px;">$0.00</strong>
+                                    Total Saldo: <strong id="txtTotalSaldoSeleccionadas"
+                                        style="color: #26B99A; font-size: 16px;">$0.00</strong>
                                 </span>
-                                <button type="button" class="btn btn-default btn-sm" onclick="limpiarSeleccionPPD();" style="margin-right: 5px; color: #333;">
+                                <button type="button" class="btn btn-default btn-sm" onclick="limpiarSeleccionPPD();"
+                                    style="margin-right: 5px; color: #333;">
                                     <i class="fa fa-eraser"></i> Limpiar
                                 </button>
-                                <button type="button" class="btn btn-success btn-sm" id="btnPagarSeleccionadas" onclick="abrirModalPagoSeleccionadas();" style="background-color: #26B99A; border-color: #26B99A; font-weight: bold; padding: 6px 14px;">
-                                    <i class="fa fa-money"></i> Pagar Facturas Seleccionadas (<span id="btnPagarCount">0</span>)
+                                <button type="button" class="btn btn-success btn-sm" id="btnPagarSeleccionadas"
+                                    onclick="abrirModalPagoSeleccionadas();"
+                                    style="background-color: #26B99A; border-color: #26B99A; font-weight: bold; padding: 6px 14px;">
+                                    <i class="fa fa-money"></i> Pagar Facturas Seleccionadas (<span
+                                        id="btnPagarCount">0</span>)
                                 </button>
                             </div>
                         </div>
@@ -134,11 +149,13 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
 </div><!-- /page content -->
 
 <!-- Modal Registro y Timbrado de Pago (REP 2.0 / CFDI 4.0) -->
-<div class="modal fade" id="modalPagoPPD" tabindex="-1" role="dialog" aria-labelledby="modalPagoPPDLabel" aria-hidden="true">
+<div class="modal fade" id="modalPagoPPD" tabindex="-1" role="dialog" aria-labelledby="modalPagoPPDLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="max-width: 900px; width: 92%;">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #2A3F54; color: #fff;">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; opacity: 0.8;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="color: #fff; opacity: 0.8;">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title" id="modalPagoPPDLabel">
@@ -147,30 +164,34 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
             </div>
             <div class="modal-body" style="padding: 20px;">
                 <form id="formPagoPPD" onsubmit="event.preventDefault(); procesarPagoPPD();">
-                    
+
                     <!-- Ficha del Cliente Receptor -->
-                    <div class="panel panel-default" style="border-left: 4px solid #26B99A; margin-bottom: 15px; background-color: #f9fbfb;">
+                    <div class="panel panel-default"
+                        style="border-left: 4px solid #26B99A; margin-bottom: 15px; background-color: #f9fbfb;">
                         <div class="panel-body" style="padding: 12px 15px;">
                             <div class="row">
                                 <div class="col-md-7 col-sm-6 col-xs-12">
                                     <p style="margin: 0 0 4px 0; font-size: 14px;">
-                                        <strong><i class="fa fa-user"></i> Cliente Receptor:</strong> 
-                                        <span id="pago_lbl_cliente" style="font-weight: bold; color: #2A3F54;">---</span>
+                                        <strong><i class="fa fa-user"></i> Cliente Receptor:</strong>
+                                        <span id="pago_lbl_cliente"
+                                            style="font-weight: bold; color: #2A3F54;">---</span>
                                     </p>
                                     <p style="margin: 0; font-size: 12px; color: #555;">
-                                        <strong>RFC:</strong> <span id="pago_lbl_rfc">---</span> | 
-                                        <strong>Régimen:</strong> <span id="pago_lbl_regimen">---</span> | 
+                                        <strong>RFC:</strong> <span id="pago_lbl_rfc">---</span> |
+                                        <strong>Régimen:</strong> <span id="pago_lbl_regimen">---</span> |
                                         <strong>C.P.:</strong> <span id="pago_lbl_cp">---</span>
                                     </p>
                                 </div>
                                 <div class="col-md-5 col-sm-6 col-xs-12 text-right">
                                     <p style="margin: 0 0 4px 0; font-size: 13px;">
-                                        <strong>Serie / Folio REP:</strong> 
-                                        <span id="pago_lbl_serie_folio_rep" class="badge" style="background-color: #34495e; font-size: 13px;">Consultando...</span>
+                                        <strong>Serie / Folio REP:</strong>
+                                        <span id="pago_lbl_serie_folio_rep" class="badge"
+                                            style="background-color: #34495e; font-size: 13px;">Consultando...</span>
                                     </p>
                                     <p style="margin: 0; font-size: 13px;">
-                                        <strong>Facturas a Pagar:</strong> 
-                                        <span id="pago_lbl_total_facturas_count" class="badge" style="background-color: #26B99A; font-size: 13px;">1</span>
+                                        <strong>Facturas a Pagar:</strong>
+                                        <span id="pago_lbl_total_facturas_count" class="badge"
+                                            style="background-color: #26B99A; font-size: 13px;">1</span>
                                     </p>
                                 </div>
                             </div>
@@ -179,11 +200,13 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
 
                     <!-- Resumen Detallado de Facturas Seleccionadas -->
                     <div class="panel panel-default" style="margin-bottom: 15px;">
-                        <div class="panel-heading" style="background-color: #f4f6f9; font-weight: bold; color: #2A3F54; padding: 8px 15px;">
+                        <div class="panel-heading"
+                            style="background-color: #f4f6f9; font-weight: bold; color: #2A3F54; padding: 8px 15px;">
                             <i class="fa fa-list"></i> Desglose de Facturas Seleccionadas
                         </div>
                         <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
-                            <table class="table table-bordered table-striped modal-resumen-table" style="margin-bottom: 0;">
+                            <table class="table table-bordered table-striped modal-resumen-table"
+                                style="margin-bottom: 0;">
                                 <thead>
                                     <tr>
                                         <th>Factura</th>
@@ -196,15 +219,18 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                                 </thead>
                                 <tbody id="tbodyFacturasPPDModal">
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted">Cargando datos de facturas...</td>
+                                        <td colspan="6" class="text-center text-muted">Cargando datos de facturas...
+                                        </td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr style="background-color: #eef2f5; font-weight: bold;">
                                         <td colspan="2" class="text-right">TOTALES:</td>
                                         <td class="text-right" id="modal_tot_monto_orig">$0.00</td>
-                                        <td class="text-right" id="modal_tot_saldo_pend" style="color: #b22222;">$0.00</td>
-                                        <td class="text-right" id="modal_tot_monto_pagar" style="color: #26B99A; font-size: 15px;">$0.00</td>
+                                        <td class="text-right" id="modal_tot_saldo_pend" style="color: #b22222;">$0.00
+                                        </td>
+                                        <td class="text-right" id="modal_tot_monto_pagar"
+                                            style="color: #26B99A; font-size: 15px;">$0.00</td>
                                         <td></td>
                                     </tr>
                                 </tfoot>
@@ -241,31 +267,38 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                     <div class="row">
                         <div class="col-md-6 col-sm-6 col-xs-12 form-group">
                             <label for="pago_monto_total_display" class="control-label">
-                                <i class="fa fa-dollar"></i> Monto Total del Pago (REP) ($ MXN) <span class="text-danger">*</span>
+                                <i class="fa fa-dollar"></i> Monto Total del Pago (REP) ($ MXN) <span
+                                    class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" id="pago_monto_total_display" readonly 
-                                style="font-size: 18px; font-weight: bold; color: #26B99A; background-color: #f9fbfb;" value="$0.00">
-                            <small class="text-muted">Suma total de los montos aplicados a las facturas seleccionadas.</small>
+                            <input type="text" class="form-control" id="pago_monto_total_display" readonly
+                                style="font-size: 18px; font-weight: bold; color: #26B99A; background-color: #f9fbfb;"
+                                value="$0.00">
+                            <small class="text-muted">Suma total de los montos aplicados a las facturas
+                                seleccionadas.</small>
                         </div>
 
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             <label for="pago_serie_display" class="control-label">
                                 <i class="fa fa-tag"></i> Serie / Folio Pago
                             </label>
-                            <input type="text" class="form-control" id="pago_serie_display" readonly style="background-color: #eee; font-weight: bold;" value="Consultando...">
-                            <input type="hidden" id="pago_serie" value="">
+                            <input type="text" class="form-control" id="pago_serie_display" readonly
+                                style="background-color: #eee; font-weight: bold;" value="Consultando...">
+                            <input type="hidden" id="pago_serie" value="CP">
                         </div>
 
                         <div class="col-md-3 col-sm-3 col-xs-12 form-group">
                             <label for="pago_num_operacion" class="control-label">
                                 <i class="fa fa-hashtag"></i> No. Operación / Ref.
                             </label>
-                            <input type="text" class="form-control" id="pago_num_operacion" placeholder="Ej. 123456 (Opcional)">
+                            <input type="text" class="form-control" id="pago_num_operacion"
+                                placeholder="Ej. 123456 (Opcional)">
                         </div>
                     </div>
 
                     <div class="alert alert-info" style="margin-top: 10px; font-size: 12px; margin-bottom: 0;">
-                        <i class="fa fa-info-circle"></i> Al confirmar, se generará el XML CFDI 4.0 con Complemento de Recepción de Pagos (REP 2.0) agrupando todas las facturas seleccionadas bajo un único comprobante fiscal en Sinube.
+                        <i class="fa fa-info-circle"></i> Al confirmar, se generará el XML CFDI 4.0 con Complemento de
+                        Recepción de Pagos (REP 2.0) agrupando todas las facturas seleccionadas bajo un único
+                        comprobante fiscal en Sinube.
                     </div>
                 </form>
             </div>
@@ -273,7 +306,9 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <i class="fa fa-times"></i> Cancelar
                 </button>
-                <button type="button" class="btn btn-success" id="btnSubmitPagoPPD" style="background-color: #26B99A; border-color: #26B99A; font-weight: bold;" onclick="procesarPagoPPD();">
+                <button type="button" class="btn btn-success" id="btnSubmitPagoPPD"
+                    style="background-color: #26B99A; border-color: #26B99A; font-weight: bold;"
+                    onclick="procesarPagoPPD();">
                     <i class="fa fa-cloud-upload"></i> Timbrar Pago en SiNube
                 </button>
             </div>
@@ -364,9 +399,9 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                 Swal.fire({
                     title: 'Restricción de Cliente',
                     html: '<p>Solo se pueden seleccionar facturas pertenecientes al <strong>mismo cliente</strong>.</p>' +
-                          '<div class="alert alert-warning" style="text-align: left; font-size: 13px; margin-top: 10px;">' +
-                          '<strong>Cliente Activo:</strong> ' + selectedCustomerName + '<br>' +
-                          '<strong>Cliente Seleccionado:</strong> ' + cliente + '</div>',
+                        '<div class="alert alert-warning" style="text-align: left; font-size: 13px; margin-top: 10px;">' +
+                        '<strong>Cliente Activo:</strong> ' + selectedCustomerName + '<br>' +
+                        '<strong>Cliente Seleccionado:</strong> ' + cliente + '</div>',
                     icon: 'warning',
                     confirmButtonColor: '#26B99A',
                     confirmButtonText: 'Entendido'
@@ -529,7 +564,7 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
         $("#pago_serie_display").val('Consultando...');
         $("#pago_lbl_serie_folio_rep").text('Consultando...');
         $("#tbodyFacturasPPDModal").html('<tr><td colspan="6" class="text-center text-muted"><i class="fa fa-spinner fa-spin"></i> Cargando resumen de facturas...</td></tr>');
-        
+
         $('#modalPagoPPD').modal('show');
 
         $.ajax({
@@ -543,13 +578,14 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                     currentModalInvoices = d.items || [];
 
                     // Encabezado del cliente
+                    var serieRep = d.serie_pago || 'CP';
                     $("#pago_lbl_cliente").text(d.cliente || 'Cliente General');
                     $("#pago_lbl_rfc").text(d.rfc || 'XAXX010101000');
                     $("#pago_lbl_regimen").text(d.regimen_fiscal || '601');
                     $("#pago_lbl_cp").text(d.domicilio_fiscal || '87000');
-                    $("#pago_serie").val(d.serie_pago || '');
-                    $("#pago_serie_display").val((d.serie_pago || '') + ' - ' + (d.folio_pago || '1'));
-                    $("#pago_lbl_serie_folio_rep").text((d.serie_pago || '') + ' - ' + (d.folio_pago || '1'));
+                    $("#pago_serie").val(serieRep);
+                    $("#pago_serie_display").val(serieRep + ' - ' + (d.folio_pago || '1'));
+                    $("#pago_lbl_serie_folio_rep").text(serieRep + ' - ' + (d.folio_pago || '1'));
                     $("#pago_lbl_total_facturas_count").text(currentModalInvoices.length);
 
                     // Renderizar filas de la tabla
@@ -575,15 +611,15 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                             '<td class="text-right">$' + fMonto.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td>' +
                             '<td class="text-right" style="font-weight: bold; color: #b22222;">$' + fSaldo.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td>' +
                             '<td>' +
-                                '<input type="number" step="0.01" min="0.01" max="' + fSaldo.toFixed(2) + '" ' +
-                                'class="form-control input-sm text-right input-monto-ppd" ' +
-                                'data-id="' + fId + '" ' +
-                                'data-saldo-max="' + fSaldo.toFixed(2) + '" ' +
-                                'value="' + fSaldo.toFixed(2) + '" ' +
-                                'oninput="recalcularTotalPagoModal();" style="font-weight: bold; color: #26B99A;">' +
+                            '<input type="number" step="0.01" min="0.01" max="' + fSaldo.toFixed(2) + '" ' +
+                            'class="form-control input-sm text-right input-monto-ppd" ' +
+                            'data-id="' + fId + '" ' +
+                            'data-saldo-max="' + fSaldo.toFixed(2) + '" ' +
+                            'value="' + fSaldo.toFixed(2) + '" ' +
+                            'oninput="recalcularTotalPagoModal();" style="font-weight: bold; color: #26B99A;">' +
                             '</td>' +
                             '<td class="text-center"><span class="badge" style="background-color: #3498db;">#' + fParc + '</span></td>' +
-                        '</tr>';
+                            '</tr>';
                     });
 
                     $("#tbodyFacturasPPDModal").html(rowsHtml);
@@ -724,9 +760,9 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
                             Swal.fire({
                                 title: '¡Pago Timbrado Exitosamente!',
                                 html: '<p>' + res.message + '</p>' +
-                                      '<p><strong>UUID REP:</strong> <br><small style="color:#2A3F54;">' + (res.uuid || '') + '</small></p>' +
-                                      '<p><strong>Serie/Folio:</strong> ' + (res.serie || '') + '-' + (res.folio || '') + ' | <strong>Facturas Pagadas:</strong> ' + (res.total_facturas || invoicesToPay.length) + '</p>' +
-                                      '<div style="margin-top: 15px;">' + linksHtml + '</div>',
+                                    '<p><strong>UUID REP:</strong> <br><small style="color:#2A3F54;">' + (res.uuid || '') + '</small></p>' +
+                                    '<p><strong>Serie/Folio:</strong> ' + (res.serie || '') + '-' + (res.folio || '') + ' | <strong>Facturas Pagadas:</strong> ' + (res.total_facturas || invoicesToPay.length) + '</p>' +
+                                    '<div style="margin-top: 15px;">' + linksHtml + '</div>',
                                 icon: 'success',
                                 confirmButtonColor: '#26B99A',
                                 confirmButtonText: 'Aceptar'
@@ -760,8 +796,8 @@ $branch_param = isset($_GET['branch']) ? htmlspecialchars($_GET['branch']) : '';
         Swal.fire({
             title: '<i class="fa fa-commenting-o text-primary"></i> Observación de la Factura',
             html: '<div style="text-align: left; padding: 15px; background: #fdfefe; border: 1px solid #e1e8ed; border-radius: 6px; font-size: 14px; max-height: 250px; overflow-y: auto; color: #2c3e50; line-height: 1.5;">' +
-                  $('<div>').text(observacion).html() +
-                  '</div>',
+                $('<div>').text(observacion).html() +
+                '</div>',
             confirmButtonColor: '#34495e',
             confirmButtonText: 'Cerrar'
         });
