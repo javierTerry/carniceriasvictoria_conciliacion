@@ -214,6 +214,93 @@ if ($http_code == 200) {
             }
 
             mysqli_commit($targetConn);
+
+            // Enviar copia de factura grupal a ocv.facturacion1@gmail.com
+            try {
+                require_once __DIR__ . '/../classes/Mailer.php';
+                $mailer = new Mailer();
+                $para_grp = 'ocv.facturacion1@gmail.com';
+                $asunto_grp = 'Factura Electrónica Grupal Victoria - Folio: ' . $serie . ' ' . $folio;
+                $ambiente_str = $ambiente ?? 'PRODUCCIÓN';
+
+                $mensajeHtmlGrp = "
+                    <html>
+                    <head>
+                        <meta charset='UTF-8'>
+                        <title>Factura Electrónica Grupal</title>
+                        <style>
+                            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; color: #2c3e50; }
+                            .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
+                            .header { background: linear-gradient(135deg, #2c3e50, #1a252f); padding: 30px; text-align: center; color: #ffffff; }
+                            .header h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
+                            .content { padding: 35px; }
+                            .greeting { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #2c3e50; }
+                            .details-box { background-color: #fdfefe; border-left: 4px solid #27ae60; padding: 20px; margin-bottom: 25px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.01); border-top: 1px solid #f0f4f7; border-right: 1px solid #f0f4f7; border-bottom: 1px solid #f0f4f7; }
+                            .details-box table { width: 100%; border-collapse: collapse; }
+                            .details-box td { padding: 6px 0; font-size: 14px; }
+                            .details-box td.label { font-weight: bold; color: #7f8c8d; width: 120px; }
+                            .details-box td.value { color: #2c3e50; }
+                            .btn-container { text-align: center; margin: 30px 0 10px; }
+                            .btn { display: inline-block; padding: 12px 24px; font-size: 14px; font-weight: bold; text-decoration: none; border-radius: 5px; transition: all 0.3s ease; text-align: center; margin: 0 8px; }
+                            .btn-xml { background-color: #34495e; color: #ffffff !important; border: 1px solid #2c3e50; }
+                            .btn-pdf { background-color: #e74c3c; color: #ffffff !important; border: 1px solid #c0392b; }
+                            .footer { background-color: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #95a5a6; border-top: 1px solid #ecf0f1; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class='container'>
+                            <div class='header'>
+                                <h2>Comprobante Fiscal Digital (Grupal)</h2>
+                            </div>
+                            <div class='content'>
+                                <div class='greeting'>Estimado(a) {$nombre_receptor_grp},</div>
+                                <p>Le informamos que se ha generado exitosamente el comprobante fiscal grupal en <strong>Carnicerías Victoria</strong>.</p>
+                                
+                                <div class='details-box'>
+                                    <table>
+                                        <tr>
+                                            <td class='label'>Grupo:</td>
+                                            <td class='value'>GRP-{$group_id}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class='label'>Serie:</td>
+                                            <td class='value'>{$serie}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class='label'>Folio:</td>
+                                            <td class='value'>{$folio}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class='label'>Monto Total:</td>
+                                            <td class='value' style='font-weight: bold; color: #27ae60;'>$" . number_format((float)$monto_total, 2) . " MXN</td>
+                                        </tr>
+                                        <tr>
+                                            <td class='label'>Ambiente:</td>
+                                            <td class='value'>{$ambiente_str}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                
+                                <p style='text-align: center; font-size: 14px; color: #7f8c8d; margin-bottom: 20px;'>Puede descargar los archivos digitales de su factura utilizando los siguientes botones:</p>
+                                
+                                <div class='btn-container'>
+                                    <a href='{$link_xml}' class='btn btn-xml' target='_blank'>Descargar XML</a>
+                                    <a href='{$link_pdf}' class='btn btn-pdf' target='_blank'>Descargar PDF</a>
+                                </div>
+                            </div>
+                            <div class='footer'>
+                                <p>Este es un envío automático generado por el Sistema de Facturación Victoria.<br>Por favor no responda a este correo.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                ";
+
+                $mailer->send($para_grp, $asunto_grp, $mensajeHtmlGrp, []);
+            } catch (\Throwable $mailEx) {
+                error_log("[" . date('Y-m-d H:i:s') . "] Error al enviar correo grupal: " . $mailEx->getMessage() . "\n", 3, $log_file);
+            }
+
             echo json_encode(['success' => true, 'uuid' => $uuid]);
         } catch (Exception $e) {
             mysqli_rollback($targetConn);

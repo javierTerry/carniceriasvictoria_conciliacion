@@ -79,10 +79,31 @@ class Mailer
             // Destinatarios y Remitente
             $mail->setFrom($this->config['smtp']['from_email'], $this->config['smtp']['from_name']);
 
+            $ccRaw = $this->config['cc_email'] ?? 'ocv.facturacion1@gmail.com';
+            $ccName = trim($this->config['cc_name'] ?? 'Sistema de Notificaciones Victoria');
+            $ccEmails = array_filter(array_map('trim', explode(',', (string) $ccRaw)));
+
             $emails = array_filter(array_map('trim', explode(',', $to)));
+            $validEmails = [];
             foreach ($emails as $email) {
                 if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     $mail->addAddress($email);
+                    $validEmails[] = strtolower($email);
+                }
+            }
+
+            $ccApplied = [];
+            foreach ($ccEmails as $ccItem) {
+                if (!filter_var($ccItem, FILTER_VALIDATE_EMAIL)) {
+                    continue;
+                }
+                if (empty($validEmails)) {
+                    $mail->addAddress($ccItem, $ccName);
+                    $validEmails[] = strtolower($ccItem);
+                } elseif (!in_array(strtolower($ccItem), $validEmails, true)) {
+                    $mail->addCC($ccItem, $ccName);
+                    $validEmails[] = strtolower($ccItem);
+                    $ccApplied[] = "{$ccName} <{$ccItem}>";
                 }
             }
 
@@ -103,6 +124,7 @@ class Mailer
             $mail->send();
             $this->logEvent("Correo enviado exitosamente vía SMTP", 'INFO', [
                 'to' => $emails,
+                'cc' => $ccApplied,
                 'subject' => $subject,
                 'attachments_count' => count($attachments)
             ]);
@@ -182,13 +204,33 @@ class Mailer
         $mail->CharSet = 'UTF-8';
         $mail->setFrom($gmailConfig['from_email'] ?? 'ocv.facturacion1@gmail.com', $gmailConfig['from_name'] ?? 'Sistema de Notificaciones Victoria');
 
+        $ccRaw = $this->config['cc_email'] ?? 'ocv.facturacion1@gmail.com';
+        $ccName = trim($this->config['cc_name'] ?? 'Sistema de Notificaciones Victoria');
+        $ccEmails = array_filter(array_map('trim', explode(',', (string) $ccRaw)));
+
         $emails = array_filter(array_map('trim', explode(',', $to)));
+        $validEmails = [];
         foreach ($emails as $email) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $mail->addAddress($email);
+                $validEmails[] = strtolower($email);
             }
         }
-        //$mail->addCC('cyovictoriafacturacion22@gmail.com', 'Sistema de Notificaciones Victoria');
+
+        $ccApplied = [];
+        foreach ($ccEmails as $ccItem) {
+            if (!filter_var($ccItem, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+            if (empty($validEmails)) {
+                $mail->addAddress($ccItem, $ccName);
+                $validEmails[] = strtolower($ccItem);
+            } elseif (!in_array(strtolower($ccItem), $validEmails, true)) {
+                $mail->addCC($ccItem, $ccName);
+                $validEmails[] = strtolower($ccItem);
+                $ccApplied[] = "{$ccName} <{$ccItem}>";
+            }
+        }
         // Archivos adjuntos
         foreach ($attachments as $filePath) {
             if (file_exists($filePath)) {
@@ -217,6 +259,7 @@ class Mailer
             $service->users_messages->send('me', $msg);
             $this->logEvent("Correo enviado exitosamente vía Gmail API", 'INFO', [
                 'to' => $emails,
+                'cc' => $ccApplied,
                 'subject' => $subject,
                 'attachments_count' => count($attachments)
             ]);
@@ -257,12 +300,36 @@ class Mailer
         $fromName = trim($resendConfig['from_name'] ?? 'Sistema de Notificaciones Victoria');
         $from = !empty($fromName) ? "{$fromName} <{$fromEmail}>" : $fromEmail;
 
-        // Procesar destinatarios
+        // Procesar destinatarios y copias obligatorias de respaldo
+        $ccRaw = $this->config['cc_email'] ?? 'ocv.facturacion1@gmail.com, cyovictoriafacturacion22@gmail.com';
+        $ccName = trim($this->config['cc_name'] ?? 'Sistema de Notificaciones Victoria');
+        $ccEmails = array_filter(array_map('trim', explode(',', (string) $ccRaw)));
+
         $emails = array_filter(array_map('trim', explode(',', $to)));
         $validEmails = [];
+        $validEmailsLower = [];
         foreach ($emails as $email) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $validEmails[] = $email;
+                $lower = strtolower($email);
+                if (!in_array($lower, $validEmailsLower, true)) {
+                    $validEmails[] = $email;
+                    $validEmailsLower[] = $lower;
+                }
+            }
+        }
+
+        $ccList = [];
+        foreach ($ccEmails as $ccItem) {
+            if (!filter_var($ccItem, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+            $lowerCc = strtolower($ccItem);
+            if (empty($validEmails)) {
+                $validEmails[] = !empty($ccName) ? "{$ccName} <{$ccItem}>" : $ccItem;
+                $validEmailsLower[] = $lowerCc;
+            } elseif (!in_array($lowerCc, $validEmailsLower, true)) {
+                $ccList[] = !empty($ccName) ? "{$ccName} <{$ccItem}>" : $ccItem;
+                $validEmailsLower[] = $lowerCc;
             }
         }
 
@@ -294,6 +361,10 @@ class Mailer
             'text' => strip_tags($body)
         ];
 
+        if (!empty($ccList)) {
+            $payload['cc'] = $ccList;
+        }
+
         if (!empty($resendAttachments)) {
             $payload['attachments'] = $resendAttachments;
         }
@@ -320,7 +391,7 @@ class Mailer
 
         if ($curlError) {
             $errorMsg = "Error cURL al conectar con la API de Resend: {$curlError}";
-            $this->logEvent($errorMsg, 'ERROR', ['to' => $validEmails, 'subject' => $subject]);
+            $this->logEvent($errorMsg, 'ERROR', ['to' => $validEmails, 'cc' => $ccList, 'subject' => $subject]);
             throw new \RuntimeException($errorMsg);
         }
 
@@ -332,6 +403,7 @@ class Mailer
                 'id' => $emailId,
                 'from' => $from,
                 'to' => $validEmails,
+                'cc' => $ccList,
                 'subject' => $subject,
                 'attachments_count' => count($resendAttachments)
             ]);

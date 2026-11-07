@@ -473,8 +473,9 @@ XML;
             }
             mysqli_close($branchConn);
 
-            // Enviar Correo
-            if (!empty($email)) {
+            // Enviar Correo (al cliente y copia a ocv.facturacion1@gmail.com)
+            $destinatario_auto = !empty($email) ? $email : 'ocv.facturacion1@gmail.com';
+            if (!empty($destinatario_auto)) {
                 try {
                     $mailer = new Mailer();
                     $asunto = 'Factura Electrónica Victoria (Autofacturado) - Folio: ' . $serie . ' ' . $folio;
@@ -549,7 +550,7 @@ XML;
                         </html>
                     ";
                     
-                    $mailer->send($email, $asunto, $mensajeHtml, []);
+                    $mailer->send($destinatario_auto, $asunto, $mensajeHtml, []);
                 } catch (Exception $ex) {
                     // Ignore email error for final response
                 }
