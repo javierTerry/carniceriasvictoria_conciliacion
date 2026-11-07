@@ -558,10 +558,22 @@ $(document).ready(function () {
                     });
                 }
             },
-            error: function () {
+            error: function (xhr, status, error) {
+                console.error("Error en ajax/complete_ticket.php:", { status: xhr.status, statusText: status, error: error, responseText: xhr.responseText });
+                let detailMsg = 'No se pudo comunicar con el servidor al actualizar el estatus del ticket.';
+                if (xhr && xhr.responseText) {
+                    try {
+                        const parsed = JSON.parse(xhr.responseText);
+                        if (parsed && parsed.message) {
+                            detailMsg = parsed.message;
+                        }
+                    } catch (e) {
+                        detailMsg += ' (HTTP ' + xhr.status + ')';
+                    }
+                }
                 Swal.fire({
                     title: 'Error de Red',
-                    text: 'No se pudo comunicar con el servidor.',
+                    text: detailMsg,
                     icon: 'error',
                     confirmButtonColor: '#34495e'
                 });

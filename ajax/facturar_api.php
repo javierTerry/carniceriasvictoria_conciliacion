@@ -25,11 +25,16 @@ if (!empty($branch)) {
     $branchesConfigs = getBranchesConfig();
     if (isset($branchesConfigs[$branch])) {
         $config = $branchesConfigs[$branch];
-        $branchConn = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
-        if ($branchConn) {
-            mysqli_set_charset($branchConn, "utf8");
-        } else {
-            $db_error = 'Error de conexión a la BD de sucursal';
+        try {
+            $branchConn = @mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
+            if ($branchConn) {
+                mysqli_set_charset($branchConn, "utf8mb4");
+            } else {
+                $db_error = 'Error de conexión a la BD de sucursal';
+            }
+        } catch (\Throwable $connEx) {
+            $branchConn = null;
+            $db_error = 'Excepción de conexión a la BD de sucursal: ' . $connEx->getMessage();
         }
     } else {
         $db_error = 'Sucursal no válida';
@@ -413,7 +418,7 @@ if ($http_code_envio == 200) {
                             error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
                         }
 
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         $db_message = sprintf("%s\n El correo no fue enviado a %s. Detalle: %s", $db_message, $email_sent_to, $e->getMessage());
                         error_log("[" . date('Y-m-d H:i:s') . "] " . $db_message, 3, $log_file);
                     }
