@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "../config/config.php";
+require_once "../classes/ProductMapper.php";
 
 header('Content-Type: application/json');
 
@@ -85,6 +86,36 @@ $log_dir = __DIR__ . "/../logs";
 $log_file = $log_dir . "/facturacion_grupal.log";
 $target_serie = $branchSeriesMap[$branch] ?? '';
 
+// PASO 0: Pre-check de todos los productos del grupo en el catálogo SAT (arts) antes de pedir folio a Sinube
+$mapper = new ProductMapper($conexion_gen);
+$missing_group_products = [];
+$resolved_group_products = [];
+
+foreach ($ticket_items as $idx => $item) {
+    $desc_original = trim((string)($item['name'] ?? ''));
+    $productData = $mapper->findByDescription($desc_original);
+    if (!$productData) {
+        $missing_group_products[] = $desc_original;
+    } elseif (empty(trim((string)($productData['clave_sat'] ?? ''))) || empty(trim((string)($productData['unidad_sat'] ?? '')))) {
+        $missing_group_products[] = $desc_original . " (sin Clave SAT o Unidad SAT)";
+    } else {
+        $resolved_group_products[$idx] = $productData;
+    }
+}
+
+if (!empty($missing_group_products)) {
+    $unique_missing = array_values(array_unique($missing_group_products));
+    $msg = "No se puede facturar el grupo. Los siguientes productos no existen o están incompletos en el catálogo SAT: " . implode(', ', $unique_missing);
+    error_log("[" . date('Y-m-d H:i:s') . "] [ERROR] [PRECHECK_GRUPO] {$msg} | Grupo: {$group_id} | Sucursal: {$branch}\n", 3, $log_file);
+    mysqli_close($targetConn);
+    echo json_encode([
+        'success' => false,
+        'missing_products' => $unique_missing,
+        'message' => $msg
+    ]);
+    exit;
+}
+
 // PASO 1: Obtener Certificado (Folio y Serie)
 try {
     $sinube = new SinubeHelper($log_file);
@@ -96,6 +127,7 @@ try {
     error_log("[" . date('Y-m-d H:i:s') . "] Folio Grupo Obtenido: Serie=$serie, Folio=$folio \n", 3, $log_file);
 } catch (Throwable $e) {
     error_log("[" . date('Y-m-d H:i:s') . "] Error en PASO 1 Grupal: " . $e->getMessage() . "\n", 3, $log_file);
+    mysqli_close($targetConn);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     exit;
 }
@@ -105,14 +137,20 @@ $monto_total = $group_info['total_tickets_amount'];
 $msTime = round(microtime(true) * 1000);
 
 $conceptos_xml = "";
-foreach ($ticket_items as $item) {
-    $desc = htmlspecialchars($item['name'], ENT_XML1, 'UTF-8');
+foreach ($ticket_items as $idx => $item) {
+    $desc_original = trim((string)($item['name'] ?? ''));
+    $desc = htmlspecialchars(mb_strtoupper($desc_original, 'UTF-8'), ENT_XML1, 'UTF-8');
+    $productData = $resolved_group_products[$idx];
+    $productoSAT = mb_strtoupper($productData['clave_sat'] ?? '01010101', 'UTF-8');
+    $unidadSinube = mb_strtoupper(!empty($productData['unidad']) ? $productData['unidad'] : 'PIEZA', 'UTF-8');
+    $unidadSAT = mb_strtoupper(!empty($productData['unidad_sat']) ? $productData['unidad_sat'] : 'H87', 'UTF-8');
+
     $qty = round($item['qty'], 4);
     $totalItem = $item['amount'];
     $priceItem = round($item['price'], 4);
     
     $conceptos_xml .= <<<XML
-       <Concepto productoSinube="01010101" productoSAT="01010101" descripcion="{$desc}" cantidad="{$qty}" unidadSinube="PIEZA" unidadSAT="H87" valorUnitario="{$priceItem}" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="{$totalItem}" montoIVA="0" importe="{$totalItem}" subtotalDet="{$totalItem}" objetoImp="02" />
+       <Concepto productoSinube="{$productoSAT}" productoSAT="{$productoSAT}" descripcion="{$desc}" cantidad="{$qty}" unidadSinube="{$unidadSinube}" unidadSAT="{$unidadSAT}" valorUnitario="{$priceItem}" descuento="0" tipoIVA="IVA 0%" montoBaseIVA="{$totalItem}" montoIVA="0" importe="{$totalItem}" subtotalDet="{$totalItem}" objetoImp="02" />
 XML;
 }
 

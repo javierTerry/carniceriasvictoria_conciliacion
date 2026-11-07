@@ -1,8 +1,228 @@
 <?php
+ob_start();
 session_start();
 require_once "../config/config.php";
 require_once "../classes/ProductMapper.php";
 require_once "../classes/Mailer.php";
+
+header('Content-Type: application/json; charset=utf-8');
+
+$log_dir = __DIR__ . "/../logs";
+if (!is_dir($log_dir)) {
+    @mkdir($log_dir, 0755, true);
+}
+$log_file = $log_dir . "/facturacion_individual.log";
+
+if (!function_exists('log_checkpoint')) {
+    function log_checkpoint(string $log_file, string $step, string $message, array $context = []): void
+    {
+        $ctx = !empty($context) ? ' | Context: ' . json_encode($context, JSON_UNESCAPED_UNICODE) : '';
+        $line = "[" . date('Y-m-d H:i:s') . "] [CHECKPOINT:{$step}] {$message}{$ctx}\n";
+        @error_log($line, 3, $log_file);
+    }
+}
+
+if (!function_exists('send_json_and_exit')) {
+    function send_json_and_exit(string $log_file, string $step, array $payload): void
+    {
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE);
+        log_checkpoint($log_file, $step, "Enviando respuesta JSON al cliente", ['payload' => $payload]);
+        if (ob_get_length()) {
+            @ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo $json;
+        exit;
+    }
+}
+
+$action = isset($_POST['action']) ? trim((string)$_POST['action']) : '';
+
+// =========================================================================
+// CHECKPOINT DESDE EL NAVEGADOR (FRONTEND JS LOGS)
+// =========================================================================
+if ($action === 'log_checkpoint') {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
+    $step_js = isset($_POST['step']) ? trim((string)$_POST['step']) : 'JS_STEP';
+    $msg_js = isset($_POST['message']) ? trim((string)$_POST['message']) : '';
+    $ctx_js = isset($_POST['context']) ? $_POST['context'] : [];
+    if (is_string($ctx_js)) {
+        $decoded = json_decode($ctx_js, true);
+        $ctx_js = is_array($decoded) ? $decoded : ['raw' => $ctx_js];
+    }
+    log_checkpoint($log_file, $step_js, $msg_js, is_array($ctx_js) ? $ctx_js : []);
+    if (ob_get_length()) {
+        @ob_clean();
+    }
+    echo json_encode(['success' => true]);
+    exit;
+}
+
+// =========================================================================
+// PRE-CHECK EXCLUSIVO DE LOS PRODUCTOS DEL TICKET A FACTURAR
+// =========================================================================
+if ($action === 'precheck_products') {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
+
+    $branch_pre = isset($_POST['branch']) ? trim((string)$_POST['branch']) : '';
+    $mov_id_pre = isset($_POST['mov_id']) ? trim((string)$_POST['mov_id']) : '';
+
+    log_checkpoint($log_file, 'CP-01_PRECHECK_START', "Iniciando validación de productos del ticket", [
+        'branch' => $branch_pre,
+        'mov_id' => $mov_id_pre,
+        'post_keys' => array_keys($_POST)
+    ]);
+
+    try {
+        // Recopilar únicamente los nombres únicos de los productos del ticket enviado
+        $raw_names = [];
+        $source_list = [];
+
+        if (!empty($_POST['ticket_products']) && is_array($_POST['ticket_products'])) {
+            $source_list = $_POST['ticket_products'];
+        } elseif (!empty($_POST['items']) && is_array($_POST['items'])) {
+            $source_list = $_POST['items'];
+        }
+
+        foreach ($source_list as $it) {
+            $n = is_array($it) ? ($it['name'] ?? ($it['descripcion'] ?? '')) : (string)$it;
+            $n = trim((string)$n);
+            if ($n !== '') {
+                $raw_names[] = $n;
+            }
+        }
+
+        // Si no se envió lista explícita de productos desde JS, consultar directamente los productos del ticket en la BD POS de la sucursal
+        if (empty($raw_names) && !empty($branch_pre)) {
+            $branchesConfigsPre = getBranchesConfig();
+            if (isset($branchesConfigsPre[$branch_pre])) {
+                $cfgPre = $branchesConfigsPre[$branch_pre];
+                $connPre = @mysqli_connect($cfgPre['host'], $cfgPre['user'], $cfgPre['pass'], $cfgPre['db']);
+                if ($connPre) {
+                    mysqli_set_charset($connPre, "utf8mb4");
+                    $group_id_pre = isset($_POST['group_id']) ? intval($_POST['group_id']) : 0;
+
+                    if ($group_id_pre > 0) {
+                        $sql_tck_items = "SELECT DISTINCT B.name
+                                          FROM vtaitem A
+                                          INNER JOIN art B ON B.id = A.art_id
+                                          INNER JOIN vtahead VH ON VH.id = A.vta_id
+                                          INNER JOIN groups_tickets_details GTD ON GTD.mov_id = VH.mov_id
+                                          WHERE GTD.group_id = ? AND A.amount > 0";
+                        $stmt_tck = mysqli_prepare($connPre, $sql_tck_items);
+                        if ($stmt_tck) {
+                            mysqli_stmt_bind_param($stmt_tck, "i", $group_id_pre);
+                            if (mysqli_stmt_execute($stmt_tck)) {
+                                $res_tck = mysqli_stmt_get_result($stmt_tck);
+                                while ($row_tck = mysqli_fetch_assoc($res_tck)) {
+                                    $pName = trim((string)($row_tck['name'] ?? ''));
+                                    if ($pName !== '') {
+                                        $raw_names[] = $pName;
+                                    }
+                                }
+                            }
+                            mysqli_stmt_close($stmt_tck);
+                        }
+                    } elseif ($mov_id_pre !== '') {
+                        $sql_tck_items = "SELECT DISTINCT B.name
+                                          FROM vtahead H
+                                          INNER JOIN vtaitem A ON A.vta_id = H.id
+                                          INNER JOIN art B ON B.id = A.art_id
+                                          WHERE H.mov_id = ? AND A.amount > 0";
+                        $stmt_tck = mysqli_prepare($connPre, $sql_tck_items);
+                        if ($stmt_tck) {
+                            mysqli_stmt_bind_param($stmt_tck, "s", $mov_id_pre);
+                            if (mysqli_stmt_execute($stmt_tck)) {
+                                $res_tck = mysqli_stmt_get_result($stmt_tck);
+                                while ($row_tck = mysqli_fetch_assoc($res_tck)) {
+                                    $pName = trim((string)($row_tck['name'] ?? ''));
+                                    if ($pName !== '') {
+                                        $raw_names[] = $pName;
+                                    }
+                                }
+                            }
+                            mysqli_stmt_close($stmt_tck);
+                        }
+                    }
+                    mysqli_close($connPre);
+                }
+            }
+        }
+
+        $unique_names = array_values(array_unique($raw_names));
+
+        log_checkpoint($log_file, 'CP-02_PRECHECK_LIST', "Productos únicos extraídos del ticket", [
+            'branch' => $branch_pre,
+            'mov_id' => $mov_id_pre,
+            'count' => count($unique_names),
+            'products' => $unique_names
+        ]);
+
+        if (empty($unique_names)) {
+            $msg = "No se recibieron productos del ticket para validar.";
+            send_json_and_exit($log_file, 'CP-03_PRECHECK_EMPTY', [
+                'success' => false,
+                'missing_products' => [],
+                'message' => $msg
+            ]);
+        }
+
+        $mapper = new ProductMapper($conexion_gen);
+        $missing_products = [];
+
+        foreach ($unique_names as $prod_name) {
+            $productData = $mapper->findByDescription($prod_name);
+            if (!$productData) {
+                $missing_products[] = $prod_name;
+                log_checkpoint($log_file, 'CP-02B_ITEM_MISSING', "Producto del ticket NO existe en catálogo arts", [
+                    'mov_id' => $mov_id_pre,
+                    'product' => $prod_name
+                ]);
+            } elseif (empty(trim((string)($productData['clave_sat'] ?? ''))) || empty(trim((string)($productData['unidad_sat'] ?? '')))) {
+                $missing_products[] = $prod_name . " (sin Clave SAT o Unidad SAT)";
+                log_checkpoint($log_file, 'CP-02B_ITEM_INCOMPLETE', "Producto del ticket incompleto en catálogo arts", [
+                    'mov_id' => $mov_id_pre,
+                    'product' => $prod_name,
+                    'data' => $productData
+                ]);
+            } else {
+                log_checkpoint($log_file, 'CP-02B_ITEM_OK', "Producto del ticket validado OK", [
+                    'mov_id' => $mov_id_pre,
+                    'product' => $prod_name,
+                    'clave_sat' => $productData['clave_sat'],
+                    'unidad_sat' => $productData['unidad_sat']
+                ]);
+            }
+        }
+
+        if (!empty($missing_products)) {
+            $failed_list_str = implode(', ', $missing_products);
+            $msg = "El ticket #{$mov_id_pre} contiene productos que no están registrados en el catálogo SAT: " . $failed_list_str;
+            send_json_and_exit($log_file, 'CP-03_PRECHECK_FAIL', [
+                'success' => false,
+                'missing_products' => $missing_products,
+                'message' => $msg
+            ]);
+        }
+
+        send_json_and_exit($log_file, 'CP-03_PRECHECK_OK', [
+            'success' => true,
+            'validated_count' => count($unique_names),
+            'ticket_products' => $unique_names,
+            'message' => 'Productos del ticket validados correctamente.'
+        ]);
+    } catch (\Throwable $preEx) {
+        send_json_and_exit($log_file, 'CP-03_PRECHECK_EXCEPTION', [
+            'success' => false,
+            'missing_products' => [],
+            'message' => 'Error al validar los productos del ticket: ' . $preEx->getMessage()
+        ]);
+    }
+}
 
 $monto = isset($_POST['monto']) ? $_POST['monto'] : 0;
 $metodo_pago = isset($_POST['metodo_pago']) ? $_POST['metodo_pago'] : 'Efectivo';
@@ -15,9 +235,6 @@ $uso_cfdi = mb_strtoupper(isset($_POST['uso_cfdi']) ? $_POST['uso_cfdi'] : 'G03'
 $cust_id = isset($_POST['cust_id']) ? $_POST['cust_id'] : 1;
 $observacion_raw = isset($_POST['observacion']) ? $_POST['observacion'] : '';
 $observacion = htmlspecialchars(trim($observacion_raw), ENT_XML1, 'UTF-8');
-
-if (empty($mov_id) || empty($branch)) {
-}
 
 $db_error = '';
 $branchConn = null;
@@ -41,8 +258,54 @@ if (!empty($branch)) {
     }
 }
 
-$log_dir = __DIR__ . "/../logs";
-$log_file = $log_dir . "/facturacion_individual.log";
+$ticket_items = isset($_POST['items']) ? $_POST['items'] : array();
+
+log_checkpoint($log_file, 'CP-04_FACTURA_START', "Iniciando proceso de timbrado individual", [
+    'mov_id' => $mov_id,
+    'branch' => $branch,
+    'monto' => $monto,
+    'metodo_pago' => $metodo_pago,
+    'forma_pago' => $forma_pago,
+    'items_count' => is_array($ticket_items) ? count($ticket_items) : 0
+]);
+
+// PASO 0: Pre-validar TODOS los productos de la factura ANTES de solicitar folio o timbrar en Sinube
+$mapper = new ProductMapper($conexion_gen);
+$missing_in_invoice = [];
+$resolved_products = [];
+
+foreach ($ticket_items as $idx => $item) {
+    $desc_original = isset($item['name']) ? trim((string)$item['name']) : 'Producto General';
+    $productData = $mapper->findByDescription($desc_original);
+
+    if (!$productData) {
+        $missing_in_invoice[] = $desc_original;
+    } elseif (empty(trim((string)($productData['clave_sat'] ?? ''))) || empty(trim((string)($productData['unidad_sat'] ?? '')))) {
+        $missing_in_invoice[] = $desc_original . " (sin Clave SAT o Unidad SAT)";
+    } else {
+        $resolved_products[$idx] = $productData;
+    }
+}
+
+if (!empty($missing_in_invoice)) {
+    $unique_missing = array_values(array_unique($missing_in_invoice));
+    $msg = count($unique_missing) === 1
+        ? "El producto '" . $unique_missing[0] . "' no está en el catálogo."
+        : "Los siguientes productos no están en el catálogo: " . implode(', ', $unique_missing);
+    if ($branchConn) {
+        mysqli_close($branchConn);
+    }
+    send_json_and_exit($log_file, 'CP-05_PASO0_PRODUCTOS_FAIL', array(
+        'success' => false,
+        'missing_products' => $unique_missing,
+        'message' => $msg
+    ));
+}
+
+log_checkpoint($log_file, 'CP-05_PASO0_PRODUCTOS_OK', "Todos los productos de la factura fueron validados en PASO 0", [
+    'mov_id' => $mov_id,
+    'branch' => $branch
+]);
 
 $target_serie = isset($branchSeriesMap[$branch]) ? $branchSeriesMap[$branch] : '';
 
@@ -53,14 +316,20 @@ try {
     $serie = $folioData['serie'];
     $folio = (string) ($folioData['folioActual'] + 1);
 
-    error_log("[" . date('Y-m-d H:i:s') . "] Folio Obtenido: Serie=$serie, Folio=$folio \n", 3, $log_file);
-} catch (Exception $e) {
-    error_log("[" . date('Y-m-d H:i:s') . "] Error en PASO 1: " . $e->getMessage() . "\n", 3, $log_file);
-    echo json_encode(array('success' => false, 'message' => $e->getMessage()));
-    exit;
+    log_checkpoint($log_file, 'CP-06_PASO1_FOLIO_OK', "Folio obtenido de Sinube", [
+        'mov_id' => $mov_id,
+        'serie' => $serie,
+        'folio' => $folio
+    ]);
+} catch (\Throwable $e) {
+    if ($branchConn) {
+        mysqli_close($branchConn);
+    }
+    send_json_and_exit($log_file, 'CP-06_PASO1_FOLIO_FAIL', array(
+        'success' => false,
+        'message' => $e->getMessage()
+    ));
 }
-
-$ticket_items = isset($_POST['items']) ? $_POST['items'] : array();
 
 $rfc_receptor = mb_strtoupper(isset($_POST['rfc_receptor']) ? $_POST['rfc_receptor'] : "SIN RFC", 'UTF-8');
 $razonSocial = mb_strtoupper(isset($_POST['razon_social']) ? $_POST['razon_social'] : "SIN RAZON SOCIAL", 'UTF-8');
@@ -89,21 +358,13 @@ $tipoIVA = "IVA 0%";
 $porcentajeIVA = "16";
 
 $conceptos_xml = "";
-$mapper = new ProductMapper($conexion_gen);
 
-foreach ($ticket_items as $item) {
-    $desc_original = isset($item['name']) ? $item['name'] : 'Producto General';
+foreach ($ticket_items as $idx => $item) {
+    $desc_original = isset($item['name']) ? trim((string)$item['name']) : 'Producto General';
     $desc_upper = mb_strtoupper($desc_original, 'UTF-8');
     $desc = htmlspecialchars($desc_upper, ENT_XML1, 'UTF-8');
 
-    $productData = $mapper->findByDescription($desc_original);
-
-    if (!$productData) {
-        $msg = "El producto '" . $desc_original . "' no esta en el catalogo.";
-        error_log("[" . date('Y-m-d H:i:s') . "] Error: " . $msg . "\n", 3, $log_file);
-        echo json_encode(array('success' => false, 'message' => $msg));
-        exit;
-    }
+    $productData = $resolved_products[$idx];
 
     $productoSAT = mb_strtoupper(isset($productData['clave_sat']) ? $productData['clave_sat'] : '01010101', 'UTF-8');
     $unidadSinube = mb_strtoupper(!empty($productData['unidad']) ? $productData['unidad'] : 'PIEZA', 'UTF-8');
@@ -438,7 +699,7 @@ if ($http_code_envio == 200) {
         if ($branchConn)
             mysqli_close($branchConn);
 
-        echo json_encode(array(
+        send_json_and_exit($log_file, 'CP-11_PASO6_FACTURA_OK', array(
             'success' => true,
             'message' => 'Factura procesada correctamente en SINUBE.',
             'db_message' => $db_message,
@@ -450,10 +711,10 @@ if ($http_code_envio == 200) {
                 'uuid' => $uuid
             )
         ));
-        exit;
     } catch (\Throwable $th) {
-        //throw $th;
-        echo json_encode(array(
+        if ($branchConn)
+            mysqli_close($branchConn);
+        send_json_and_exit($log_file, 'CP-11_PASO6_EXCEPTION', array(
             'success' => false,
             'message' => $th->getMessage(),
             'details' => "detalles"
@@ -461,7 +722,9 @@ if ($http_code_envio == 200) {
     }
 
 } else {
-    echo json_encode(array(
+    if ($branchConn)
+        mysqli_close($branchConn);
+    send_json_and_exit($log_file, 'CP-11_PASO6_HTTP_ERROR', array(
         'success' => false,
         'message' => 'Error al enviar XML a SINUBE.',
         'details' => $response_envio

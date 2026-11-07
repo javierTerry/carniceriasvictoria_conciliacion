@@ -298,7 +298,7 @@ if ($action == 'ajax') {
                   </button>
                 <?php endif; ?>
                 <button type="button" class='btn btn-default btn-xs action-btn-victoria' title='Gestionar Facturación de Ticket'
-                  onclick="window.location.href='vtapendente.php?mov_id=<?php echo $r['mov_id']; ?>&branch=<?php echo $r['branch_label']; ?>'">
+                  onclick="irAFacturarTicket('<?php echo $r['mov_id']; ?>', '<?php echo $r['branch_label']; ?>')">
                   <i class="glyphicon glyphicon-cog"></i>
                 </button>
               <?php endif; ?>
