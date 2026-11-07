@@ -268,6 +268,34 @@ if ($action === 'invoice') {
         exit;
     }
 
+    // Pre-validar todos los productos del ticket en el catálogo SAT antes de solicitar folio a Sinube
+    $mapper = new ProductMapper($conexion_gen);
+    $missing_auto_products = [];
+    $resolved_auto_products = [];
+
+    foreach ($ticket_items as $idx => $item) {
+        $desc_original = trim((string)($item['name'] ?? ''));
+        $productData = $mapper->findByDescription($desc_original);
+        if (!$productData) {
+            $missing_auto_products[] = $desc_original;
+        } elseif (empty(trim((string)($productData['clave_sat'] ?? ''))) || empty(trim((string)($productData['unidad_sat'] ?? '')))) {
+            $missing_auto_products[] = $desc_original . " (sin Clave SAT o Unidad SAT)";
+        } else {
+            $resolved_auto_products[$idx] = $productData;
+        }
+    }
+
+    if (!empty($missing_auto_products)) {
+        $unique_missing = array_values(array_unique($missing_auto_products));
+        echo json_encode([
+            'success' => false,
+            'missing_products' => $unique_missing,
+            'message' => "Los siguientes productos no están configurados en el catálogo SAT de consolidación: " . implode(', ', $unique_missing)
+        ]);
+        mysqli_close($branchConn);
+        exit;
+    }
+
     // Obtener Folio y Serie
     $target_serie = $branchSeriesMap[$branch] ?? '';
     $log_file = __DIR__ . "/../logs/autofacturacion.log";
@@ -301,19 +329,13 @@ if ($action === 'invoice') {
     $porcentajeIVA = "16";
 
     $conceptos_xml = "";
-    $mapper = new ProductMapper($conexion_gen);
 
-    foreach ($ticket_items as $item) {
+    foreach ($ticket_items as $idx => $item) {
         $desc_original = $item['name'];
         $desc_upper = mb_strtoupper($desc_original, 'UTF-8');
         $desc = htmlspecialchars($desc_upper, ENT_XML1, 'UTF-8');
 
-        $productData = $mapper->findByDescription($desc_original);
-        if (!$productData) {
-            echo json_encode(['success' => false, 'message' => "El producto '{$desc_original}' no está configurado en el catálogo SAT de consolidación."]);
-            mysqli_close($branchConn);
-            exit;
-        }
+        $productData = $resolved_auto_products[$idx];
 
         $productoSAT = mb_strtoupper($productData['clave_sat'] ?? '01010101', 'UTF-8');
         $unidadSinube = mb_strtoupper($productData['unidad'] ?: 'PIEZA', 'UTF-8');
@@ -473,8 +495,9 @@ XML;
             }
             mysqli_close($branchConn);
 
-            // Enviar Correo
-            if (!empty($email)) {
+            // Enviar Correo (al cliente y copia a ocv.facturacion1@gmail.com)
+            $destinatario_auto = !empty($email) ? $email : 'ocv.facturacion1@gmail.com';
+            if (!empty($destinatario_auto)) {
                 try {
                     $mailer = new Mailer();
                     $asunto = 'Factura Electrónica Victoria (Autofacturado) - Folio: ' . $serie . ' ' . $folio;
@@ -549,7 +572,7 @@ XML;
                         </html>
                     ";
                     
-                    $mailer->send($email, $asunto, $mensajeHtml, []);
+                    $mailer->send($destinatario_auto, $asunto, $mensajeHtml, []);
                 } catch (Exception $ex) {
                     // Ignore email error for final response
                 }

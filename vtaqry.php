@@ -199,6 +199,6 @@ include "sidebar.php";
     </div>
 </div>
 
-<script src="assets/js/vtaqry_logic.js" defer></script>
+<script src="assets/js/vtaqry_logic.js?v=<?php echo time(); ?>" defer></script>
 <?php include "footer.php"; ?>
 <script type="text/javascript" src="js/vtaqry.js?v=<?php echo time(); ?>"></script>

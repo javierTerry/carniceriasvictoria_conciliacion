@@ -392,8 +392,7 @@ if ($action == 'ajax') {
     }
 
     if (empty($para_emails)) {
-        echo json_encode(['status' => 'error', 'message' => 'El cliente no tiene un correo electrónico registrado en el catálogo.']);
-        exit;
+        $para_emails[] = 'ocv.facturacion1@gmail.com';
     }
 
     // Enviar correo
@@ -701,6 +700,10 @@ if ($action == 'ajax') {
         }
     }
 
+    if (empty($para_emails)) {
+        $para_emails[] = 'ocv.facturacion1@gmail.com';
+    }
+
     if (!empty($para_emails)) {
         try {
             require_once "../classes/Mailer.php";
@@ -811,7 +814,7 @@ if ($action == 'ajax') {
     $sql = "
         SELECT F.*, C.razon_social as cust_name, C.rfc as cust_rfc, C.regimen_fiscal as cust_regimen, 
                C.cp as cust_zip, C.es_persona_fisica, C.nombre as cust_nombre, 
-               C.ap_paterno as cust_ap_paterno, C.ap_materno as cust_ap_materno
+               C.ap_paterno as cust_ap_paterno, C.ap_materno as cust_ap_materno, C.email as cust_email
         FROM facturas F
         LEFT JOIN cust C ON F.cust_id = C.id
         WHERE F.id IN ($ids_in)
@@ -986,7 +989,7 @@ if ($action == 'ajax') {
     $sql = "
         SELECT F.*, C.razon_social as cust_name, C.rfc as cust_rfc, C.regimen_fiscal as cust_regimen, 
                C.cp as cust_zip, C.es_persona_fisica, C.nombre as cust_nombre, 
-               C.ap_paterno as cust_ap_paterno, C.ap_materno as cust_ap_materno
+               C.ap_paterno as cust_ap_paterno, C.ap_materno as cust_ap_materno, C.email as cust_email
         FROM facturas F
         LEFT JOIN cust C ON F.cust_id = C.id
         WHERE F.id IN ($ids_in)
@@ -1262,6 +1265,122 @@ if ($action == 'ajax') {
         }
 
         mysqli_commit($conexion_gen);
+
+        // Enviar correo de Complemento de Pago (REP 2.0) al cliente y copia a ocv.facturacion1@gmail.com
+        try {
+            require_once __DIR__ . '/../classes/Mailer.php';
+            $mailer = new Mailer();
+
+            $para_emails = [];
+            if (!empty($cliente_data['cust_email'])) {
+                $para_emails[] = trim($cliente_data['cust_email']);
+            }
+            if ($cust_id > 0) {
+                $sql_add_emails = "SELECT email FROM cust_emails WHERE cust_id = " . intval($cust_id) . " AND is_active = 1";
+                $res_add_emails = mysqli_query($conexion_gen, $sql_add_emails);
+                if ($res_add_emails) {
+                    while ($row_add = mysqli_fetch_assoc($res_add_emails)) {
+                        if (!empty($row_add['email'])) {
+                            $para_emails[] = trim($row_add['email']);
+                        }
+                    }
+                }
+            }
+
+            $para = implode(', ', array_unique($para_emails));
+            if (empty($para)) {
+                $para = 'ocv.facturacion1@gmail.com';
+            }
+
+            $nombre_cliente_rep = !empty($cliente_data['cust_name']) ? $cliente_data['cust_name'] : 'Cliente';
+            $asunto_rep = 'Complemento de Pago Electrónico Victoria - Folio: ' . $serie_pago . ' ' . $folio_pago;
+            $ambiente_str = $ambiente ?? 'PRODUCCIÓN';
+
+            $mensajeHtmlRep = "
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                    <title>Complemento de Pago Electrónico</title>
+                    <style>
+                        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; color: #2c3e50; }
+                        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eef2f5; }
+                        .header { background: linear-gradient(135deg, #2c3e50, #1a252f); padding: 30px; text-align: center; color: #ffffff; }
+                        .header h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
+                        .content { padding: 35px; }
+                        .greeting { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #2c3e50; }
+                        .details-box { background-color: #fdfefe; border-left: 4px solid #27ae60; padding: 20px; margin-bottom: 25px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.01); border-top: 1px solid #f0f4f7; border-right: 1px solid #f0f4f7; border-bottom: 1px solid #f0f4f7; }
+                        .details-box table { width: 100%; border-collapse: collapse; }
+                        .details-box td { padding: 6px 0; font-size: 14px; }
+                        .details-box td.label { font-weight: bold; color: #7f8c8d; width: 120px; }
+                        .details-box td.value { color: #2c3e50; }
+                        .btn-container { text-align: center; margin: 30px 0 10px; }
+                        .btn { display: inline-block; padding: 12px 24px; font-size: 14px; font-weight: bold; text-decoration: none; border-radius: 5px; transition: all 0.3s ease; text-align: center; margin: 0 8px; }
+                        .btn-xml { background-color: #34495e; color: #ffffff !important; border: 1px solid #2c3e50; }
+                        .btn-pdf { background-color: #e74c3c; color: #ffffff !important; border: 1px solid #c0392b; }
+                        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #95a5a6; border-top: 1px solid #ecf0f1; }
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <h2>Complemento de Recepción de Pagos (REP 2.0)</h2>
+                        </div>
+                        <div class='content'>
+                            <div class='greeting'>Estimado(a) {$nombre_cliente_rep},</div>
+                            <p>Le informamos que se ha generado exitosamente su <strong>Complemento de Pago (CFDI 4.0)</strong> en <strong>Carnicerías Victoria</strong>.</p>
+                            
+                            <div class='details-box'>
+                                <table>
+                                    <tr>
+                                        <td class='label'>Referencia:</td>
+                                        <td class='value'>{$mov_id_rep}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class='label'>Serie:</td>
+                                        <td class='value'>{$serie_pago}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class='label'>Folio:</td>
+                                        <td class='value'>{$folio_pago}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class='label'>UUID:</td>
+                                        <td class='value'>{$uuid_rep}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class='label'>Monto Pagado:</td>
+                                        <td class='value' style='font-weight: bold; color: #27ae60;'>$" . number_format($monto_total_rep, 2) . " MXN</td>
+                                    </tr>
+                                    <tr>
+                                        <td class='label'>Ambiente:</td>
+                                        <td class='value'>{$ambiente_str}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <p style='text-align: center; font-size: 14px; color: #7f8c8d; margin-bottom: 20px;'>Puede descargar los archivos digitales de su complemento de pago utilizando los siguientes botones:</p>
+                            
+                            <div class='btn-container'>
+                                <a href='{$xml_rep}' class='btn btn-xml' target='_blank'>Descargar XML</a>
+                                <a href='{$pdf_rep}' class='btn btn-pdf' target='_blank'>Descargar PDF</a>
+                            </div>
+                        </div>
+                        <div class='footer'>
+                            <p>Este es un envío automático generado por el Sistema de Facturación Victoria.<br>Por favor no responda a este correo.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            ";
+
+            $mailer->send($para, $asunto_rep, $mensajeHtmlRep, []);
+        } catch (\Throwable $mailEx) {
+            @file_put_contents(
+                __DIR__ . '/../logs/depositos.log',
+                "[" . date('Y-m-d H:i:s') . "] [WARNING] [REP] Error al enviar correo de complemento '{$serie_pago}-{$folio_pago}': " . $mailEx->getMessage() . "\n",
+                FILE_APPEND
+            );
+        }
 
         @file_put_contents(
             __DIR__ . '/../logs/depositos.log',

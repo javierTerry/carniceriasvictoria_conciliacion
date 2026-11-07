@@ -19,12 +19,18 @@ if (!isset($branchesConfigs[$branch])) {
 }
 
 $config = $branchesConfigs[$branch];
-$targetConn = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
+$targetConn = null;
+try {
+    $targetConn = @mysqli_connect($config['host'], $config['user'], $config['pass'], $config['db']);
+} catch (\Throwable $connEx) {
+    echo json_encode(['success' => false, 'message' => 'Excepción de conexión para cierre: ' . $connEx->getMessage()]);
+    exit;
+}
 if (!$targetConn) {
     echo json_encode(['success' => false, 'message' => 'Error de conexión para cierre.']);
     exit;
 }
-mysqli_set_charset($targetConn, "utf8");
+mysqli_set_charset($targetConn, "utf8mb4");
 
 mysqli_begin_transaction($targetConn);
 

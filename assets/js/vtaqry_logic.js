@@ -3,6 +3,58 @@ function printTicket(id, branch) {
     $("#ticketModal").modal("show");
 }
 
+function irAFacturarTicket(mov_id, branch) {
+    $.ajax({
+        url: "ajax/facturar_api.php",
+        type: "POST",
+        dataType: "json",
+        data: {
+            action: "precheck_products",
+            mov_id: mov_id,
+            branch: branch
+        }
+    }).done(function (precheckRes) {
+        if (!precheckRes || !precheckRes.success) {
+            let missingHtml = '';
+            if (precheckRes && Array.isArray(precheckRes.missing_products) && precheckRes.missing_products.length > 0) {
+                missingHtml = '<ul style="text-align:left; margin-top:10px; color:#c0392b; font-weight:600;">' +
+                    precheckRes.missing_products.map(p => `<li>${$('<div>').text(p).html()}</li>`).join('') +
+                    '</ul>';
+            }
+            Swal.fire({
+                title: 'Productos Faltantes en el Ticket',
+                html: `<div style="text-align:left; font-size:14px;">
+                    <p>No se puede pasar el ticket <b>#${mov_id}</b> (${branch}) al proceso de facturación porque los siguientes productos del ticket no están registrados o están incompletos en el catálogo SAT:</p>
+                    ${missingHtml || `<p style="color:#c0392b;"><b>${(precheckRes && precheckRes.message) ? precheckRes.message : 'Error al validar los productos del ticket.'}</b></p>`}
+                    <p style="margin-top:10px; color:#555;">Por favor regístrelos o corríjalos en el <b>Catálogo de Productos</b> antes de continuar con la facturación.</p>
+                </div>`,
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#26B99A',
+                cancelButtonColor: '#34495e',
+                confirmButtonText: '<i class="fa fa-Tag"></i> Ir a Catálogo de Productos',
+                cancelButtonText: 'Entendido'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    window.location.href = 'prod.php';
+                }
+            });
+            return;
+        }
+
+        // Todos los productos del ticket existen en el catálogo -> Continuar al proceso de facturación
+        window.location.href = `vtapendente.php?mov_id=${encodeURIComponent(mov_id)}&branch=${encodeURIComponent(branch)}`;
+    }).fail(function (xhr, status, error) {
+        console.error("Error al validar productos del ticket antes de facturar:", { status: xhr ? xhr.status : 0, error: error });
+        Swal.fire({
+            title: 'Error de Validación',
+            text: 'No se pudieron verificar los productos del ticket con el servidor.',
+            icon: 'error',
+            confirmButtonColor: '#34495e'
+        });
+    });
+}
+
 function viewTicketHTML(id, branch) {
     $("#htmlTicketBody").html(
         '<div class="text-center"><img src="./images/ajax-loader.gif"> Cargando...</div>',

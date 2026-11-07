@@ -124,7 +124,48 @@ function desagruparTicket(group_id, mov_id, branch) {
 }
 
 function facturarGrupo(group_id, branch) {
-    window.location.href = `vtaagrupados_facturar.php?group_id=${group_id}&branch=${branch}`;
+    $.ajax({
+        url: 'ajax/facturar_api.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'precheck_products',
+            group_id: group_id,
+            mov_id: 'GRP-' + group_id,
+            branch: branch
+        }
+    }).done(function(precheckRes) {
+        if (!precheckRes || !precheckRes.success) {
+            let missingHtml = '';
+            if (precheckRes && Array.isArray(precheckRes.missing_products) && precheckRes.missing_products.length > 0) {
+                missingHtml = '<ul style="text-align:left; margin-top:10px; color:#c0392b; font-weight:600;">' +
+                    precheckRes.missing_products.map(p => `<li>${$('<div>').text(p).html()}</li>`).join('') +
+                    '</ul>';
+            }
+            Swal.fire({
+                title: 'Productos Faltantes en el Grupo',
+                html: `<div style="text-align:left; font-size:14px;">
+                    <p>No se puede pasar el grupo <b>#${group_id}</b> al proceso de facturación porque contiene productos que no están dados de alta en el catálogo SAT:</p>
+                    ${missingHtml || `<p style="color:#c0392b;"><b>${(precheckRes && precheckRes.message) ? precheckRes.message : 'Error al validar productos.'}</b></p>`}
+                    <p style="margin-top:10px; color:#555;">Por favor regístrelos en el <b>Catálogo de Productos</b> antes de continuar.</p>
+                </div>`,
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#26B99A',
+                cancelButtonColor: '#34495e',
+                confirmButtonText: 'Ir a Catálogo de Productos',
+                cancelButtonText: 'Entendido'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    window.location.href = 'prod.php';
+                }
+            });
+            return;
+        }
+        window.location.href = `vtaagrupados_facturar.php?group_id=${group_id}&branch=${branch}`;
+    }).fail(function() {
+        Swal.fire('Error', 'No se pudieron validar los productos del grupo con el servidor.', 'error');
+    });
 }
 
 window.addEventListener('load', function() {
