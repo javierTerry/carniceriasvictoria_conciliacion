@@ -51,9 +51,17 @@ class SiNubePagoService
         $parEncoded = base64_encode($paramString);
         $urlEnvio = rtrim($this->baseUrl, '/') . "/blob?par=" . $parEncoded;
 
-        $this->log("Iniciando timbrado de Pago (tipo=47). Serie: {$dto->serie}, Folio: {$dto->folio}, Monto: {$dto->monto}", 'INFO');
+        $this->log("Iniciando timbrado de Pago (tipo=47). Serie: {$dto->serie}, Folio: {$dto->folio}, NomArchivoDescarga: {$dto->nomArchivoDescarga}, Monto: {$dto->monto}", 'INFO');
         $this->log("Endpoint: {$urlEnvio}", 'DEBUG');
         $this->log("XML Payload:\n" . $xmlPayload, 'DEBUG');
+
+        // Registro estructurado en Base64 para auditoría unificada en depositos.log y sinube_api.log
+        $rfcReceptorLog = $dto->receptor->rfc ?? '';
+        $nombreReceptorLog = $dto->receptor->razonSocial ?? '';
+        $xmlBase64 = base64_encode($xmlPayload);
+        $logTimbrado = "[" . date('Y-m-d H:i:s') . "] [TIMBRADO_ENVIO] RFC: {$rfcReceptorLog} | Nombre: {$nombreReceptorLog} | Serie: {$dto->serie} | Folio: {$dto->folio} | NomArchivo: {$dto->nomArchivoDescarga} | XML_BASE64: {$xmlBase64}" . PHP_EOL;
+        @file_put_contents($this->logPath, $logTimbrado, FILE_APPEND);
+        @file_put_contents(__DIR__ . '/../../logs/sinube_api.log', $logTimbrado, FILE_APPEND);
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $urlEnvio);
@@ -191,5 +199,8 @@ class SiNubePagoService
         $date = date('Y-m-d H:i:s');
         $line = "[{$date}] [{$level}] [PAGO_SINUBE] {$message}" . PHP_EOL;
         @file_put_contents($this->logPath, $line, FILE_APPEND);
+        if ($level === 'ERROR' || $level === 'INFO') {
+            @file_put_contents(__DIR__ . '/../../logs/sinube_api.log', $line, FILE_APPEND);
+        }
     }
 }

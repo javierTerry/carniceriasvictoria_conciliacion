@@ -56,6 +56,12 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 
 ## 📝 Bitácora de Cambios
 
+- **2026-11-12:**
+  - **Estandarización de `nomArchivoDescarga` y Corrección de Error HTTP 500 en Complementos de Pago (`ajax/depositos_ajax.php`, `ajax/facturas_ajax.php`, `classes/SiNube/SiNubePagoFactory.php`, `classes/SiNube/DTOs/SiNubePagoDTO.php`, `classes/SiNube/SiNubePagoService.php`):**
+    - Se actualizó el atributo `nomArchivoDescarga` enviado al PAC Sinube para los Complementos de Pago (REP 2.0, Serie `CP`) al formato `"{$serie}-{$folio}-{$timestamp}"` (capturando `time()` en una sola variable inmutable por petición), tanto al generar el REP desde el módulo de depósitos (`ajax/depositos_ajax.php` -> `generate_payment_complement`) como desde la vista de Facturas PPD (`ajax/facturas_ajax.php` -> `timbrar_pago_ppd`) y en la fábrica por defecto (`classes/SiNube/SiNubePagoFactory.php`).
+    - Se corrigió un error de sintaxis (`public string $ = '',` -> `public string $nomArchivoDescarga = '',`) en `classes/SiNube/DTOs/SiNubePagoDTO.php` que provocaba un `ParseError` fatal (HTTP 500) justo después de consultar `obtenerIdClienteSiNube()` antes de que `SiNubePagoService` pudiera escribir en `logs/depositos.log`.
+    - Se incorporó un bloque `try { ... } catch (\Throwable $fatalEx)` en `timbrar_pago_ppd` (`ajax/facturas_ajax.php`) y réplica de logs `[TIMBRADO_ENVIO]` / `[PAGO_SINUBE]` hacia `logs/depositos.log` y `logs/sinube_api.log`, garantizando trazabilidad completa en las 5 sucursales oficiales (`Obrador`, `Victoria1`, `Victoria2`, `Produccion` y `CEP`).
+
 - **2026-11-03:**
   - **Configuración de Serie `CP` para Complemento de Pago REP 2.0 (`config/config.php`, `ajax/facturas_ajax.php`, `ajax/depositos_ajax.php`, `classes/SiNube/SiNubePagoFactory.php`, `facturas_ppd.php`, `tests/`):**
     - Se definió `$serie_complemento_pago = 'CP'` en `config/config.php` como serie oficial unificada para todos los comprobantes de Recepción de Pagos (REP 2.0 / CFDI 4.0).
