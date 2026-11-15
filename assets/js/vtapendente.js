@@ -358,6 +358,20 @@ $(document).ready(function () {
         }
     }
 
+    function logClientCheckpoint(step, message, context) {
+        console.log(`[CHECKPOINT:${step}] ${message}`, context || {});
+        $.ajax({
+            url: "ajax/facturar_api.php",
+            type: "POST",
+            data: {
+                action: "log_checkpoint",
+                step: step,
+                message: message,
+                context: JSON.stringify(context || {})
+            }
+        });
+    }
+
     function showCompletionSummary() {
         let summaryHtml = '<div style="text-align: left; margin-top: 10px;">';
         let grandTotal = 0;
@@ -448,76 +462,179 @@ $(document).ready(function () {
             return;
         }
 
+        // Extraer únicamente los nombres únicos de los productos de este ticket a facturar
+        let ticketProductsMap = {};
+        invoices.forEach(inv => {
+            (inv.items || []).forEach(it => {
+                const pName = it && it.name ? String(it.name).trim() : '';
+                if (pName !== '') {
+                    ticketProductsMap[pName] = true;
+                }
+            });
+        });
+        const ticketProducts = Object.keys(ticketProductsMap);
+
         let completedInvoices = 0;
         let totalInvoices = invoices.length;
         let successCount = 0;
         let firstError = null;
         let consultaMessages = [];
 
-        Swal.fire({
-            title: 'Procesando...',
-            text: `Facturando 0 de ${totalInvoices}...`,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+        logClientCheckpoint('JS-CP01_PRECHECK_SEND', 'Enviando precheck de productos del ticket', {
+            mov_id: mov_id,
+            branch: branch,
+            ticket_products: ticketProducts,
+            total_invoices: totalInvoices
         });
 
-        // Execute ajax requests concurrently but track completion
-        let ajaxPromises = invoices.map(invData => {
-            return $.ajax({
-                url: "ajax/facturar_api.php",
-                type: "POST",
-                dataType: 'json',
-                data: invData
-            }).done(function(certResponse) {
-                completedInvoices++;
-                Swal.update({ text: `Facturando ${completedInvoices} de ${totalInvoices}...` });
-                if (certResponse && certResponse.success) {
-                    successCount++;
-                } else if (certResponse && certResponse.is_consulta) {
-                    consultaMessages.push(certResponse.message);
-                } else {
-                    if (!firstError) firstError = (certResponse && certResponse.message) ? certResponse.message : "Error al obtener datos.";
-                }
-            }).fail(function( response ) {
+        // PASO 1: Validar productos del ticket SIN abrir modal intermedio para evitar colisión de animación en SweetAlert2
+        $.ajax({
+            url: "ajax/facturar_api.php",
+            type: "POST",
+            dataType: 'json',
+            data: {
+                action: "precheck_products",
+                mov_id: mov_id,
+                branch: branch,
+                ticket_products: ticketProducts
+            }
+        }).done(function(precheckRes) {
+            logClientCheckpoint('JS-CP02_PRECHECK_DONE', 'Respuesta recibida de precheck_products', precheckRes);
 
-                console.log(response);
-                completedInvoices++;
-                Swal.update({ text: `Facturando ${completedInvoices} de ${totalInvoices}...` });
-                if (!firstError) firstError = "Fallo al conectar con el servidor para la factura de " + invData.metodo_pago + ".";
+            if (!precheckRes || !precheckRes.success) {
+                let missingHtml = '';
+                if (precheckRes && Array.isArray(precheckRes.missing_products) && precheckRes.missing_products.length > 0) {
+                    missingHtml = '<ul style="text-align:left; margin-top:10px; color:#c0392b; font-weight:600;">' +
+                        precheckRes.missing_products.map(p => `<li>${$('<div>').text(p).html()}</li>`).join('') +
+                        '</ul>';
+                }
+                setTimeout(function() {
+                    Swal.fire({
+                        title: 'Productos Faltantes en el Ticket',
+                        html: `<div style="text-align:left; font-size:14px;">
+                            <p>No se envió ninguna factura para evitar dejar el ticket <b>#${mov_id}</b> incompleto. Los siguientes productos del ticket no están dados de alta en el catálogo:</p>
+                            ${missingHtml || `<p style="color:#c0392b;"><b>${(precheckRes && precheckRes.message) ? precheckRes.message : 'Error al validar los productos del ticket.'}</b></p>`}
+                        </div>`,
+                        icon: 'error',
+                        confirmButtonColor: '#34495e',
+                        confirmButtonText: 'Entendido'
+                    });
+                }, 120);
+                return;
+            }
+
+            // PASO 2: Precheck exitoso -> Abrir modal de facturación y enviar facturas de forma secuencial
+            Swal.fire({
+                title: 'Procesando...',
+                html: `<div id="swal-ticket-status" style="font-size:15px;">Facturando 0 de ${totalInvoices}...</div>`,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: async () => {
+                    Swal.showLoading();
+
+                    for (let i = 0; i < invoices.length; i++) {
+                        const invData = invoices[i];
+                        logClientCheckpoint('JS-CP03_INVOICE_SEND', `Enviando factura ${i + 1} de ${totalInvoices}`, {
+                            mov_id: mov_id,
+                            branch: branch,
+                            metodo_pago: invData.metodo_pago,
+                            monto: invData.monto
+                        });
+
+                        try {
+                            const certResponse = await $.ajax({
+                                url: "ajax/facturar_api.php",
+                                type: "POST",
+                                dataType: 'json',
+                                data: invData
+                            });
+                            completedInvoices++;
+                            $('#swal-ticket-status').text(`Facturando ${completedInvoices} de ${totalInvoices}...`);
+
+                            logClientCheckpoint('JS-CP04_INVOICE_RESPONSE', `Respuesta factura ${i + 1} de ${totalInvoices}`, certResponse);
+
+                            if (certResponse && certResponse.success) {
+                                successCount++;
+                            } else if (certResponse && certResponse.is_consulta) {
+                                consultaMessages.push(certResponse.message);
+                                break;
+                            } else {
+                                if (!firstError) firstError = (certResponse && certResponse.message) ? certResponse.message : "Error al obtener datos.";
+                                break;
+                            }
+                        } catch (xhrErr) {
+                            console.error(xhrErr);
+                            completedInvoices++;
+                            $('#swal-ticket-status').text(`Facturando ${completedInvoices} de ${totalInvoices}...`);
+                            logClientCheckpoint('JS-CP04_INVOICE_ERROR', `Error de red en factura ${i + 1} de ${totalInvoices}`, {
+                                status: xhrErr ? xhrErr.status : 0,
+                                responseText: xhrErr ? xhrErr.responseText : ''
+                            });
+                            if (!firstError) firstError = "Fallo al conectar con el servidor para la factura de " + invData.metodo_pago + ".";
+                            break;
+                        }
+                    }
+
+                    if (successCount === totalInvoices && totalInvoices > 0) {
+                        logClientCheckpoint('JS-CP05_ALL_INVOICES_OK', 'Todas las facturas timbradas, procediendo a actualizar estatus del ticket', {
+                            mov_id: mov_id,
+                            branch: branch,
+                            successCount: successCount
+                        });
+                        proceedWithLocalCompletion();
+                    } else {
+                        let alertTitle = 'Atención en Facturación';
+                        let alertIcon = 'warning';
+                        let alertText = '';
+                        
+                        if (consultaMessages.length > 0) {
+                            alertText = consultaMessages.join("<br><br>");
+                            if (firstError) {
+                                alertText += "<br><br><b>Además ocurrió un error:</b> " + firstError;
+                            }
+                            if (successCount > 0) {
+                                alertText += `<br><br><em>(Solo se generaron exitosamente ${successCount} de ${totalInvoices} solicitadas)</em>`;
+                            }
+                        } else {
+                            alertIcon = 'error';
+                            alertText = `Se lograron facturar ${successCount} de ${totalInvoices}. Error: ${firstError}`;
+                        }
+
+                        logClientCheckpoint('JS-CP05_INVOICES_INCOMPLETE', 'Proceso detenido por error en timbrado', {
+                            mov_id: mov_id,
+                            branch: branch,
+                            successCount: successCount,
+                            totalInvoices: totalInvoices,
+                            firstError: firstError
+                        });
+
+                        Swal.hideLoading();
+                        Swal.fire({
+                            title: alertTitle,
+                            html: `<div style="text-align:left; font-size:14px;">${alertText}</div>`,
+                            icon: alertIcon,
+                            confirmButtonColor: '#34495e',
+                            confirmButtonText: 'Entendido'
+                        });
+                    }
+                }
             });
-        });
-
-        $.when.apply($, ajaxPromises).always(function() {
-            if (successCount === totalInvoices && totalInvoices > 0) {
-                proceedWithLocalCompletion();
-            } else {
-                let alertTitle = 'Atención en Facturación';
-                let alertIcon = 'warning';
-                let alertText = '';
-                
-                if (consultaMessages.length > 0) {
-                    alertText = consultaMessages.join("<br><br>");
-                    if (firstError) {
-                        alertText += "<br><br><b>Además ocurrió un error:</b> " + firstError;
-                    }
-                    if (successCount > 0) {
-                        alertText += `<br><br><em>(Solo se generaron exitosamente ${successCount} de ${totalInvoices} solicitadas)</em>`;
-                    }
-                } else {
-                    alertIcon = 'error';
-                    alertText = `Se lograron facturar ${successCount} de ${totalInvoices}. Error: ${firstError}`;
-                }
-
+        }).fail(function(xhr, status, error) {
+            console.error("Error en precheck_products:", { status: xhr.status, error: error, responseText: xhr.responseText });
+            logClientCheckpoint('JS-CP02_PRECHECK_FAIL', 'Fallo AJAX en precheck_products', {
+                status: xhr ? xhr.status : 0,
+                error: error,
+                responseText: xhr ? xhr.responseText : ''
+            });
+            setTimeout(function() {
                 Swal.fire({
-                    title: alertTitle,
-                    html: `<div style="text-align:left; font-size:14px;">${alertText}</div>`,
-                    icon: alertIcon,
-                    confirmButtonColor: '#34495e',
-                    confirmButtonText: 'Entendido'
+                    title: 'Error de Validación',
+                    text: 'No se pudieron validar los productos del ticket antes de facturar.',
+                    icon: 'error',
+                    confirmButtonColor: '#34495e'
                 });
-            }
+            }, 120);
         });
     }
 
@@ -558,10 +675,22 @@ $(document).ready(function () {
                     });
                 }
             },
-            error: function () {
+            error: function (xhr, status, error) {
+                console.error("Error en ajax/complete_ticket.php:", { status: xhr.status, statusText: status, error: error, responseText: xhr.responseText });
+                let detailMsg = 'No se pudo comunicar con el servidor al actualizar el estatus del ticket.';
+                if (xhr && xhr.responseText) {
+                    try {
+                        const parsed = JSON.parse(xhr.responseText);
+                        if (parsed && parsed.message) {
+                            detailMsg = parsed.message;
+                        }
+                    } catch (e) {
+                        detailMsg += ' (HTTP ' + xhr.status + ')';
+                    }
+                }
                 Swal.fire({
                     title: 'Error de Red',
-                    text: 'No se pudo comunicar con el servidor.',
+                    text: detailMsg,
                     icon: 'error',
                     confirmButtonColor: '#34495e'
                 });
@@ -654,6 +783,76 @@ $(document).ready(function () {
                     if (fcodeInfo.length > 0) {
                         currentTicketFcode = fcodeInfo.data("fcode") || '03';
                         console.log("Captured fcode:", currentTicketFcode);
+                    }
+
+                    // Validar de inmediato los productos del ticket al entrar al proceso de facturación
+                    const initialTicketProducts = [...new Set(availableItems.map(it => (it.name || '').trim()).filter(Boolean))];
+                    if (initialTicketProducts.length > 0) {
+                        logClientCheckpoint('JS-CP00_INIT_PRECHECK', 'Validando productos del ticket al entrar a vtapendente.php', {
+                            mov_id: mov_id,
+                            branch: branch,
+                            ticket_products: initialTicketProducts
+                        });
+
+                        $.ajax({
+                            url: "ajax/facturar_api.php",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                action: "precheck_products",
+                                mov_id: mov_id,
+                                branch: branch,
+                                ticket_products: initialTicketProducts
+                            }
+                        }).done(function(precheckRes) {
+                            if (!precheckRes || !precheckRes.success) {
+                                let missingHtml = '';
+                                if (precheckRes && Array.isArray(precheckRes.missing_products) && precheckRes.missing_products.length > 0) {
+                                    missingHtml = '<ul style="text-align:left; margin-top:10px; color:#c0392b; font-weight:600;">' +
+                                        precheckRes.missing_products.map(p => `<li>${$('<div>').text(p).html()}</li>`).join('') +
+                                        '</ul>';
+                                }
+
+                                // Bloquear controles de facturación hasta que se corrijan los productos del ticket
+                                $('#btn_add_manual_amount').prop('disabled', true).addClass('disabled');
+                                $('#fpayment_selector').prop('disabled', true);
+                                $('#manual_amount').prop('disabled', true);
+                                $('#client_selector').prop('disabled', true);
+
+                                $('#empty_management_msg').html(`
+                                    <div class="alert alert-danger" style="text-align:left; margin-top:10px;">
+                                        <h4><i class="fa fa-exclamation-triangle"></i> Productos Faltantes en Catálogo SAT</h4>
+                                        <p>No es posible continuar con la facturación del ticket <b>#${mov_id}</b> porque los siguientes productos no existen o están incompletos en el catálogo:</p>
+                                        ${missingHtml}
+                                        <div style="margin-top:15px;">
+                                            <a href="prod.php" class="btn btn-danger btn-sm"><i class="fa fa-plus-circle"></i> Ir a Catálogo de Productos</a>
+                                            <a href="vtaqry.php?branch=${encodeURIComponent(branch)}&status=2" class="btn btn-default btn-sm"><i class="fa fa-arrow-left"></i> Volver a Pendientes</a>
+                                        </div>
+                                    </div>
+                                `).show();
+
+                                Swal.fire({
+                                    title: 'Productos Faltantes en el Ticket',
+                                    html: `<div style="text-align:left; font-size:14px;">
+                                        <p>El ticket <b>#${mov_id}</b> contiene productos que no están dados de alta en el catálogo SAT:</p>
+                                        ${missingHtml || `<p style="color:#c0392b;"><b>${(precheckRes && precheckRes.message) ? precheckRes.message : 'Error al validar productos.'}</b></p>`}
+                                        <p style="margin-top:10px; color:#555;">Debe registrar o corregir estos productos antes de poder continuar con la facturación.</p>
+                                    </div>`,
+                                    icon: 'error',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#26B99A',
+                                    cancelButtonColor: '#34495e',
+                                    confirmButtonText: '<i class="fa fa-plus-circle"></i> Ir a Catálogo de Productos',
+                                    cancelButtonText: 'Volver a Pendientes'
+                                }).then((res) => {
+                                    if (res.isConfirmed) {
+                                        window.location.href = 'prod.php';
+                                    } else if (res.dismiss === Swal.DismissReason.cancel) {
+                                        window.location.href = `vtaqry.php?branch=${encodeURIComponent(branch)}&status=2`;
+                                    }
+                                });
+                            }
+                        });
                     }
                 } catch(e) {
                     console.error("Error parsing ticket items from DOM:", e);

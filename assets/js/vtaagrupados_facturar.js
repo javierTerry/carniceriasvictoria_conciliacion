@@ -384,61 +384,124 @@ $(document).ready(function () {
 
         if (invoices.length === 0) return Swal.fire('Error', 'No hay montos asignados.', 'error');
 
-        Swal.fire({ title: 'Procesando Grupo...', text: `Facturando 0 de ${invoices.length}...`, allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        // Extraer únicamente los nombres únicos de los productos de los tickets del grupo
+        let groupProductsMap = {};
+        invoices.forEach(inv => {
+            (inv.items || []).forEach(it => {
+                const pName = it && it.name ? String(it.name).trim() : '';
+                if (pName !== '') {
+                    groupProductsMap[pName] = true;
+                }
+            });
+        });
+        const groupTicketProducts = Object.keys(groupProductsMap);
 
         let completed = 0;
         let successCount = 0;
         let firstError = null;
         let consultaMessages = [];
 
-        let ajaxPromises = invoices.map(invData => {
-            return $.ajax({ url: "ajax/facturar_api.php", type: "POST", dataType: 'json', data: invData })
-            .done(res => {
-                completed++;
-                Swal.update({ text: `Facturando ${completed} de ${invoices.length}...` });
-                if (res && res.success) {
-                    successCount++;
-                } else if (res && res.is_consulta) {
-                    consultaMessages.push(res.message);
-                } else {
-                    if (!firstError) firstError = res.message || "Error en Sinube";
-                }
-            })
-            .fail(() => {
-                completed++;
-                if (!firstError) firstError = "Fallo de conexión";
-            });
-        });
-
-        $.when.apply($, ajaxPromises).always(function() {
-            if (successCount === invoices.length && invoices.length > 0) {
-                proceedWithLocalCompletion();
-            } else {
-                let alertTitle = 'Atención en Facturación';
-                let alertIcon = 'warning';
-                let alertText = '';
-                
-                if (consultaMessages.length > 0) {
-                    alertText = consultaMessages.join("<br><br>");
-                    if (firstError) {
-                        alertText += "<br><br><b>Además ocurrió un error:</b> " + firstError;
-                    }
-                    if (successCount > 0) {
-                        alertText += `<br><br><em>(Solo se generaron exitosamente ${successCount} de ${invoices.length} solicitadas)</em>`;
-                    }
-                } else {
-                    alertIcon = 'error';
-                    alertText = `Se facturaron ${successCount} de ${invoices.length}. Error: ${firstError}`;
-                }
-
-                Swal.fire({
-                    title: alertTitle,
-                    html: `<div style="text-align:left; font-size:14px;">${alertText}</div>`,
-                    icon: alertIcon,
-                    confirmButtonColor: '#34495e',
-                    confirmButtonText: 'Entendido'
-                });
+        // PASO 1: Pre-check exclusivo de los productos del grupo SIN abrir modal intermedio
+        $.ajax({
+            url: "ajax/facturar_api.php",
+            type: "POST",
+            dataType: 'json',
+            data: {
+                action: "precheck_products",
+                mov_id: "GRP-" + group_id,
+                branch: branch,
+                ticket_products: groupTicketProducts
             }
+        }).done(function(precheckRes) {
+            if (!precheckRes || !precheckRes.success) {
+                let missingHtml = '';
+                if (precheckRes && Array.isArray(precheckRes.missing_products) && precheckRes.missing_products.length > 0) {
+                    missingHtml = '<ul style="text-align:left; margin-top:10px; color:#c0392b; font-weight:600;">' +
+                        precheckRes.missing_products.map(p => `<li>${$('<div>').text(p).html()}</li>`).join('') +
+                        '</ul>';
+                }
+                setTimeout(function() {
+                    Swal.fire({
+                        title: 'Productos Faltantes en el Ticket Grupal',
+                        html: `<div style="text-align:left; font-size:14px;">
+                            <p>No se envió ninguna factura para evitar dejar el grupo incompleto. Los siguientes productos del ticket no están dados de alta:</p>
+                            ${missingHtml || `<p style="color:#c0392b;"><b>${(precheckRes && precheckRes.message) ? precheckRes.message : 'Error al validar productos.'}</b></p>`}
+                        </div>`,
+                        icon: 'error',
+                        confirmButtonColor: '#34495e',
+                        confirmButtonText: 'Entendido'
+                    });
+                }, 120);
+                return;
+            }
+
+            // PASO 2: Timbrar facturas del grupo secuencialmente
+            Swal.fire({
+                title: 'Procesando Grupo...',
+                html: `<div id="swal-group-status" style="font-size:15px;">Facturando 0 de ${invoices.length}...</div>`,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: async () => {
+                    Swal.showLoading();
+
+                    for (let i = 0; i < invoices.length; i++) {
+                        const invData = invoices[i];
+                        try {
+                            const res = await $.ajax({ url: "ajax/facturar_api.php", type: "POST", dataType: 'json', data: invData });
+                            completed++;
+                            $('#swal-group-status').text(`Facturando ${completed} de ${invoices.length}...`);
+                            if (res && res.success) {
+                                successCount++;
+                            } else if (res && res.is_consulta) {
+                                consultaMessages.push(res.message);
+                                break;
+                            } else {
+                                if (!firstError) firstError = (res && res.message) ? res.message : "Error en Sinube";
+                                break;
+                            }
+                        } catch (err) {
+                            completed++;
+                            if (!firstError) firstError = "Fallo de conexión";
+                            break;
+                        }
+                    }
+
+                    if (successCount === invoices.length && invoices.length > 0) {
+                        proceedWithLocalCompletion();
+                    } else {
+                        let alertTitle = 'Atención en Facturación';
+                        let alertIcon = 'warning';
+                        let alertText = '';
+                        
+                        if (consultaMessages.length > 0) {
+                            alertText = consultaMessages.join("<br><br>");
+                            if (firstError) {
+                                alertText += "<br><br><b>Además ocurrió un error:</b> " + firstError;
+                            }
+                            if (successCount > 0) {
+                                alertText += `<br><br><em>(Solo se generaron exitosamente ${successCount} de ${invoices.length} solicitadas)</em>`;
+                            }
+                        } else {
+                            alertIcon = 'error';
+                            alertText = `Se facturaron ${successCount} de ${invoices.length}. Error: ${firstError}`;
+                        }
+
+                        Swal.hideLoading();
+                        Swal.fire({
+                            title: alertTitle,
+                            html: `<div style="text-align:left; font-size:14px;">${alertText}</div>`,
+                            icon: alertIcon,
+                            confirmButtonColor: '#34495e',
+                            confirmButtonText: 'Entendido'
+                        });
+                    }
+                }
+            });
+        }).fail(function() {
+            setTimeout(function() {
+                Swal.fire('Error de Validación', 'No se pudieron validar los productos de los tickets antes de facturar el grupo.', 'error');
+            }, 120);
         });
     }
 
@@ -508,6 +571,69 @@ $(document).ready(function () {
                             availableItems.push({ name: name, qty: qty, price: price, amount: amount, originalIndex: availableItems.length, remainingQty: qty, remainingAmount: amount });
                         }
                     });
+
+                    // Validar de inmediato los productos del grupo al entrar a vtaagrupados_facturar.php
+                    const initialGroupProducts = [...new Set(availableItems.map(it => (it.name || '').trim()).filter(Boolean))];
+                    if (initialGroupProducts.length > 0) {
+                        $.ajax({
+                            url: "ajax/facturar_api.php",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                action: "precheck_products",
+                                mov_id: "GRP-" + gid,
+                                branch: br,
+                                ticket_products: initialGroupProducts
+                            }
+                        }).done(function(precheckRes) {
+                            if (!precheckRes || !precheckRes.success) {
+                                let missingHtml = '';
+                                if (precheckRes && Array.isArray(precheckRes.missing_products) && precheckRes.missing_products.length > 0) {
+                                    missingHtml = '<ul style="text-align:left; margin-top:10px; color:#c0392b; font-weight:600;">' +
+                                        precheckRes.missing_products.map(p => `<li>${$('<div>').text(p).html()}</li>`).join('') +
+                                        '</ul>';
+                                }
+
+                                $('#btn_add_manual_amount').prop('disabled', true).addClass('disabled');
+                                $('#fpayment_selector').prop('disabled', true);
+                                $('#manual_amount').prop('disabled', true);
+                                $('#client_selector').prop('disabled', true);
+
+                                $('#empty_management_msg').html(`
+                                    <div class="alert alert-danger" style="text-align:left; margin-top:10px;">
+                                        <h4><i class="fa fa-exclamation-triangle"></i> Productos Faltantes en Catálogo SAT</h4>
+                                        <p>No es posible continuar con la facturación del grupo <b>#${gid}</b> porque los siguientes productos no existen o están incompletos en el catálogo:</p>
+                                        ${missingHtml}
+                                        <div style="margin-top:15px;">
+                                            <a href="prod.php" class="btn btn-danger btn-sm"><i class="fa fa-plus-circle"></i> Ir a Catálogo de Productos</a>
+                                            <a href="vtaagrupados.php?branch=${encodeURIComponent(br)}" class="btn btn-default btn-sm"><i class="fa fa-arrow-left"></i> Volver a Grupos</a>
+                                        </div>
+                                    </div>
+                                `).show();
+
+                                Swal.fire({
+                                    title: 'Productos Faltantes en el Grupo',
+                                    html: `<div style="text-align:left; font-size:14px;">
+                                        <p>El grupo <b>#${gid}</b> contiene productos que no están dados de alta en el catálogo SAT:</p>
+                                        ${missingHtml || `<p style="color:#c0392b;"><b>${(precheckRes && precheckRes.message) ? precheckRes.message : 'Error al validar productos.'}</b></p>`}
+                                        <p style="margin-top:10px; color:#555;">Debe registrar o corregir estos productos antes de poder continuar con la facturación.</p>
+                                    </div>`,
+                                    icon: 'error',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#26B99A',
+                                    cancelButtonColor: '#34495e',
+                                    confirmButtonText: '<i class="fa fa-plus-circle"></i> Ir a Catálogo de Productos',
+                                    cancelButtonText: 'Volver a Grupos'
+                                }).then((res) => {
+                                    if (res.isConfirmed) {
+                                        window.location.href = 'prod.php';
+                                    } else if (res.dismiss === Swal.DismissReason.cancel) {
+                                        window.location.href = `vtaagrupados.php?branch=${encodeURIComponent(br)}`;
+                                    }
+                                });
+                            }
+                        });
+                    }
                 } catch(e) { console.error("Error parsing group items:", e); }
 
                 setTimeout(() => {
