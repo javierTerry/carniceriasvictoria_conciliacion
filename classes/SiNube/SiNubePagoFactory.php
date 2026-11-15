@@ -91,7 +91,7 @@ class SiNubePagoFactory
         $montoFinal = isset($data['monto']) ? (float) $data['monto'] : $totalCalculado;
         $serie = !empty($data['serie']) ? (string) $data['serie'] : 'CP';
         $folio = (string) ($data['folio'] ?? '1');
-        $nomDescarga = (string) ($data['nomArchivoDescarga'] ?? ($data['rfcEmisor'] ?? 'CFDI') . "_{$serie}{$folio}");
+        $nomDescarga = (string) ($data['nomArchivoDescarga'] ?? "{$serie}-{$folio}-" . time());
 
         // 3. Instanciar DTO Principal de Pago
         return new SiNubePagoDTO(

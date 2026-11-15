@@ -678,13 +678,15 @@ XML;
 <Receptor usoCFDI="CP01" rfc="{$rfc_cliente}" nombre="{$razonSocial}" regimenFiscalReceptor="{$regimen_cliente}" domicilioFiscalReceptor="{$cp_cliente}"/>
 XML;
 
-    $mov_id = !empty($rep_parts) ? "REP-" . implode(',', $rep_parts) : "REP-" . time();
+    $timestamp = time();
+    $mov_id = !empty($rep_parts) ? "REP-" . implode(',', $rep_parts) : "REP-" . $timestamp;
     $observacion = "Pago de facturas PPD";
+    $nom_archivo_descarga = "{$serie}-{$folio}-{$timestamp}";
     
     $xml_payload = <<<XML
 <?xml version="1.0" encoding="utf-8"?>
 <Comprobante exportacion="01" version="CFDI 4.0" sistema="{$api_sistema}" generar="Pago" rfcEmisor="{$api_rfc_emisor}" sucursal="{$api_sucursal}" codigoReporte="CFDI 4.0 - CON IVA - SINUBE-COPIA" 
-    permiteAgregarProductosNoInv="1" nomArchivoDescarga="{$mov_id}-{$serie}-{$folio}" noCertificado="{$api_no_certificado}" serie="{$serie}" folio="{$folio}"  
+    permiteAgregarProductosNoInv="1" nomArchivoDescarga="{$nom_archivo_descarga}" noCertificado="{$api_no_certificado}" serie="{$serie}" folio="{$folio}"  
     subtotal="0" descuento="0" total="0" monedaSinube="XXX" monedaSAT="XXX" difZonaHoraria="-06" observacion="{$observacion}">
    {$receptor}
    <Conceptos>

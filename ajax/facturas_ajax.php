@@ -1148,6 +1148,9 @@ if ($action == 'ajax') {
         $stmt_fol->close();
     }
 
+    // Capturar timestamp único para toda la petición de timbrado
+    $timestamp_rep = time();
+
     // Identificador REP compuesto por el id de ticket ($mov_id) y número de pago/parcialidad
     $rep_parts = [];
     foreach ($invoice_payments_to_save as $pay_item) {
@@ -1155,7 +1158,8 @@ if ($action == 'ajax') {
         $p_num = $pay_item['parcialidad'];
         $rep_parts[] = "{$t_mov}-{$p_num}";
     }
-    $mov_id_rep = !empty($rep_parts) ? 'REP-' . implode(',', $rep_parts) : 'REP-' . time();
+    $mov_id_rep = !empty($rep_parts) ? 'REP-' . implode(',', $rep_parts) : 'REP-' . $timestamp_rep;
+    $nom_archivo_descarga_rep = "{$serie_pago}-{$folio_pago}-{$timestamp_rep}";
 
     // Datos del Receptor
     $es_fisica = (!empty($cliente_data['es_persona_fisica']) && in_array((string) $cliente_data['es_persona_fisica'], ['1', 'true', 'TRUE'], true)) ? '1' : '0';
@@ -1186,7 +1190,7 @@ if ($action == 'ajax') {
         'fechaPago' => $fecha_pago_iso,
         'numOperacion' => $num_operacion,
         'rfcEmisor' => $api_rfc_emisor ?? 'URE180429TM6-39',
-        'nomArchivoDescarga' => "{$mov_id_rep}-{$serie_pago}-{$folio_pago}",
+        'nomArchivoDescarga' => $nom_archivo_descarga_rep,
         'receptor' => [
             'cliente' => (string) $idClienteSiNube,
             'rfc' => $cliente_data['cust_rfc'] ?? 'XAXX010101000',
@@ -1202,18 +1206,29 @@ if ($action == 'ajax') {
         'documentos' => $documentos_sinube
     ];
 
-    // Instanciar servicio y timbrar
-    $pagoService = new \App\Services\SiNube\SiNubePagoService(
-        rfcEmisor: $api_rfc_emisor ?? 'URE180429TM6-39',
-        sucursal: $api_sucursal ?? 'Matriz',
-        usuario: $api_usuario ?? '',
-        password: $api_password ?? '',
-        baseUrl: $api_base_url ?? 'https://ep-dot-facturanube.appspot.com',
-        logPath: __DIR__ . '/../logs/depositos.log'
-    );
+    // Instanciar servicio y timbrar con captura integral de errores (Throwable / ParseError / Error)
+    try {
+        $pagoService = new \App\Services\SiNube\SiNubePagoService(
+            rfcEmisor: $api_rfc_emisor ?? 'URE180429TM6-39',
+            sucursal: $api_sucursal ?? 'Matriz',
+            usuario: $api_usuario ?? '',
+            password: $api_password ?? '',
+            baseUrl: $api_base_url ?? 'https://ep-dot-facturanube.appspot.com',
+            logPath: __DIR__ . '/../logs/depositos.log'
+        );
 
-    $pagoDTO = \App\Services\SiNube\SiNubePagoFactory::fromArray($pagoData);
-    $response = $pagoService->timbrarPago($pagoDTO);
+        $pagoDTO = \App\Services\SiNube\SiNubePagoFactory::fromArray($pagoData);
+        $response = $pagoService->timbrarPago($pagoDTO);
+    } catch (\Throwable $fatalEx) {
+        $errLine = "[" . date('Y-m-d H:i:s') . "] [ERROR] [TIMBRAR_PAGO_PPD_FATAL] Excepción al construir/enviar pago REP '{$serie_pago}-{$folio_pago}': " . $fatalEx->getMessage() . " en " . $fatalEx->getFile() . ":" . $fatalEx->getLine() . PHP_EOL;
+        @file_put_contents(__DIR__ . '/../logs/depositos.log', $errLine, FILE_APPEND);
+        @file_put_contents(__DIR__ . '/../logs/sinube_api.log', $errLine, FILE_APPEND);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Error interno al procesar el complemento de pago: ' . $fatalEx->getMessage()
+        ]);
+        exit;
+    }
 
     if (!$response->success) {
         echo json_encode([
