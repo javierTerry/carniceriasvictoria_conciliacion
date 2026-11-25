@@ -278,12 +278,59 @@ if ($action === 'save') {
     }
 
     try {
+        $is_reactivation = false;
+        if ($id === 0) {
+            // Verificar si existe un registro previo (activo o eliminado lógicamente) con el mismo RFC o Razón Social
+            $existing = null;
+            $existing_field = '';
+
+            $stmt_chk_rfc = $conexion_gen->prepare("SELECT id, code, is_active FROM cust WHERE rfc = ? LIMIT 1");
+            $stmt_chk_rfc->bind_param("s", $data['rfc']);
+            $stmt_chk_rfc->execute();
+            $res_chk_rfc = $stmt_chk_rfc->get_result();
+            if ($row_chk = $res_chk_rfc->fetch_assoc()) {
+                $existing = $row_chk;
+                $existing_field = 'rfc';
+            }
+            $stmt_chk_rfc->close();
+
+            if (!$existing) {
+                $stmt_chk_rs = $conexion_gen->prepare("SELECT id, code, is_active FROM cust WHERE razon_social = ? LIMIT 1");
+                $stmt_chk_rs->bind_param("s", $data['razon_social']);
+                $stmt_chk_rs->execute();
+                $res_chk_rs = $stmt_chk_rs->get_result();
+                if ($row_chk = $res_chk_rs->fetch_assoc()) {
+                    $existing = $row_chk;
+                    $existing_field = 'razon_social';
+                }
+                $stmt_chk_rs->close();
+            }
+
+            if ($existing) {
+                if (intval($existing['is_active']) === 1) {
+                    $dupMsg = ($existing_field === 'rfc')
+                        ? "Atención: El <b>RFC</b> ingresado ya está asignado a otro cliente. Por favor, verifícalo."
+                        : "Atención: La <b>Razón Social</b> ya se encuentra registrada para otro cliente.";
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => $dupMsg,
+                        'field' => $existing_field
+                    ]);
+                    exit;
+                }
+
+                // El cliente existía con is_active = 0 (eliminado): reactivarlo y actualizar sus datos
+                $id = intval($existing['id']);
+                $is_reactivation = true;
+            }
+        }
+
         if ($id > 0) {
             $sql = "UPDATE cust SET 
                     razon_social=?, calle=?, noext=?, noint=?, colonia=?, municipio=?, 
                     estado=?, cp=?, email=?, phone=?, 
                     nombre=?, ap_paterno=?, ap_materno=?, rfc=?, regimen_fiscal=?, 
-                    metodo_pago_code=?, uso_cfdi_code=?, es_persona_fisica=? 
+                    metodo_pago_code=?, uso_cfdi_code=?, es_persona_fisica=?, is_active=1 
                     WHERE id=?";
             $stmt = $conexion_gen->prepare($sql);
             $stmt->bind_param("ssssssssssssssssssi", 
@@ -294,7 +341,9 @@ if ($action === 'save') {
                 $data['metodo_pago_code'], $data['uso_cfdi_code'], 
                 $data['es_persona_fisica'], $id
             );
-            $msg = "Cliente actualizado correctamente.";
+            $msg = $is_reactivation
+                ? "Cliente reactivado y registrado con éxito."
+                : "Cliente actualizado correctamente.";
         } else {
             // Autogenerar código para nuevos registros
             $new_code = generateNextCode($conexion_gen);

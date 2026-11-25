@@ -105,7 +105,7 @@ if ($action === 'validate') {
         while ($item = mysqli_fetch_assoc($result_items)) {
             $items[] = [
                 'qty' => floatval($item['qty']),
-                'name' => $item['name'],
+                'name' => normalizarTextoPOS($item['name'] ?? ''),
                 'price' => floatval($item['price']),
                 'amount' => floatval($item['amount'])
             ];
@@ -257,6 +257,7 @@ if ($action === 'invoice') {
         mysqli_stmt_execute($stmt_items);
         $result_items = mysqli_stmt_get_result($stmt_items);
         while ($item = mysqli_fetch_assoc($result_items)) {
+            $item['name'] = normalizarTextoPOS($item['name'] ?? '');
             $ticket_items[] = $item;
         }
         mysqli_stmt_close($stmt_items);

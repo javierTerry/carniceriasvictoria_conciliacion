@@ -20,7 +20,7 @@ $targetConn = mysqli_connect($config['host'], $config['user'], $config['pass'], 
 if (!$targetConn) {
     die("<div class='alert alert-danger'>Error de conexión a la sucursal.</div>");
 }
-mysqli_set_charset($targetConn, "utf8");
+mysqli_set_charset($targetConn, "utf8mb4");
 
 // 1. Empresa
 $sql_empresa = "SELECT name, rfc, domicilio, municipio, alias FROM emprsa LIMIT 1";
@@ -64,8 +64,8 @@ $res_items = mysqli_query($targetConn, $sql_items);
     </div>
 
     <div class="ticket-info">
-        GRUPO: <strong><?php echo htmlspecialchars($group['name']); ?></strong><br>
-        Cliente: <strong><?php echo utf8_decode($group['cliente'] ?? 'N/A'); ?></strong><br>
+        GRUPO: <strong><?php echo htmlspecialchars(normalizarTextoPOS($group['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong><br>
+        Cliente: <strong><?php echo htmlspecialchars(normalizarTextoPOS($group['cliente'] ?? 'N/A'), ENT_QUOTES, 'UTF-8'); ?></strong><br>
         ID Grupo: <?php echo $group['id']; ?><br>
         Fecha: <?php echo date('d-m-Y', strtotime($group['created_at'])); ?><br>
         Tickets Relacionados: <?php echo $group['ticket_count']; ?>
@@ -92,7 +92,7 @@ $res_items = mysqli_query($targetConn, $sql_items);
                 ?>
                 <tr>
                     <td><?php echo number_format($item['total_qty'], 3); ?></td>
-                    <td><?php echo utf8_decode($item['name']); ?></td>
+                    <td><?php echo htmlspecialchars(normalizarTextoPOS($item['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                     <td class="text-right"><?php echo number_format($item['price'], 2); ?></td>
                     <td class="text-right"><?php echo number_format($item['total_amount'], 2); ?></td>
                 </tr>

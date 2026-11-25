@@ -123,7 +123,7 @@ if ($action == 'ajax') {
       continue;
     }
 
-    mysqli_set_charset($branchConn, "utf8");
+    mysqli_set_charset($branchConn, "utf8mb4");
 
     $sTable = "vtahead A 
                    INNER JOIN cust B ON A.cust_id = B.id 
@@ -144,6 +144,8 @@ if ($action == 'ajax') {
     if (mysqli_stmt_execute($stmt_data)) {
       $query_res = mysqli_stmt_get_result($stmt_data);
       while ($row = mysqli_fetch_array($query_res, MYSQLI_ASSOC)) {
+        $row['cliente'] = normalizarTextoPOS($row['cliente'] ?? '');
+        $row['fname'] = normalizarTextoPOS($row['fname'] ?? '');
         $row['branch_label'] = $branchLabel;
         // Assign CSS class based on branch label
         $row['branch_class'] = 'label-' . strtolower($branchLabel);
