@@ -121,7 +121,7 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
         <?php echo date('d-m-Y', strtotime($sale['created_at'])); ?>
         <?php echo $sale['hour_at']; ?><br>
         Cliente: <span class="ticket-bold">
-            <?php echo utf8_decode($sale['cliente']); ?>
+            <?php echo htmlspecialchars(normalizarTextoPOS($sale['cliente'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
         </span>
     </div>
 
@@ -141,7 +141,7 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
                         <?php echo number_format($item['qty'], 3); ?>
                     </td>
                     <td>
-                        <?php echo ($item['name']); ?>
+                        <?php echo htmlspecialchars(normalizarTextoPOS($item['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
                     </td>
                     <td class="text-right">
                         <?php echo number_format($item['price'], 2); ?>
@@ -199,14 +199,14 @@ $cambio = ($sale['cust_id'] == 1) ? ($sale['recibo'] - $sale['sumimp']) : ($sale
         </div>
         <div class="row">
             <div class="col-xs-12" id="ticket_payment_info" data-fcode="<?php echo $sale['fcode']; ?>">Forma de pago:
-                <?php echo "{$sale['fcode']} - {$sale['fname']}"; ?>
+                <?php echo htmlspecialchars(normalizarTextoPOS("{$sale['fcode']} - {$sale['fname']}"), ENT_QUOTES, 'UTF-8'); ?>
             </div>
         </div>
     </div>
 
     <div class="ticket-footer">
         <p class="ticket-bold">ATENDIO:
-            <?php echo utf8_decode($sale['uname']); ?>
+            <?php echo htmlspecialchars(normalizarTextoPOS($sale['uname'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
         </p>
         <p>SERVICIO A DOMICILIO TEL. 55 52 04 16 20</p>
         <p class="ticket-bold">ESTIMADO CLIENTE</p>

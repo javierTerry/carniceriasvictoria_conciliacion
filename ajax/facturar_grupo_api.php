@@ -29,7 +29,7 @@ if (!$targetConn) {
     echo json_encode(['success' => false, 'message' => 'Error de conexión a la BD de la sucursal']);
     exit;
 }
-mysqli_set_charset($targetConn, "utf8");
+mysqli_set_charset($targetConn, "utf8mb4");
 
 // 1. Obtener información del grupo y tickets
 $sql_group = "SELECT * FROM groups_tickets WHERE id = " . intval($group_id);
@@ -72,7 +72,7 @@ $res_items = mysqli_query($targetConn, $sql_items);
 $ticket_items = [];
 while ($item = mysqli_fetch_array($res_items, MYSQLI_ASSOC)) {
     $ticket_items[] = [
-        'name' => $item['name'],
+        'name' => normalizarTextoPOS($item['name'] ?? ''),
         'qty' => $item['total_qty'],
         'price' => $item['price'],
         'amount' => $item['total_amount']

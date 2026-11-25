@@ -90,7 +90,7 @@ if ($action === 'precheck_products') {
 
         foreach ($source_list as $it) {
             $n = is_array($it) ? ($it['name'] ?? ($it['descripcion'] ?? '')) : (string)$it;
-            $n = trim((string)$n);
+            $n = normalizarTextoPOS(trim((string)$n));
             if ($n !== '') {
                 $raw_names[] = $n;
             }
@@ -119,7 +119,7 @@ if ($action === 'precheck_products') {
                             if (mysqli_stmt_execute($stmt_tck)) {
                                 $res_tck = mysqli_stmt_get_result($stmt_tck);
                                 while ($row_tck = mysqli_fetch_assoc($res_tck)) {
-                                    $pName = trim((string)($row_tck['name'] ?? ''));
+                                    $pName = normalizarTextoPOS(trim((string)($row_tck['name'] ?? '')));
                                     if ($pName !== '') {
                                         $raw_names[] = $pName;
                                     }
@@ -139,7 +139,7 @@ if ($action === 'precheck_products') {
                             if (mysqli_stmt_execute($stmt_tck)) {
                                 $res_tck = mysqli_stmt_get_result($stmt_tck);
                                 while ($row_tck = mysqli_fetch_assoc($res_tck)) {
-                                    $pName = trim((string)($row_tck['name'] ?? ''));
+                                    $pName = normalizarTextoPOS(trim((string)($row_tck['name'] ?? '')));
                                     if ($pName !== '') {
                                         $raw_names[] = $pName;
                                     }
@@ -275,7 +275,7 @@ $missing_in_invoice = [];
 $resolved_products = [];
 
 foreach ($ticket_items as $idx => $item) {
-    $desc_original = isset($item['name']) ? trim((string)$item['name']) : 'Producto General';
+    $desc_original = normalizarTextoPOS(isset($item['name']) ? trim((string)$item['name']) : 'Producto General');
     $productData = $mapper->findByDescription($desc_original);
 
     if (!$productData) {
@@ -360,7 +360,7 @@ $porcentajeIVA = "16";
 $conceptos_xml = "";
 
 foreach ($ticket_items as $idx => $item) {
-    $desc_original = isset($item['name']) ? trim((string)$item['name']) : 'Producto General';
+    $desc_original = normalizarTextoPOS(isset($item['name']) ? trim((string)$item['name']) : 'Producto General');
     $desc_upper = mb_strtoupper($desc_original, 'UTF-8');
     $desc = htmlspecialchars($desc_upper, ENT_XML1, 'UTF-8');
 

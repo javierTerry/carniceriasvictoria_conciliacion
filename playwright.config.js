@@ -1,9 +1,11 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 
+const isHeaded = process.argv.includes('--headed');
+
 module.exports = defineConfig({
   testDir: './tests/e2e',
-  timeout: 30 * 1000,
+  timeout: isHeaded ? 60 * 1000 : 30 * 1000,
   expect: {
     timeout: 5000
   },
@@ -17,6 +19,9 @@ module.exports = defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    launchOptions: {
+      slowMo: isHeaded ? 500 : 0,
+    },
   },
   projects: [
     {
