@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once "../config/config.php";
+require_once __DIR__ . "/../helpers/encoding.php";
 require_once "../classes/ProductMapper.php";
 require_once "../classes/Mailer.php";
 

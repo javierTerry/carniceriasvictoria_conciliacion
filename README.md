@@ -56,6 +56,10 @@ Se ha estructurado la base de conocimiento para desarrollo asistido por IA en `.
 
 ## 📝 Bitácora de Cambios
 
+- **2026-11-26:**
+  - **Desacoplamiento de `normalizarTextoPOS()` a archivo versionado (`helpers/encoding.php`, `config/config.php`, `ajax/vtaqry.php`, `ajax/vta_html_ticket.php`, `ajax/vta_html_group_ticket.php`, `ajax/facturar_api.php`, `ajax/facturar_grupo_api.php`, `api/autofacturacion.php`):**
+    - Se extrajo `normalizarTextoPOS()` hacia `helpers/encoding.php` (archivo incluido en Git, a diferencia de `config/config.php` que está en `.gitignore`) y se cargó mediante `require_once` en todos los endpoints que leen datos de las 4 BDs POS heredadas (`Obrador` -> `carvic_sysvicobr`, `Victoria1` -> `carvic_sysvicm`, `Victoria2` -> `carvic_sysvics`, `Produccion` -> `carvic_sysvicprod`) y `CEP` (`carvic_sysvic_general`), evitando errores fatales `Call to undefined function normalizarTextoPOS()` al desplegar en ambientes `dev` o `prod`.
+
 - **2026-11-24:**
   - **Prueba E2E Playwright para CRUD de Clientes y Corrección de Re-registro tras Eliminación (`tests/e2e/cust_crud.spec.js`, `playwright.config.js`, `ajax/cust.php`):**
     - Se creó la suite E2E `tests/e2e/cust_crud.spec.js` que cubre el ciclo completo en `cust.php`: creación de cliente (`action=save`), búsqueda y lectura en tabla (`action=ajax`), edición (`action=save` con `id > 0`), eliminación lógica (`action=delete`) y re-registro inmediato con el mismo RFC/Razón Social para reproducir y validar el bug de duplicidad en `carvic_sysvic_general.cust` (catálogo compartido por las 5 sucursales oficiales: `Obrador`, `Victoria1`, `Victoria2`, `Produccion` y `CEP`), validando los diálogos SweetAlert2 por su rol (`getByRole('dialog', ...)`).
