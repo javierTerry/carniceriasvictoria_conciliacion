@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "../config/config.php";
+require_once __DIR__ . "/../helpers/encoding.php";
 require_once "../config/numtolet.php";
 
 $group_id = $_GET['group_id'] ?? null;

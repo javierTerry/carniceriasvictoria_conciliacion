@@ -3,6 +3,7 @@ ini_set('memory_limit', '2024M');
 session_start();
 
 require_once "../config/config.php";
+require_once __DIR__ . "/../helpers/encoding.php";
 
 $user_kind = $_SESSION['user_kind'] ?? 0;
 $user_id = $_SESSION['user_id'] ?? 0;
